@@ -1,0 +1,450 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Persetujuan - SIRAB</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap");
+      body {
+        font-family: "Inter", sans-serif;
+        background-color: #f8fafc; /* slate-50 */
+      }
+      .font-mono-num {
+        font-family: "JetBrains Mono", monospace;
+      }
+      /* Custom textarea styling */
+      textarea {
+        outline: none;
+        transition: all 0.2s;
+      }
+      textarea:focus {
+        border-color: #6366f1;
+        box-shadow: 0 0 0 1px #6366f1;
+      }
+    </style>
+  </head>
+  <body class="text-slate-800 pb-12">
+    <!-- Navbar -->
+    <nav
+      class="bg-[#1e293b] text-white flex items-center justify-between px-6 py-3 text-sm"
+    >
+      <div class="flex items-center gap-8">
+        <div class="flex items-center gap-3">
+          <div class="bg-indigo-600 text-white font-bold px-2 py-1 rounded">
+            AB
+          </div>
+          <div>
+            <div class="font-bold tracking-wide">SIRAB</div>
+            <div class="text-[10px] text-slate-400">SISTEM INFORMASI RAB</div>
+          </div>
+        </div>
+        <div class="hidden md:flex gap-6 text-slate-300">
+          <a href="#" class="hover:text-white py-1.5">Dashboard</a>
+          <a href="#" class="hover:text-white py-1.5">Buat Pengajuan</a>
+          <a href="#" class="hover:text-white py-1.5">Daftar RAB</a>
+          <a href="#" class="bg-slate-700 text-white px-3 py-1.5 rounded-md"
+            >Persetujuan</a
+          >
+          <a href="#" class="hover:text-white py-1.5">Laporan</a>
+        </div>
+      </div>
+      <div class="flex items-center gap-4">
+        <button class="text-yellow-400 hover:text-yellow-300">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-5 w-5"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+          >
+            <path
+              d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z"
+            />
+          </svg>
+        </button>
+        <div class="flex items-center gap-2 border-l border-slate-600 pl-4">
+          <div
+            class="bg-blue-600 text-white font-bold rounded-full h-8 w-8 flex items-center justify-center"
+          >
+            DR
+          </div>
+          <div class="hidden sm:block">
+            <div class="text-sm font-semibold">Drs. Arif Rachman</div>
+            <div class="text-[10px] text-slate-400">Direktur Keuangan</div>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <!-- Breadcrumb -->
+      <div class="text-xs text-slate-500 mb-6">
+        SIRAB / <span class="text-slate-800 font-medium">Persetujuan</span>
+      </div>
+
+      <!-- Page Header -->
+      <div class="mb-6">
+        <h1 class="text-2xl font-bold text-slate-900">Antrean Persetujuan</h1>
+        <p class="text-sm text-slate-500 mt-1">
+          Pengajuan yang menunggu persetujuan Anda sebagai Direktur Keuangan
+        </p>
+      </div>
+
+      <!-- Stats Cards -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+        <div
+          class="bg-amber-50/50 border border-amber-100 rounded-lg p-4 shadow-sm"
+        >
+          <div class="text-xs font-semibold text-amber-600 mb-1">
+            Menunggu Review
+          </div>
+          <div class="text-2xl font-bold text-amber-700">2</div>
+        </div>
+        <div
+          class="bg-emerald-50/50 border border-emerald-100 rounded-lg p-4 shadow-sm"
+        >
+          <div class="text-xs font-semibold text-emerald-600 mb-1">
+            Disetujui Bulan Ini
+          </div>
+          <div class="text-2xl font-bold text-emerald-700">2</div>
+        </div>
+        <div
+          class="bg-rose-50/50 border border-rose-100 rounded-lg p-4 shadow-sm"
+        >
+          <div class="text-xs font-semibold text-rose-600 mb-1">
+            Ditolak Bulan Ini
+          </div>
+          <div class="text-2xl font-bold text-rose-700">1</div>
+        </div>
+      </div>
+
+      <!-- Approval Queue List -->
+      <div class="space-y-6 mb-10">
+        <!-- Item 1 -->
+        <div class="bg-white border border-slate-200 rounded-xl shadow-sm p-6">
+          <!-- Header Card -->
+          <div
+            class="flex flex-col sm:flex-row justify-between items-start mb-4 gap-4"
+          >
+            <div>
+              <div class="flex flex-wrap items-center gap-3 mb-2">
+                <span class="text-xs font-mono font-medium text-slate-600"
+                  >RAB-2026-002</span
+                >
+                <span
+                  class="text-[10px] font-semibold bg-rose-50 text-rose-600 px-2 py-0.5 rounded border border-rose-100"
+                  >Urgensi: tinggi</span
+                >
+                <span
+                  class="inline-flex items-center gap-1 text-[10px] font-semibold bg-amber-50 text-amber-600 px-2 py-0.5 rounded border border-amber-100"
+                >
+                  <span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
+                  Diajukan
+                </span>
+              </div>
+              <h2 class="text-base font-semibold text-slate-900">
+                Pelatihan SDM & Sertifikasi Karyawan Q4
+              </h2>
+              <div class="text-xs text-slate-400 mt-1">
+                Pengaju: Sari Dewi · Diajukan: 2026-09-02
+              </div>
+            </div>
+            <div class="text-xl font-bold text-slate-800 font-mono-num">
+              Rp 72.500.000
+            </div>
+          </div>
+
+          <div
+            class="border-t border-slate-100 pt-5 mt-2 grid grid-cols-1 md:grid-cols-2 gap-8"
+          >
+            <!-- Ringkasan Item -->
+            <div>
+              <h3
+                class="text-[10px] font-bold text-slate-500 tracking-wider uppercase mb-3"
+              >
+                Ringkasan Item
+              </h3>
+              <div class="space-y-2 text-xs">
+                <div class="flex justify-between text-slate-600">
+                  <span>Laptop Dell XPS 15 (Core i7)</span>
+                  <span class="font-mono-num">Rp 92.500.000</span>
+                </div>
+                <div class="flex justify-between text-slate-600">
+                  <span>Monitor 27" 4K UltraSharp</span>
+                  <span class="font-mono-num">Rp 31.000.000</span>
+                </div>
+                <div class="flex justify-between text-slate-600">
+                  <span>Keyboard & Mouse Wireless</span>
+                  <span class="font-mono-num">Rp 8.500.000</span>
+                </div>
+                <div class="pt-1 text-slate-400 italic">+ 2 item lainnya</div>
+              </div>
+            </div>
+
+            <!-- Catatan -->
+            <div>
+              <h3
+                class="text-[10px] font-bold text-slate-500 tracking-wider uppercase mb-3"
+              >
+                Catatan
+              </h3>
+              <textarea
+                rows="3"
+                placeholder="Tambahkan catatan persetujuan atau alasan penolakan..."
+                class="w-full border border-slate-200 rounded-lg p-3 text-xs text-slate-700 placeholder-slate-300 resize-none bg-slate-50/50"
+              ></textarea>
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div
+            class="border-t border-slate-100 pt-5 mt-5 flex flex-col sm:flex-row justify-between items-center gap-4"
+          >
+            <div class="flex flex-wrap items-center gap-3 w-full sm:w-auto">
+              <button
+                class="flex-1 sm:flex-none bg-teal-600 hover:bg-teal-700 text-white text-xs font-semibold px-4 py-2.5 rounded-lg transition-colors flex items-center justify-center gap-1.5"
+              >
+                ✓ Setujui Pengajuan
+              </button>
+              <button
+                class="flex-1 sm:flex-none bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold px-4 py-2.5 rounded-lg transition-colors flex items-center justify-center gap-1.5"
+              >
+                ✕ Tolak
+              </button>
+              <button
+                class="flex-1 sm:flex-none bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 text-xs font-semibold px-4 py-2.5 rounded-lg transition-colors flex items-center justify-center gap-1.5"
+              >
+                ↩ Minta Revisi
+              </button>
+            </div>
+            <a
+              href="#"
+              class="text-xs text-slate-500 hover:text-slate-800 font-medium flex items-center gap-1"
+            >
+              Lihat Detail Lengkap &rarr;
+            </a>
+          </div>
+        </div>
+
+        <!-- Item 2 -->
+        <div class="bg-white border border-slate-200 rounded-xl shadow-sm p-6">
+          <!-- Header Card -->
+          <div
+            class="flex flex-col sm:flex-row justify-between items-start mb-4 gap-4"
+          >
+            <div>
+              <div class="flex flex-wrap items-center gap-3 mb-2">
+                <span class="text-xs font-mono font-medium text-slate-600"
+                  >RAB-2026-004</span
+                >
+                <span
+                  class="text-[10px] font-semibold bg-rose-50 text-rose-600 px-2 py-0.5 rounded border border-rose-100"
+                  >Urgensi: tinggi</span
+                >
+                <span
+                  class="inline-flex items-center gap-1 text-[10px] font-semibold bg-amber-50 text-amber-600 px-2 py-0.5 rounded border border-amber-100"
+                >
+                  <span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
+                  Diajukan
+                </span>
+              </div>
+              <h2 class="text-base font-semibold text-slate-900">
+                Kampanye Pemasaran Digital Q4 2026
+              </h2>
+              <div class="text-xs text-slate-400 mt-1">
+                Pengaju: Dina Marlina · Diajukan: 2026-09-04
+              </div>
+            </div>
+            <div class="text-xl font-bold text-slate-800 font-mono-num">
+              Rp 210.000.000
+            </div>
+          </div>
+
+          <div
+            class="border-t border-slate-100 pt-5 mt-2 grid grid-cols-1 md:grid-cols-2 gap-8"
+          >
+            <!-- Ringkasan Item -->
+            <div>
+              <h3
+                class="text-[10px] font-bold text-slate-500 tracking-wider uppercase mb-3"
+              >
+                Ringkasan Item
+              </h3>
+              <div class="space-y-2 text-xs">
+                <div class="flex justify-between text-slate-600">
+                  <span>Laptop Dell XPS 15 (Core i7)</span>
+                  <span class="font-mono-num">Rp 92.500.000</span>
+                </div>
+                <div class="flex justify-between text-slate-600">
+                  <span>Monitor 27" 4K UltraSharp</span>
+                  <span class="font-mono-num">Rp 31.000.000</span>
+                </div>
+                <div class="flex justify-between text-slate-600">
+                  <span>Keyboard & Mouse Wireless</span>
+                  <span class="font-mono-num">Rp 8.500.000</span>
+                </div>
+                <div class="pt-1 text-slate-400 italic">+ 2 item lainnya</div>
+              </div>
+            </div>
+
+            <!-- Catatan -->
+            <div>
+              <h3
+                class="text-[10px] font-bold text-slate-500 tracking-wider uppercase mb-3"
+              >
+                Catatan
+              </h3>
+              <textarea
+                rows="3"
+                placeholder="Tambahkan catatan persetujuan atau alasan penolakan..."
+                class="w-full border border-slate-200 rounded-lg p-3 text-xs text-slate-700 placeholder-slate-300 resize-none bg-slate-50/50"
+              ></textarea>
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div
+            class="border-t border-slate-100 pt-5 mt-5 flex flex-col sm:flex-row justify-between items-center gap-4"
+          >
+            <div class="flex flex-wrap items-center gap-3 w-full sm:w-auto">
+              <button
+                class="flex-1 sm:flex-none bg-teal-600 hover:bg-teal-700 text-white text-xs font-semibold px-4 py-2.5 rounded-lg transition-colors flex items-center justify-center gap-1.5"
+              >
+                ✓ Setujui Pengajuan
+              </button>
+              <button
+                class="flex-1 sm:flex-none bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold px-4 py-2.5 rounded-lg transition-colors flex items-center justify-center gap-1.5"
+              >
+                ✕ Tolak
+              </button>
+              <button
+                class="flex-1 sm:flex-none bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 text-xs font-semibold px-4 py-2.5 rounded-lg transition-colors flex items-center justify-center gap-1.5"
+              >
+                ↩ Minta Revisi
+              </button>
+            </div>
+            <a
+              href="#"
+              class="text-xs text-slate-500 hover:text-slate-800 font-medium flex items-center gap-1"
+            >
+              Lihat Detail Lengkap &rarr;
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Riwayat Persetujuan -->
+      <div
+        class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden mb-8"
+      >
+        <div class="p-6 border-b border-slate-100">
+          <h2 class="font-semibold text-slate-900">Riwayat Persetujuan</h2>
+        </div>
+        <div class="px-6 py-2">
+          <div class="divide-y divide-slate-100">
+            <!-- History Item 1 -->
+            <div
+              class="py-4 flex flex-col sm:flex-row sm:items-center gap-4 hover:bg-slate-50 -mx-6 px-6 transition-colors cursor-default"
+            >
+              <div class="w-24 shrink-0">
+                <span
+                  class="inline-flex items-center gap-1.5 text-[10px] font-semibold bg-emerald-50 text-emerald-600 px-2 py-1 rounded-full border border-emerald-100"
+                >
+                  <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                  Disetujui
+                </span>
+              </div>
+              <div class="flex-1 min-w-0 flex items-center gap-3 text-sm">
+                <span class="font-mono text-slate-500 text-xs"
+                  >RAB-2026-001</span
+                >
+                <span class="text-slate-800 font-medium truncate"
+                  >Pengadaan Peralatan IT Divisi Teknologi</span
+                >
+              </div>
+              <div
+                class="flex items-center justify-between sm:justify-end gap-6 sm:w-48 shrink-0"
+              >
+                <span class="font-mono-num text-sm text-slate-700"
+                  >Rp 185.000.000</span
+                >
+                <span class="text-xs text-slate-400 font-mono">2026-09-01</span>
+              </div>
+            </div>
+
+            <!-- History Item 2 -->
+            <div
+              class="py-4 flex flex-col sm:flex-row sm:items-center gap-4 hover:bg-slate-50 -mx-6 px-6 transition-colors cursor-default"
+            >
+              <div class="w-24 shrink-0">
+                <span
+                  class="inline-flex items-center gap-1.5 text-[10px] font-semibold bg-rose-50 text-rose-600 px-2 py-1 rounded-full border border-rose-100"
+                >
+                  <span class="w-1.5 h-1.5 rounded-full bg-rose-400"></span>
+                  Ditolak
+                </span>
+              </div>
+              <div class="flex-1 min-w-0 flex items-center gap-3 text-sm">
+                <span class="font-mono text-slate-500 text-xs"
+                  >RAB-2026-005</span
+                >
+                <span class="text-slate-800 font-medium truncate"
+                  >Pemeliharaan Kendaraan Operasional</span
+                >
+              </div>
+              <div
+                class="flex items-center justify-between sm:justify-end gap-6 sm:w-48 shrink-0"
+              >
+                <span class="font-mono-num text-sm text-slate-700"
+                  >Rp 28.750.000</span
+                >
+                <span class="text-xs text-slate-400 font-mono">2026-08-28</span>
+              </div>
+            </div>
+
+            <!-- History Item 3 -->
+            <div
+              class="py-4 flex flex-col sm:flex-row sm:items-center gap-4 hover:bg-slate-50 -mx-6 px-6 transition-colors cursor-default"
+            >
+              <div class="w-24 shrink-0">
+                <span
+                  class="inline-flex items-center gap-1.5 text-[10px] font-semibold bg-emerald-50 text-emerald-600 px-2 py-1 rounded-full border border-emerald-100"
+                >
+                  <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                  Disetujui
+                </span>
+              </div>
+              <div class="flex-1 min-w-0 flex items-center gap-3 text-sm">
+                <span class="font-mono text-slate-500 text-xs"
+                  >RAB-2026-006</span
+                >
+                <span class="text-slate-800 font-medium truncate"
+                  >Pengembangan Sistem ERP Modul Keuangan</span
+                >
+              </div>
+              <div
+                class="flex items-center justify-between sm:justify-end gap-6 sm:w-48 shrink-0"
+              >
+                <span class="font-mono-num text-sm text-slate-700"
+                  >Rp 395.000.000</span
+                >
+                <span class="text-xs text-slate-400 font-mono">2026-08-25</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer
+      class="bg-[#0f172a] text-slate-400 text-[10px] py-4 px-6 fixed bottom-0 w-full z-10"
+    >
+      <div class="max-w-5xl mx-auto">
+        © 2026 SIRAB - Sistem Informasi Rencana Anggaran Biaya v2.4.1
+      </div>
+    </footer>
+  </body>
+</html>

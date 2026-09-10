@@ -1,0 +1,507 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Daftar RAB - SIRAB</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap");
+      body {
+        font-family: "Inter", sans-serif;
+        background-color: #f8fafc; /* slate-50 */
+      }
+      .font-mono-num {
+        font-family: "JetBrains Mono", monospace;
+      }
+      /* Custom scrollbar for table */
+      .table-container::-webkit-scrollbar {
+        height: 8px;
+      }
+      .table-container::-webkit-scrollbar-thumb {
+        background-color: #cbd5e1;
+        border-radius: 4px;
+      }
+      /* Custom input outline */
+      input:focus,
+      select:focus {
+        outline: none;
+        border-color: #6366f1;
+        box-shadow: 0 0 0 1px #6366f1;
+      }
+    </style>
+  </head>
+  <body class="text-slate-800">
+    <!-- Navbar -->
+    <nav
+      class="bg-[#1e293b] text-white flex items-center justify-between px-6 py-3 text-sm"
+    >
+      <div class="flex items-center gap-8">
+        <div class="flex items-center gap-3">
+          <div class="bg-indigo-600 text-white font-bold px-2 py-1 rounded">
+            AB
+          </div>
+          <div>
+            <div class="font-bold tracking-wide">SIRAB</div>
+            <div class="text-[10px] text-slate-400">SISTEM INFORMASI RAB</div>
+          </div>
+        </div>
+        <div class="hidden md:flex gap-6 text-slate-300">
+          <a href="#" class="hover:text-white py-1.5">Dashboard</a>
+          <a href="#" class="hover:text-white py-1.5">Buat Pengajuan</a>
+          <a href="#" class="bg-slate-700 text-white px-3 py-1.5 rounded-md"
+            >Daftar RAB</a
+          >
+          <a href="#" class="hover:text-white py-1.5">Persetujuan</a>
+          <a href="#" class="hover:text-white py-1.5">Laporan</a>
+        </div>
+      </div>
+      <div class="flex items-center gap-4">
+        <button class="text-yellow-400 hover:text-yellow-300">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-5 w-5"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+          >
+            <path
+              d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z"
+            />
+          </svg>
+        </button>
+        <div class="flex items-center gap-2 border-l border-slate-600 pl-4">
+          <div
+            class="bg-blue-600 text-white font-bold rounded-full h-8 w-8 flex items-center justify-center"
+          >
+            DR
+          </div>
+          <div class="hidden sm:block">
+            <div class="text-sm font-semibold">Drs. Arif Rachman</div>
+            <div class="text-[10px] text-slate-400">Direktur Keuangan</div>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <!-- Breadcrumb -->
+      <div class="text-xs text-slate-500 mb-6">
+        SIRAB / <span class="text-slate-800 font-medium">Daftar RAB</span>
+      </div>
+
+      <!-- Page Header -->
+      <div
+        class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4"
+      >
+        <div>
+          <h1 class="text-2xl font-bold text-slate-900">
+            Daftar Pengajuan RAB
+          </h1>
+          <p class="text-sm text-slate-500 mt-1">8 dokumen ditemukan</p>
+        </div>
+        <button
+          class="bg-[#1e293b] hover:bg-slate-800 text-white px-4 py-2 rounded-md text-sm font-medium flex items-center gap-2 shadow-sm"
+        >
+          + Buat Pengajuan
+        </button>
+      </div>
+
+      <!-- Filter & Search Section -->
+      <div
+        class="bg-white border border-slate-200 rounded-lg shadow-sm p-4 mb-6"
+      >
+        <div class="flex flex-col lg:flex-row justify-between gap-4">
+          <!-- Left: Search and Status Filters -->
+          <div class="flex flex-col sm:flex-row flex-1 gap-4">
+            <!-- Search Input -->
+            <div class="w-full sm:w-64 shrink-0">
+              <input
+                type="text"
+                placeholder="Cari nomor, judul, divisi..."
+                class="w-full border border-slate-300 rounded-md px-3 py-1.5 text-sm text-slate-800 placeholder-slate-400"
+              />
+            </div>
+
+            <!-- Status Filter Group -->
+            <div class="flex flex-wrap items-center gap-2">
+              <button
+                class="bg-[#1e293b] text-white border border-[#1e293b] text-xs font-medium px-4 py-1.5 rounded-md"
+              >
+                Semua
+              </button>
+              <button
+                class="bg-white text-slate-600 border border-slate-300 hover:bg-slate-50 text-xs font-medium px-4 py-1.5 rounded-md"
+              >
+                Draft
+              </button>
+              <button
+                class="bg-white text-slate-600 border border-slate-300 hover:bg-slate-50 text-xs font-medium px-4 py-1.5 rounded-md"
+              >
+                Diajukan
+              </button>
+              <button
+                class="bg-white text-slate-600 border border-slate-300 hover:bg-slate-50 text-xs font-medium px-4 py-1.5 rounded-md"
+              >
+                Disetujui
+              </button>
+              <button
+                class="bg-white text-slate-600 border border-slate-300 hover:bg-slate-50 text-xs font-medium px-4 py-1.5 rounded-md"
+              >
+                Ditolak
+              </button>
+              <button
+                class="bg-white text-slate-600 border border-slate-300 hover:bg-slate-50 text-xs font-medium px-4 py-1.5 rounded-md"
+              >
+                Perlu Revisi
+              </button>
+            </div>
+          </div>
+
+          <!-- Right: Sort & Export -->
+          <div
+            class="flex items-center gap-3 justify-end shrink-0 pt-4 lg:pt-0 border-t lg:border-t-0 border-slate-100"
+          >
+            <select
+              class="border border-slate-300 bg-white text-slate-700 text-sm rounded-md px-3 py-1.5 pr-8 appearance-none cursor-pointer"
+            >
+              <option>Terbaru</option>
+              <option>Terlama</option>
+            </select>
+            <button
+              class="bg-white text-slate-700 border border-slate-300 hover:bg-slate-50 text-sm font-medium px-4 py-1.5 rounded-md flex items-center gap-1.5"
+            >
+              Export &darr;
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Data Table Section -->
+      <div
+        class="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden mb-8"
+      >
+        <div class="overflow-x-auto table-container">
+          <table class="w-full text-left whitespace-nowrap">
+            <thead
+              class="text-[10px] text-slate-500 uppercase bg-slate-50 border-b border-slate-200 font-semibold"
+            >
+              <tr>
+                <th class="px-5 py-4 w-10">
+                  <input
+                    type="checkbox"
+                    class="w-4 h-4 rounded border-slate-300 accent-[#1e293b] cursor-pointer"
+                  />
+                </th>
+                <th class="px-5 py-4">NO. RAB</th>
+                <th class="px-5 py-4">JUDUL PENGAJUAN</th>
+                <th class="px-5 py-4">DIVISI</th>
+                <th class="px-5 py-4">PENGAJU</th>
+                <th class="px-5 py-4">TANGGAL</th>
+                <th class="px-5 py-4">TOTAL ANGGARAN</th>
+                <th class="px-5 py-4">PRIORITAS</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100 text-sm">
+              <!-- Row 1 -->
+              <tr class="hover:bg-slate-50">
+                <td class="px-5 py-4">
+                  <input
+                    type="checkbox"
+                    class="w-4 h-4 rounded border-slate-300 accent-[#1e293b] cursor-pointer"
+                  />
+                </td>
+                <td
+                  class="px-5 py-4 font-mono font-medium text-slate-600 text-xs"
+                >
+                  RAB-2026-001
+                </td>
+                <td class="px-5 py-4 text-slate-800 font-medium">
+                  Pengadaan Peralatan IT Divi...
+                </td>
+                <td class="px-5 py-4 text-slate-600">Teknologi Informasi</td>
+                <td class="px-5 py-4 text-slate-600">Andi Kusuma</td>
+                <td class="px-5 py-4 text-slate-400 font-mono text-xs">
+                  2026-09-01
+                </td>
+                <td
+                  class="px-5 py-4 font-mono-num font-semibold text-slate-800"
+                >
+                  Rp 185.000.000
+                </td>
+                <td class="px-5 py-4">
+                  <span
+                    class="inline-block px-2 py-0.5 text-[10px] font-semibold bg-rose-50 text-rose-600 border border-rose-100 rounded"
+                    >Tinggi</span
+                  >
+                </td>
+              </tr>
+              <!-- Row 2 -->
+              <tr class="hover:bg-slate-50">
+                <td class="px-5 py-4">
+                  <input
+                    type="checkbox"
+                    class="w-4 h-4 rounded border-slate-300 accent-[#1e293b] cursor-pointer"
+                  />
+                </td>
+                <td
+                  class="px-5 py-4 font-mono font-medium text-slate-600 text-xs"
+                >
+                  RAB-2026-002
+                </td>
+                <td class="px-5 py-4 text-slate-800 font-medium">
+                  Pelatihan SDM & Sertifikasi K...
+                </td>
+                <td class="px-5 py-4 text-slate-600">HRD</td>
+                <td class="px-5 py-4 text-slate-600">Sari Dewi</td>
+                <td class="px-5 py-4 text-slate-400 font-mono text-xs">
+                  2026-09-02
+                </td>
+                <td
+                  class="px-5 py-4 font-mono-num font-semibold text-slate-800"
+                >
+                  Rp 72.500.000
+                </td>
+                <td class="px-5 py-4">
+                  <span
+                    class="inline-block px-2 py-0.5 text-[10px] font-semibold bg-amber-50 text-amber-600 border border-amber-100 rounded"
+                    >Sedang</span
+                  >
+                </td>
+              </tr>
+              <!-- Row 3 -->
+              <tr class="hover:bg-slate-50">
+                <td class="px-5 py-4">
+                  <input
+                    type="checkbox"
+                    class="w-4 h-4 rounded border-slate-300 accent-[#1e293b] cursor-pointer"
+                  />
+                </td>
+                <td
+                  class="px-5 py-4 font-mono font-medium text-slate-600 text-xs"
+                >
+                  RAB-2026-003
+                </td>
+                <td class="px-5 py-4 text-slate-800 font-medium">
+                  Renovasi Ruang Rapat Lantai...
+                </td>
+                <td class="px-5 py-4 text-slate-600">Umum & Fasilitas</td>
+                <td class="px-5 py-4 text-slate-600">Budi Santoso</td>
+                <td class="px-5 py-4 text-slate-400 font-mono text-xs">
+                  2026-09-03
+                </td>
+                <td
+                  class="px-5 py-4 font-mono-num font-semibold text-slate-800"
+                >
+                  Rp 43.200.000
+                </td>
+                <td class="px-5 py-4">
+                  <span
+                    class="inline-block px-2 py-0.5 text-[10px] font-semibold bg-indigo-50 text-indigo-600 border border-indigo-100 rounded"
+                    >Rendah</span
+                  >
+                </td>
+              </tr>
+              <!-- Row 4 -->
+              <tr class="hover:bg-slate-50">
+                <td class="px-5 py-4">
+                  <input
+                    type="checkbox"
+                    class="w-4 h-4 rounded border-slate-300 accent-[#1e293b] cursor-pointer"
+                  />
+                </td>
+                <td
+                  class="px-5 py-4 font-mono font-medium text-slate-600 text-xs"
+                >
+                  RAB-2026-004
+                </td>
+                <td class="px-5 py-4 text-slate-800 font-medium">
+                  Kampanye Pemasaran Digital...
+                </td>
+                <td class="px-5 py-4 text-slate-600">Marketing</td>
+                <td class="px-5 py-4 text-slate-600">Dina Marlina</td>
+                <td class="px-5 py-4 text-slate-400 font-mono text-xs">
+                  2026-09-04
+                </td>
+                <td
+                  class="px-5 py-4 font-mono-num font-semibold text-slate-800"
+                >
+                  Rp 210.000.000
+                </td>
+                <td class="px-5 py-4">
+                  <span
+                    class="inline-block px-2 py-0.5 text-[10px] font-semibold bg-rose-50 text-rose-600 border border-rose-100 rounded"
+                    >Tinggi</span
+                  >
+                </td>
+              </tr>
+              <!-- Row 5 -->
+              <tr class="hover:bg-slate-50">
+                <td class="px-5 py-4">
+                  <input
+                    type="checkbox"
+                    class="w-4 h-4 rounded border-slate-300 accent-[#1e293b] cursor-pointer"
+                  />
+                </td>
+                <td
+                  class="px-5 py-4 font-mono font-medium text-slate-600 text-xs"
+                >
+                  RAB-2026-005
+                </td>
+                <td class="px-5 py-4 text-slate-800 font-medium">
+                  Pemeliharaan Kendaraan Op...
+                </td>
+                <td class="px-5 py-4 text-slate-600">Logistik</td>
+                <td class="px-5 py-4 text-slate-600">Hendra Wijaya</td>
+                <td class="px-5 py-4 text-slate-400 font-mono text-xs">
+                  2026-08-28
+                </td>
+                <td
+                  class="px-5 py-4 font-mono-num font-semibold text-slate-800"
+                >
+                  Rp 28.750.000
+                </td>
+                <td class="px-5 py-4">
+                  <span
+                    class="inline-block px-2 py-0.5 text-[10px] font-semibold bg-amber-50 text-amber-600 border border-amber-100 rounded"
+                    >Sedang</span
+                  >
+                </td>
+              </tr>
+              <!-- Row 6 -->
+              <tr class="hover:bg-slate-50">
+                <td class="px-5 py-4">
+                  <input
+                    type="checkbox"
+                    class="w-4 h-4 rounded border-slate-300 accent-[#1e293b] cursor-pointer"
+                  />
+                </td>
+                <td
+                  class="px-5 py-4 font-mono font-medium text-slate-600 text-xs"
+                >
+                  RAB-2026-006
+                </td>
+                <td class="px-5 py-4 text-slate-800 font-medium">
+                  Pengembangan Sistem ERP...
+                </td>
+                <td class="px-5 py-4 text-slate-600">Keuangan</td>
+                <td class="px-5 py-4 text-slate-600">Ratna Sari</td>
+                <td class="px-5 py-4 text-slate-400 font-mono text-xs">
+                  2026-08-25
+                </td>
+                <td
+                  class="px-5 py-4 font-mono-num font-semibold text-slate-800"
+                >
+                  Rp 395.000.000
+                </td>
+                <td class="px-5 py-4">
+                  <span
+                    class="inline-block px-2 py-0.5 text-[10px] font-semibold bg-rose-50 text-rose-600 border border-rose-100 rounded"
+                    >Tinggi</span
+                  >
+                </td>
+              </tr>
+              <!-- Row 7 -->
+              <tr class="hover:bg-slate-50">
+                <td class="px-5 py-4">
+                  <input
+                    type="checkbox"
+                    class="w-4 h-4 rounded border-slate-300 accent-[#1e293b] cursor-pointer"
+                  />
+                </td>
+                <td
+                  class="px-5 py-4 font-mono font-medium text-slate-600 text-xs"
+                >
+                  RAB-2026-007
+                </td>
+                <td class="px-5 py-4 text-slate-800 font-medium">
+                  Inventaris Alat Tulis Kantor Q4
+                </td>
+                <td class="px-5 py-4 text-slate-600">Administrasi</td>
+                <td class="px-5 py-4 text-slate-600">Yusuf Hakim</td>
+                <td class="px-5 py-4 text-slate-400 font-mono text-xs">
+                  2026-09-05
+                </td>
+                <td
+                  class="px-5 py-4 font-mono-num font-semibold text-slate-800"
+                >
+                  Rp 12.300.000
+                </td>
+                <td class="px-5 py-4">
+                  <span
+                    class="inline-block px-2 py-0.5 text-[10px] font-semibold bg-indigo-50 text-indigo-600 border border-indigo-100 rounded"
+                    >Rendah</span
+                  >
+                </td>
+              </tr>
+              <!-- Row 8 -->
+              <tr class="hover:bg-slate-50">
+                <td class="px-5 py-4">
+                  <input
+                    type="checkbox"
+                    class="w-4 h-4 rounded border-slate-300 accent-[#1e293b] cursor-pointer"
+                  />
+                </td>
+                <td
+                  class="px-5 py-4 font-mono font-medium text-slate-600 text-xs"
+                >
+                  RAB-2026-008
+                </td>
+                <td class="px-5 py-4 text-slate-800 font-medium">
+                  Audit Eksternal & Konsultasi...
+                </td>
+                <td class="px-5 py-4 text-slate-600">Keuangan</td>
+                <td class="px-5 py-4 text-slate-600">Lestari Wulandari</td>
+                <td class="px-5 py-4 text-slate-400 font-mono text-xs">
+                  2026-09-06
+                </td>
+                <td
+                  class="px-5 py-4 font-mono-num font-semibold text-slate-800"
+                >
+                  Rp 55.000.000
+                </td>
+                <td class="px-5 py-4">
+                  <span
+                    class="inline-block px-2 py-0.5 text-[10px] font-semibold bg-amber-50 text-amber-600 border border-amber-100 rounded"
+                    >Sedang</span
+                  >
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Pagination Footer -->
+        <div
+          class="px-6 py-4 border-t border-slate-200 flex flex-col sm:flex-row justify-between items-center gap-4 bg-white text-xs"
+        >
+          <div class="text-slate-500">Menampilkan 8 dari 8 dokumen</div>
+          <div class="flex items-center gap-1">
+            <button
+              class="w-7 h-7 flex items-center justify-center rounded-md bg-[#1e293b] text-white font-medium"
+            >
+              1
+            </button>
+            <button
+              class="w-7 h-7 flex items-center justify-center rounded-md text-slate-500 hover:bg-slate-100 font-medium transition-colors"
+            >
+              2
+            </button>
+            <button
+              class="w-7 h-7 flex items-center justify-center rounded-md text-slate-500 hover:bg-slate-100 font-medium transition-colors"
+            >
+              3
+            </button>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-[#0f172a] text-slate-400 text-[10px] py-4 px-6 mt-10">
+      <div class="max-w-7xl mx-auto">
+        © 2026 SIRAB - Sistem Informasi Rencana Anggaran Biaya v2.4.1
+      </div>
+    </footer>
+  </body>
+</html>

@@ -1,0 +1,651 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard Anggaran - SIRAB</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
+      body {
+        font-family: "Inter", sans-serif;
+        background-color: #f8fafc; /* slate-50 */
+      }
+      /* Custom scrollbar for table */
+      .table-container::-webkit-scrollbar {
+        height: 8px;
+      }
+      .table-container::-webkit-scrollbar-thumb {
+        background-color: #cbd5e1;
+        border-radius: 4px;
+      }
+    </style>
+  </head>
+  <body class="text-slate-800">
+    <!-- Navbar -->
+    <nav
+      class="bg-[#1e293b] text-white flex items-center justify-between px-6 py-3 text-sm"
+    >
+      <div class="flex items-center gap-8">
+        <div class="flex items-center gap-3">
+          <div class="bg-indigo-600 text-white font-bold px-2 py-1 rounded">
+            AB
+          </div>
+          <div>
+            <div class="font-bold tracking-wide">SIRAB</div>
+            <div class="text-[10px] text-slate-400">SISTEM INFORMASI RAB</div>
+          </div>
+        </div>
+        <div class="hidden md:flex gap-6 text-slate-300">
+          <a href="#" class="bg-slate-700 text-white px-3 py-1.5 rounded-md"
+            >Dashboard</a
+          >
+          <a href="#" class="hover:text-white py-1.5">Buat Pengajuan</a>
+          <a href="#" class="hover:text-white py-1.5">Daftar RAB</a>
+          <a href="#" class="hover:text-white py-1.5">Persetujuan</a>
+          <a href="#" class="hover:text-white py-1.5">Laporan</a>
+        </div>
+      </div>
+      <div class="flex items-center gap-4">
+        <button class="text-yellow-400 hover:text-yellow-300">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-5 w-5"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+          >
+            <path
+              d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z"
+            />
+          </svg>
+        </button>
+        <div class="flex items-center gap-2 border-l border-slate-600 pl-4">
+          <div
+            class="bg-blue-600 text-white font-bold rounded-full h-8 w-8 flex items-center justify-center"
+          >
+            DR
+          </div>
+          <div class="hidden sm:block">
+            <div class="text-sm font-semibold">Drs. Arif Rachman</div>
+            <div class="text-[10px] text-slate-400">Direktur Keuangan</div>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <!-- Breadcrumb -->
+      <div class="text-xs text-slate-500 mb-6">
+        SIRAB / <span class="text-slate-800 font-medium">Dashboard</span>
+      </div>
+
+      <!-- Page Header -->
+      <div
+        class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4"
+      >
+        <div>
+          <h1 class="text-2xl font-bold text-slate-900">Dashboard Anggaran</h1>
+          <p class="text-sm text-slate-500 mt-1">
+            Periode: September 2026 · Tahun Anggaran 2026
+          </p>
+        </div>
+        <button
+          class="bg-[#1e293b] hover:bg-slate-800 text-white px-4 py-2 rounded-md text-sm font-medium flex items-center gap-2"
+        >
+          + Buat Pengajuan
+        </button>
+      </div>
+
+      <!-- Stats Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+        <!-- Card 1 -->
+        <div class="bg-white border border-indigo-100 rounded-lg p-5 shadow-sm">
+          <div class="text-xs font-semibold text-slate-500 mb-2">
+            TOTAL PENGAJUAN
+          </div>
+          <div class="text-2xl font-bold text-slate-800 font-mono mb-1">
+            Rp 1.001.750.000
+          </div>
+          <div class="text-xs text-slate-400">8 dokumen</div>
+        </div>
+        <!-- Card 2 -->
+        <div
+          class="bg-emerald-50 border border-emerald-100 rounded-lg p-5 shadow-sm"
+        >
+          <div class="text-xs font-semibold text-emerald-600 mb-2">
+            DISETUJUI
+          </div>
+          <div class="text-2xl font-bold text-emerald-700 font-mono mb-1">
+            Rp 580.000.000
+          </div>
+          <div class="text-xs text-emerald-500">2 dokumen</div>
+        </div>
+        <!-- Card 3 -->
+        <div
+          class="bg-amber-50 border border-amber-100 rounded-lg p-5 shadow-sm"
+        >
+          <div class="text-xs font-semibold text-amber-600 mb-2">
+            MENUNGGU REVIEW
+          </div>
+          <div class="text-2xl font-bold text-amber-700 font-mono mb-1">
+            Rp 282.500.000
+          </div>
+          <div class="text-xs text-amber-500">2 dokumen</div>
+        </div>
+        <!-- Card 4 -->
+        <div class="bg-rose-50 border border-rose-100 rounded-lg p-5 shadow-sm">
+          <div class="text-xs font-semibold text-rose-600 mb-2">
+            DITOLAK/REVISI
+          </div>
+          <div class="text-2xl font-bold text-rose-700 font-mono mb-1">
+            Rp 71.950.000
+          </div>
+          <div class="text-xs text-rose-500">2 dokumen</div>
+        </div>
+      </div>
+
+      <!-- Pengajuan Terbaru -->
+      <div class="bg-white border border-slate-200 rounded-lg shadow-sm mb-8">
+        <div
+          class="flex justify-between items-center p-5 border-b border-slate-100"
+        >
+          <h2 class="font-semibold text-slate-800">Pengajuan Terbaru</h2>
+          <a
+            href="#"
+            class="text-sm text-slate-500 hover:text-indigo-600 flex items-center gap-1"
+            >Lihat semua &rarr;</a
+          >
+        </div>
+        <div class="divide-y divide-slate-100">
+          <!-- Item 1 -->
+          <div class="p-5 flex justify-between items-center hover:bg-slate-50">
+            <div>
+              <div class="flex items-center gap-3 mb-1">
+                <span class="text-xs font-mono text-slate-500"
+                  >RAB-2026-001</span
+                >
+                <span
+                  class="text-[10px] font-semibold bg-rose-100 text-rose-600 px-2 py-0.5 rounded"
+                  >Tinggi</span
+                >
+              </div>
+              <div class="text-sm font-medium text-slate-800">
+                Pengadaan Peralatan IT Divisi Teknologi
+              </div>
+              <div class="text-xs text-slate-400 mt-1">
+                Teknologi Informasi · 2026-09-01
+              </div>
+            </div>
+            <div class="text-right">
+              <div class="font-mono text-sm font-medium text-slate-800 mb-1">
+                Rp 185.000.000
+              </div>
+              <span
+                class="inline-flex items-center gap-1 text-[10px] font-medium bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full"
+              >
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                Disetujui
+              </span>
+            </div>
+          </div>
+          <!-- Item 2 -->
+          <div class="p-5 flex justify-between items-center hover:bg-slate-50">
+            <div>
+              <div class="flex items-center gap-3 mb-1">
+                <span class="text-xs font-mono text-slate-500"
+                  >RAB-2026-002</span
+                >
+                <span
+                  class="text-[10px] font-semibold bg-amber-100 text-amber-600 px-2 py-0.5 rounded"
+                  >Sedang</span
+                >
+              </div>
+              <div class="text-sm font-medium text-slate-800">
+                Pelatihan SDM & Sertifikasi Karyawan Q4
+              </div>
+              <div class="text-xs text-slate-400 mt-1">HRD · 2026-09-02</div>
+            </div>
+            <div class="text-right">
+              <div class="font-mono text-sm font-medium text-slate-800 mb-1">
+                Rp 72.500.000
+              </div>
+              <span
+                class="inline-flex items-center gap-1 text-[10px] font-medium bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full"
+              >
+                <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+                Diajukan
+              </span>
+            </div>
+          </div>
+          <!-- Item 3 -->
+          <div class="p-5 flex justify-between items-center hover:bg-slate-50">
+            <div>
+              <div class="flex items-center gap-3 mb-1">
+                <span class="text-xs font-mono text-slate-500"
+                  >RAB-2026-003</span
+                >
+                <span
+                  class="text-[10px] font-semibold bg-slate-100 text-slate-600 px-2 py-0.5 rounded"
+                  >Rendah</span
+                >
+              </div>
+              <div class="text-sm font-medium text-slate-800">
+                Renovasi Ruang Rapat Lantai 3
+              </div>
+              <div class="text-xs text-slate-400 mt-1">
+                Umum & Fasilitas · 2026-09-03
+              </div>
+            </div>
+            <div class="text-right">
+              <div class="font-mono text-sm font-medium text-slate-800 mb-1">
+                Rp 43.200.000
+              </div>
+              <span
+                class="inline-flex items-center gap-1 text-[10px] font-medium bg-orange-100 text-orange-700 px-2 py-0.5 rounded-full"
+              >
+                <span class="w-1.5 h-1.5 rounded-full bg-orange-500"></span>
+                Perlu Revisi
+              </span>
+            </div>
+          </div>
+          <!-- Item 4 -->
+          <div class="p-5 flex justify-between items-center hover:bg-slate-50">
+            <div>
+              <div class="flex items-center gap-3 mb-1">
+                <span class="text-xs font-mono text-slate-500"
+                  >RAB-2026-004</span
+                >
+                <span
+                  class="text-[10px] font-semibold bg-rose-100 text-rose-600 px-2 py-0.5 rounded"
+                  >Tinggi</span
+                >
+              </div>
+              <div class="text-sm font-medium text-slate-800">
+                Kampanye Pemasaran Digital Q4 2026
+              </div>
+              <div class="text-xs text-slate-400 mt-1">
+                Marketing · 2026-09-04
+              </div>
+            </div>
+            <div class="text-right">
+              <div class="font-mono text-sm font-medium text-slate-800 mb-1">
+                Rp 210.000.000
+              </div>
+              <span
+                class="inline-flex items-center gap-1 text-[10px] font-medium bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full"
+              >
+                <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+                Diajukan
+              </span>
+            </div>
+          </div>
+          <!-- Item 5 -->
+          <div class="p-5 flex justify-between items-center hover:bg-slate-50">
+            <div>
+              <div class="flex items-center gap-3 mb-1">
+                <span class="text-xs font-mono text-slate-500"
+                  >RAB-2026-005</span
+                >
+                <span
+                  class="text-[10px] font-semibold bg-amber-100 text-amber-600 px-2 py-0.5 rounded"
+                  >Sedang</span
+                >
+              </div>
+              <div class="text-sm font-medium text-slate-800">
+                Pemeliharaan Kendaraan Operasional
+              </div>
+              <div class="text-xs text-slate-400 mt-1">
+                Logistik · 2026-08-28
+              </div>
+            </div>
+            <div class="text-right">
+              <div class="font-mono text-sm font-medium text-slate-800 mb-1">
+                Rp 28.750.000
+              </div>
+              <span
+                class="inline-flex items-center gap-1 text-[10px] font-medium bg-rose-100 text-rose-700 px-2 py-0.5 rounded-full"
+              >
+                <span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span>
+                Ditolak
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Progress Bars Section -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+        <!-- Distribusi Status -->
+        <div class="bg-white border border-slate-200 rounded-lg shadow-sm p-6">
+          <h2 class="font-semibold text-slate-800 mb-6">Distribusi Status</h2>
+          <div class="space-y-4">
+            <div>
+              <div class="flex justify-between text-xs mb-1">
+                <span class="font-medium text-emerald-600">Disetujui</span>
+                <span class="text-slate-500">2 dok</span>
+              </div>
+              <div class="w-full bg-slate-100 h-2 rounded-full">
+                <div
+                  class="bg-emerald-500 h-2 rounded-full"
+                  style="width: 25%"
+                ></div>
+              </div>
+            </div>
+            <div>
+              <div class="flex justify-between text-xs mb-1">
+                <span class="font-medium text-amber-500">Diajukan</span>
+                <span class="text-slate-500">2 dok</span>
+              </div>
+              <div class="w-full bg-slate-100 h-2 rounded-full">
+                <div
+                  class="bg-amber-400 h-2 rounded-full"
+                  style="width: 25%"
+                ></div>
+              </div>
+            </div>
+            <div>
+              <div class="flex justify-between text-xs mb-1">
+                <span class="font-medium text-orange-500">Perlu Revisi</span>
+                <span class="text-slate-500">1 dok</span>
+              </div>
+              <div class="w-full bg-slate-100 h-2 rounded-full">
+                <div
+                  class="bg-orange-500 h-2 rounded-full"
+                  style="width: 12.5%"
+                ></div>
+              </div>
+            </div>
+            <div>
+              <div class="flex justify-between text-xs mb-1">
+                <span class="font-medium text-rose-500">Ditolak</span>
+                <span class="text-slate-500">1 dok</span>
+              </div>
+              <div class="w-full bg-slate-100 h-2 rounded-full">
+                <div
+                  class="bg-rose-500 h-2 rounded-full"
+                  style="width: 12.5%"
+                ></div>
+              </div>
+            </div>
+            <div>
+              <div class="flex justify-between text-xs mb-1">
+                <span class="font-medium text-slate-500">Draft</span>
+                <span class="text-slate-500">2 dok</span>
+              </div>
+              <div class="w-full bg-slate-100 h-2 rounded-full">
+                <div
+                  class="bg-slate-300 h-2 rounded-full"
+                  style="width: 25%"
+                ></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Realisasi Anggaran -->
+        <div class="bg-white border border-slate-200 rounded-lg shadow-sm p-6">
+          <div class="mb-6">
+            <h2 class="font-semibold text-slate-800">Realisasi Anggaran</h2>
+            <p class="text-xs text-slate-400">Vs. Pagu 2026</p>
+          </div>
+          <div class="space-y-4">
+            <div>
+              <div class="flex justify-between text-xs mb-1">
+                <span class="font-medium text-slate-700"
+                  >Teknologi Informasi</span
+                >
+                <span class="text-slate-400">53%</span>
+              </div>
+              <div class="w-full bg-slate-100 h-2 rounded-full">
+                <div
+                  class="bg-indigo-800 h-2 rounded-full"
+                  style="width: 53%"
+                ></div>
+              </div>
+            </div>
+            <div>
+              <div class="flex justify-between text-xs mb-1">
+                <span class="font-medium text-slate-700">Marketing</span>
+                <span class="text-slate-400">53%</span>
+              </div>
+              <div class="w-full bg-slate-100 h-2 rounded-full">
+                <div
+                  class="bg-indigo-800 h-2 rounded-full"
+                  style="width: 53%"
+                ></div>
+              </div>
+            </div>
+            <div>
+              <div class="flex justify-between text-xs mb-1">
+                <span class="font-medium text-slate-700">Keuangan</span>
+                <span class="text-slate-400">75%</span>
+              </div>
+              <div class="w-full bg-slate-100 h-2 rounded-full">
+                <div
+                  class="bg-amber-400 h-2 rounded-full"
+                  style="width: 75%"
+                ></div>
+              </div>
+            </div>
+            <div>
+              <div class="flex justify-between text-xs mb-1">
+                <span class="font-medium text-slate-700">HRD</span>
+                <span class="text-slate-400">36%</span>
+              </div>
+              <div class="w-full bg-slate-100 h-2 rounded-full">
+                <div
+                  class="bg-indigo-800 h-2 rounded-full"
+                  style="width: 36%"
+                ></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Alert / Action Required -->
+      <div
+        class="bg-amber-50 border border-amber-200 rounded-lg p-5 mb-8 shadow-sm"
+      >
+        <h3
+          class="text-amber-800 font-semibold mb-3 text-sm flex items-center gap-2"
+        >
+          <span>⚡</span> Perlu Persetujuan
+        </h3>
+        <ul class="space-y-2 text-sm">
+          <li class="flex justify-between items-center">
+            <span class="text-amber-900"
+              >Pelatihan SDM & Sertifikasi Karyawan Q4</span
+            >
+            <a href="#" class="text-amber-700 font-semibold hover:underline"
+              >Review</a
+            >
+          </li>
+          <li class="flex justify-between items-center">
+            <span class="text-amber-900"
+              >Kampanye Pemasaran Digital Q4 2026</span
+            >
+            <a href="#" class="text-amber-700 font-semibold hover:underline"
+              >Review</a
+            >
+          </li>
+        </ul>
+      </div>
+
+      <!-- Rekap Per Divisi Table -->
+      <div
+        class="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden mb-8"
+      >
+        <div class="p-5 border-b border-slate-100">
+          <h2 class="font-semibold text-slate-800">Rekap per Divisi</h2>
+        </div>
+        <div class="overflow-x-auto table-container">
+          <table class="w-full text-left text-sm whitespace-nowrap">
+            <thead
+              class="text-xs text-slate-500 uppercase bg-slate-50 border-b border-slate-100"
+            >
+              <tr>
+                <th class="px-5 py-3 font-medium">DIVISI</th>
+                <th class="px-5 py-3 font-medium text-center">JUMLAH DOK.</th>
+                <th class="px-5 py-3 font-medium">TOTAL PENGAJUAN</th>
+                <th class="px-5 py-3 font-medium">DISETUJUI</th>
+                <th class="px-5 py-3 font-medium">PENDING</th>
+                <th class="px-5 py-3 font-medium w-48">% REALISASI</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100 font-mono text-xs">
+              <tr class="hover:bg-slate-50">
+                <td class="px-5 py-3 font-sans text-slate-700">
+                  Teknologi Informasi
+                </td>
+                <td class="px-5 py-3 text-center">1</td>
+                <td class="px-5 py-3">Rp 185.000.000</td>
+                <td class="px-5 py-3 text-emerald-600">Rp 185.000.000</td>
+                <td class="px-5 py-3 text-slate-400">-</td>
+                <td class="px-5 py-3">
+                  <div class="flex items-center gap-2">
+                    <div class="w-full bg-slate-100 h-1.5 rounded-full">
+                      <div
+                        class="bg-indigo-800 h-1.5 rounded-full"
+                        style="width: 100%"
+                      ></div>
+                    </div>
+                    <span class="text-[10px] w-8 text-right">100%</span>
+                  </div>
+                </td>
+              </tr>
+              <tr class="hover:bg-slate-50">
+                <td class="px-5 py-3 font-sans text-slate-700">Keuangan</td>
+                <td class="px-5 py-3 text-center">2</td>
+                <td class="px-5 py-3">Rp 450.000.000</td>
+                <td class="px-5 py-3 text-emerald-600">Rp 395.000.000</td>
+                <td class="px-5 py-3 text-amber-600">Rp 55.000.000</td>
+                <td class="px-5 py-3">
+                  <div class="flex items-center gap-2">
+                    <div class="w-full bg-slate-100 h-1.5 rounded-full">
+                      <div
+                        class="bg-indigo-800 h-1.5 rounded-full"
+                        style="width: 88%"
+                      ></div>
+                    </div>
+                    <span class="text-[10px] w-8 text-right">88%</span>
+                  </div>
+                </td>
+              </tr>
+              <tr class="hover:bg-slate-50">
+                <td class="px-5 py-3 font-sans text-slate-700">Marketing</td>
+                <td class="px-5 py-3 text-center">1</td>
+                <td class="px-5 py-3">Rp 210.000.000</td>
+                <td class="px-5 py-3 text-slate-400">-</td>
+                <td class="px-5 py-3 text-amber-600">Rp 210.000.000</td>
+                <td class="px-5 py-3">
+                  <div class="flex items-center gap-2">
+                    <div class="w-full bg-slate-100 h-1.5 rounded-full">
+                      <div
+                        class="bg-slate-200 h-1.5 rounded-full"
+                        style="width: 0%"
+                      ></div>
+                    </div>
+                    <span class="text-[10px] w-8 text-right text-slate-400"
+                      >0%</span
+                    >
+                  </div>
+                </td>
+              </tr>
+              <tr class="hover:bg-slate-50">
+                <td class="px-5 py-3 font-sans text-slate-700">HRD</td>
+                <td class="px-5 py-3 text-center">1</td>
+                <td class="px-5 py-3">Rp 72.500.000</td>
+                <td class="px-5 py-3 text-slate-400">-</td>
+                <td class="px-5 py-3 text-amber-600">Rp 72.500.000</td>
+                <td class="px-5 py-3">
+                  <div class="flex items-center gap-2">
+                    <div class="w-full bg-slate-100 h-1.5 rounded-full">
+                      <div
+                        class="bg-slate-200 h-1.5 rounded-full"
+                        style="width: 0%"
+                      ></div>
+                    </div>
+                    <span class="text-[10px] w-8 text-right text-slate-400"
+                      >0%</span
+                    >
+                  </div>
+                </td>
+              </tr>
+              <tr class="hover:bg-slate-50">
+                <td class="px-5 py-3 font-sans text-slate-700">
+                  Umum & Fasilitas
+                </td>
+                <td class="px-5 py-3 text-center">1</td>
+                <td class="px-5 py-3">Rp 43.200.000</td>
+                <td class="px-5 py-3 text-slate-400">-</td>
+                <td class="px-5 py-3 text-slate-400">-</td>
+                <td class="px-5 py-3">
+                  <div class="flex items-center gap-2">
+                    <div class="w-full bg-slate-100 h-1.5 rounded-full">
+                      <div
+                        class="bg-slate-200 h-1.5 rounded-full"
+                        style="width: 0%"
+                      ></div>
+                    </div>
+                    <span class="text-[10px] w-8 text-right text-slate-400"
+                      >0%</span
+                    >
+                  </div>
+                </td>
+              </tr>
+              <tr class="hover:bg-slate-50">
+                <td class="px-5 py-3 font-sans text-slate-700">Logistik</td>
+                <td class="px-5 py-3 text-center">1</td>
+                <td class="px-5 py-3">Rp 28.750.000</td>
+                <td class="px-5 py-3 text-slate-400">-</td>
+                <td class="px-5 py-3 text-slate-400">-</td>
+                <td class="px-5 py-3">
+                  <div class="flex items-center gap-2">
+                    <div class="w-full bg-slate-100 h-1.5 rounded-full">
+                      <div
+                        class="bg-slate-200 h-1.5 rounded-full"
+                        style="width: 0%"
+                      ></div>
+                    </div>
+                    <span class="text-[10px] w-8 text-right text-slate-400"
+                      >0%</span
+                    >
+                  </div>
+                </td>
+              </tr>
+              <tr class="hover:bg-slate-50">
+                <td class="px-5 py-3 font-sans text-slate-700">Administrasi</td>
+                <td class="px-5 py-3 text-center">1</td>
+                <td class="px-5 py-3">Rp 12.300.000</td>
+                <td class="px-5 py-3 text-slate-400">-</td>
+                <td class="px-5 py-3 text-slate-400">-</td>
+                <td class="px-5 py-3">
+                  <div class="flex items-center gap-2">
+                    <div class="w-full bg-slate-100 h-1.5 rounded-full">
+                      <div
+                        class="bg-slate-200 h-1.5 rounded-full"
+                        style="width: 0%"
+                      ></div>
+                    </div>
+                    <span class="text-[10px] w-8 text-right text-slate-400"
+                      >0%</span
+                    >
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-[#111827] text-slate-400 text-xs py-4 px-6 mt-8">
+      <div class="max-w-7xl mx-auto">
+        © 2026 SIRAB - Sistem Informasi Rencana Anggaran Biaya v2.4.1
+      </div>
+    </footer>
+  </body>
+</html>
