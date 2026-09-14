@@ -96,9 +96,7 @@ Route::middleware(['auth', 'role:pimpinan'])->prefix('pimpinan')->name('pimpinan
     Route::get('/riwayat', [PimpinanController::class, 'riwayat'])->name('riwayat');
 
     // New placeholder routes
-    Route::get('/statistik', function () {
-        return 'Statistik Anggaran';
-    })->name('statistik.index');
+    Route::get('/statistik', [PimpinanController::class, 'statistik'])->name('statistik.index');
     Route::get('/delegasi', function () {
         return 'Delegasi Wewenang';
     })->name('delegasi.index');

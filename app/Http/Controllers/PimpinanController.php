@@ -170,4 +170,88 @@ class PimpinanController extends Controller
 
         return view('pimpinan.riwayat', compact('pengajuanList', 'statusFilter', 'search'));
     }
+
+    /**
+     * Tampilkan statistik dan laporan penyerapan anggaran.
+     */
+    public function statistik(Request $request): View
+    {
+        $filterWaktu = $request->input('filter_waktu', 'bulan_ini');
+        
+        $baseQuery = PengajuanRab::query();
+        $now = now();
+        
+        if ($filterWaktu === 'bulan_ini') {
+            $baseQuery->whereMonth('tanggal_pengajuan', $now->month)
+                      ->whereYear('tanggal_pengajuan', $now->year);
+        } elseif ($filterWaktu === 'kuartal_ini') {
+            $baseQuery->whereRaw('QUARTER(tanggal_pengajuan) = ?', [$now->quarter])
+                      ->whereYear('tanggal_pengajuan', $now->year);
+        } elseif ($filterWaktu === 'tahun_ini') {
+            $baseQuery->whereYear('tanggal_pengajuan', $now->year);
+        }
+
+        // Summary Cards
+        $totalDisetujui = (clone $baseQuery)->whereIn('status', [StatusPengajuan::PROSES_PENCAIRAN, StatusPengajuan::SELESAI])->sum('estimasi_total');
+        $totalDicairkan = (clone $baseQuery)->where('status', StatusPengajuan::SELESAI)->sum('estimasi_total');
+        $totalMenunggu = (clone $baseQuery)->where('status', StatusPengajuan::MENUNGGU_PIMPINAN)->sum('estimasi_total');
+        $totalDitolak = (clone $baseQuery)->where('status', StatusPengajuan::DITOLAK)->sum('estimasi_total');
+
+        // Data Grafik Penyerapan per Bulan (Tahun Berjalan)
+        $chartBulanDisetujui = PengajuanRab::selectRaw('MONTH(tanggal_pengajuan) as bulan, SUM(estimasi_total) as total')
+            ->whereIn('status', [StatusPengajuan::PROSES_PENCAIRAN, StatusPengajuan::SELESAI])
+            ->whereYear('tanggal_pengajuan', $now->year)
+            ->groupBy('bulan')
+            ->pluck('total', 'bulan')
+            ->toArray();
+
+        $chartBulanDicairkan = PengajuanRab::selectRaw('MONTH(tanggal_pengajuan) as bulan, SUM(estimasi_total) as total')
+            ->where('status', StatusPengajuan::SELESAI)
+            ->whereYear('tanggal_pengajuan', $now->year)
+            ->groupBy('bulan')
+            ->pluck('total', 'bulan')
+            ->toArray();
+
+        $dataPenyerapanDisetujui = [];
+        $dataPenyerapanDicairkan = [];
+        for ($i = 1; $i <= 12; $i++) {
+            $dataPenyerapanDisetujui[] = $chartBulanDisetujui[$i] ?? 0;
+            $dataPenyerapanDicairkan[] = $chartBulanDicairkan[$i] ?? 0;
+        }
+
+        // Data Alokasi per Divisi (berdasarkan filter waktu)
+        $chartDivisi = (clone $baseQuery)
+            ->selectRaw('id_divisi, SUM(estimasi_total) as total')
+            ->whereIn('status', [StatusPengajuan::PROSES_PENCAIRAN, StatusPengajuan::SELESAI])
+            ->groupBy('id_divisi')
+            ->with('divisi')
+            ->get();
+
+        $labelDivisi = [];
+        $dataDivisi = [];
+        foreach ($chartDivisi as $item) {
+            $labelDivisi[] = $item->divisi->nama_divisi ?? 'Unknown';
+            $dataDivisi[] = $item->total;
+        }
+
+        // Riwayat Pencairan Terkini
+        $riwayatPencairan = PengajuanRab::with(['divisi'])
+            ->where('status', StatusPengajuan::SELESAI)
+            ->orderBy('updated_at', 'desc')
+            ->take(5)
+            ->get();
+
+        return view('pimpinan.statistik', compact(
+            'filterWaktu',
+            'totalDisetujui',
+            'totalDicairkan',
+            'totalMenunggu',
+            'totalDitolak',
+            'dataPenyerapanDisetujui',
+            'dataPenyerapanDicairkan',
+            'labelDivisi',
+            'dataDivisi',
+            'riwayatPencairan'
+        ));
+    }
 }

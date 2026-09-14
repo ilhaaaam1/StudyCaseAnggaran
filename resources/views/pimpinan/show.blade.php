@@ -83,6 +83,52 @@
       </table>
     </div>
 
+    <!-- Dokumen Pendukung -->
+    @if($pengajuan->dokumenPendukung->isNotEmpty())
+      <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm mt-6">
+        <h2 class="text-sm font-bold text-slate-900 uppercase tracking-wider border-b border-slate-100 pb-3 mb-4">
+          Dokumen Pendukung
+        </h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          @foreach($pengajuan->dokumenPendukung as $dokumen)
+            @php
+              $extension = pathinfo($dokumen->path_file, PATHINFO_EXTENSION);
+              $isImage = in_array(strtolower($extension), ['jpg', 'jpeg', 'png']);
+              $isPdf = strtolower($extension) === 'pdf';
+              $fileUrl = Storage::url($dokumen->path_file);
+            @endphp
+            <div class="border border-slate-200 rounded-xl p-4 flex flex-col items-center justify-center bg-slate-50 relative group">
+              @if($isImage)
+                <img src="{{ $fileUrl }}" alt="{{ $dokumen->nama_file }}" class="max-h-48 object-contain rounded-lg mb-3 shadow-sm border border-slate-200" />
+                <p class="text-xs text-slate-600 font-medium truncate w-full text-center" title="{{ $dokumen->nama_file }}">{{ $dokumen->nama_file }}</p>
+                <div class="mt-3 flex gap-2">
+                  <a href="{{ $fileUrl }}" target="_blank" class="text-xs px-3 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">Lihat Penuh</a>
+                  <a href="{{ $fileUrl }}" download="{{ $dokumen->nama_file }}" class="text-xs px-3 py-1.5 bg-slate-200 text-slate-700 rounded-lg hover:bg-slate-300 transition">Unduh</a>
+                </div>
+              @elseif($isPdf)
+                <div class="w-full h-48 mb-3 border border-slate-200 rounded-lg overflow-hidden bg-white">
+                  <iframe src="{{ $fileUrl }}" class="w-full h-full" title="{{ $dokumen->nama_file }}"></iframe>
+                </div>
+                <p class="text-xs text-slate-600 font-medium truncate w-full text-center" title="{{ $dokumen->nama_file }}">{{ $dokumen->nama_file }}</p>
+                <div class="mt-3 flex gap-2">
+                  <a href="{{ $fileUrl }}" target="_blank" class="text-xs px-3 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">Buka Tab Baru</a>
+                  <a href="{{ $fileUrl }}" download="{{ $dokumen->nama_file }}" class="text-xs px-3 py-1.5 bg-slate-200 text-slate-700 rounded-lg hover:bg-slate-300 transition">Unduh PDF</a>
+                </div>
+              @else
+                <div class="w-16 h-16 bg-slate-200 rounded-full flex items-center justify-center mb-3">
+                  <svg class="w-8 h-8 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+                </div>
+                <p class="text-xs text-slate-600 font-medium truncate w-full text-center" title="{{ $dokumen->nama_file }}">{{ $dokumen->nama_file }}</p>
+                <div class="mt-3">
+                  <a href="{{ $fileUrl }}" download="{{ $dokumen->nama_file }}" class="text-xs px-3 py-1.5 bg-slate-200 text-slate-700 rounded-lg hover:bg-slate-300 transition">Unduh File</a>
+                </div>
+              @endif
+            </div>
+          @endforeach
+        </div>
+      </div>
+    @endif
+
     <!-- Form Keputusan Final Pimpinan -->
     @if($pengajuan->status === \App\Enums\StatusPengajuan::MENUNGGU_PIMPINAN)
       <div class="bg-white p-6 rounded-2xl border border-indigo-200 shadow-sm bg-indigo-50/20">
@@ -91,7 +137,7 @@
           Bila disetujui, status akan diteruskan ke Finance untuk <strong>Proses Pencairan</strong>. Bila ditolak, status menjadi <strong>Ditolak</strong>.
         </p>
 
-        <form action="{{ route('pimpinan.approve', $pengajuan->id_pengajuan) }}" method="POST" class="space-y-4">
+        <form id="approvalForm" action="{{ route('pimpinan.approve', $pengajuan->id_pengajuan) }}" method="POST" class="space-y-4">
           @csrf
           <div>
             <label class="block text-xs font-semibold text-slate-700 mb-1">Catatan Pimpinan / Disposisi</label>
@@ -100,14 +146,13 @@
           </div>
 
           <div class="flex items-center justify-end gap-3 pt-2">
-            <button type="submit" name="status" value="Ditolak"
-                    onclick="return confirm('Apakah Anda yakin ingin MENOLAK pengajuan RAB ini secara permanen?');"
-                    class="px-5 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-semibold shadow-sm">
+            <button type="button" onclick="showTolakModal()"
+                    class="px-5 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-semibold shadow-sm transition">
               Tolak Pengajuan
             </button>
             <button type="submit" name="status" value="ACC"
                     onclick="return confirm('Apakah Anda yakin ingin memberikan persetujuan akhir dan meneruskan ke proses pencairan?');"
-                    class="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-semibold shadow-sm">
+                    class="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-semibold shadow-sm transition">
               Setujui &amp; Lanjutkan ke Pencairan
             </button>
           </div>
@@ -119,4 +164,72 @@
       </div>
     @endif
   </div>
+
+  <!-- Modal Konfirmasi Penolakan -->
+  <div id="tolakModal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300">
+    <div id="tolakModalContent" class="bg-white rounded-2xl shadow-xl w-full max-w-md mx-4 overflow-hidden transform scale-95 transition-transform duration-300">
+      <div class="px-6 py-5 border-b border-slate-100 flex items-center gap-3 text-rose-600">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+        </svg>
+        <h3 class="text-lg font-bold text-slate-900">Konfirmasi Penolakan</h3>
+      </div>
+      <div class="p-6 bg-slate-50">
+        <p class="text-sm text-slate-600 leading-relaxed">
+          Apakah Anda yakin ingin <strong>MENOLAK</strong> pengajuan RAB ini secara permanen? Alasan penolakan (jika ada) akan dikirimkan kepada pemohon.
+        </p>
+      </div>
+      <div class="px-6 py-4 border-t border-slate-100 bg-white flex justify-end gap-3">
+        <button type="button" onclick="closeTolakModal()" class="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-sm font-semibold transition-colors">
+          Batal
+        </button>
+        <button type="button" onclick="submitTolak()" class="px-5 py-2.5 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-sm font-semibold shadow-sm transition-colors">
+          Ya, Tolak
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function showTolakModal() {
+      const modal = document.getElementById('tolakModal');
+      const content = document.getElementById('tolakModalContent');
+      
+      modal.classList.remove('hidden');
+      // trigger reflow
+      void modal.offsetWidth;
+      modal.classList.remove('opacity-0');
+      content.classList.remove('scale-95');
+    }
+
+    function closeTolakModal() {
+      const modal = document.getElementById('tolakModal');
+      const content = document.getElementById('tolakModalContent');
+      
+      modal.classList.add('opacity-0');
+      content.classList.add('scale-95');
+      
+      setTimeout(() => {
+        modal.classList.add('hidden');
+      }, 300);
+    }
+
+    function submitTolak() {
+      const form = document.getElementById('approvalForm');
+      // Add hidden input to simulate 'Tolak' button click
+      const hiddenInput = document.createElement('input');
+      hiddenInput.type = 'hidden';
+      hiddenInput.name = 'status';
+      hiddenInput.value = 'Ditolak';
+      form.appendChild(hiddenInput);
+      form.submit();
+    }
+
+    // Tutup modal jika klik di luar modal (area backdrop)
+    document.getElementById('tolakModal').addEventListener('click', function(e) {
+      if (e.target === this) {
+        closeTolakModal();
+      }
+    });
+  </script>
 @endsection

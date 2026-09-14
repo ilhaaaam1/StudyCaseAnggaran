@@ -39,7 +39,7 @@ class StoreRabRequest extends FormRequest
             'items.*.harga_satuan' => ['required', 'numeric', 'min:0'],
 
             // Validasi Dokumen Pendukung (Upload File, max 5MB = 5120 KB)
-            'dokumen' => ['nullable', 'file', 'mimes:pdf,jpg,jpeg,png', 'max:5120'],
+            'dokumen_pendukung' => ['nullable', 'file', 'mimes:pdf,jpg,jpeg,png', 'max:5120'],
         ];
     }
 
@@ -61,7 +61,7 @@ class StoreRabRequest extends FormRequest
             'items.*.satuan' => 'Satuan',
             'items.*.volume' => 'Volume',
             'items.*.harga_satuan' => 'Harga Satuan',
-            'dokumen' => 'Dokumen Pendukung',
+            'dokumen_pendukung' => 'Dokumen Pendukung',
         ];
     }
 
@@ -75,8 +75,8 @@ class StoreRabRequest extends FormRequest
         return [
             'items.required' => 'Setidaknya harus ada satu rincian item anggaran.',
             'items.min' => 'Setidaknya harus ada satu rincian item anggaran.',
-            'dokumen.mimes' => 'Format file dokumen pendukung harus berupa PDF, JPG, JPEG, atau PNG.',
-            'dokumen.max' => 'Ukuran file dokumen pendukung maksimal 5MB (5120 KB).',
+            'dokumen_pendukung.mimes' => 'Format file dokumen pendukung harus berupa PDF, JPG, JPEG, atau PNG.',
+            'dokumen_pendukung.max' => 'Ukuran file dokumen pendukung maksimal 5MB (5120 KB).',
         ];
     }
 }
