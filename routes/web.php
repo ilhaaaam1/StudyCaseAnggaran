@@ -53,8 +53,15 @@ Route::middleware(['auth', 'role:staff,user'])->prefix('staff')->name('staff.')-
     Route::get('/dashboard', [StaffRabController::class, 'index'])->name('dashboard');
     Route::get('/rab/create', [StaffRabController::class, 'create'])->name('rab.create');
     Route::post('/rab', [StaffRabController::class, 'store'])->name('rab.store');
+    Route::get('/rab/{id}/edit', [StaffRabController::class, 'edit'])->name('rab.edit');
+    Route::put('/rab/{id}', [StaffRabController::class, 'update'])->name('rab.update');
+    Route::delete('/rab/{id}', [StaffRabController::class, 'destroy'])->name('rab.destroy');
     Route::get('/rab/{id}', [StaffRabController::class, 'show'])->name('rab.show');
     Route::get('/riwayat', [StaffRabController::class, 'riwayat'])->name('riwayat');
+
+    // New placeholder routes
+    Route::get('/draft', [StaffRabController::class, 'draft'])->name('draft');
+    Route::get('/panduan', [StaffRabController::class, 'panduan'])->name('panduan');
 });
 
 // -------------------------------------------------------------------------
@@ -65,7 +72,17 @@ Route::middleware(['auth', 'role:finance'])->prefix('finance')->name('finance.')
     Route::get('/antrean', [FinanceController::class, 'antrean'])->name('antrean');
     Route::get('/pengajuan/{id}', [FinanceController::class, 'show'])->name('show');
     Route::post('/pengajuan/{id}/approval', [FinanceController::class, 'processApproval'])->name('approve');
+    Route::get('/pencairan', [FinanceController::class, 'antreanPencairan'])->name('pencairan');
+    Route::post('/pengajuan/{id}/pencairan', [FinanceController::class, 'uploadBuktiPencairan'])->name('upload_bukti');
     Route::get('/riwayat', [FinanceController::class, 'riwayat'])->name('riwayat');
+
+    // New placeholder routes
+    Route::get('/kategori-pagu', function () {
+        return 'Master Kategori & Pagu';
+    })->name('kategori.index');
+    Route::get('/rekapitulasi', function () {
+        return 'Rekapitulasi Laporan';
+    })->name('rekapitulasi.index');
 });
 
 // -------------------------------------------------------------------------
@@ -77,6 +94,14 @@ Route::middleware(['auth', 'role:pimpinan'])->prefix('pimpinan')->name('pimpinan
     Route::get('/pengajuan/{id}', [PimpinanController::class, 'show'])->name('show');
     Route::post('/pengajuan/{id}/approval', [PimpinanController::class, 'processApproval'])->name('approve');
     Route::get('/riwayat', [PimpinanController::class, 'riwayat'])->name('riwayat');
+
+    // New placeholder routes
+    Route::get('/statistik', function () {
+        return 'Statistik Anggaran';
+    })->name('statistik.index');
+    Route::get('/delegasi', function () {
+        return 'Delegasi Wewenang';
+    })->name('delegasi.index');
 });
 
 // -------------------------------------------------------------------------
@@ -97,6 +122,14 @@ Route::middleware(['auth', 'role:admin_it,admin'])->prefix('admin-it')->name('ad
     Route::get('/divisi', [AdminItController::class, 'divisiIndex'])->name('divisi.index');
     Route::post('/divisi', [AdminItController::class, 'divisiStore'])->name('divisi.store');
     Route::delete('/divisi/{id}', [AdminItController::class, 'divisiDestroy'])->name('divisi.destroy');
+
+    // New placehoder routes
+    Route::get('/log-aktivitas', function () {
+        return 'Log Aktivitas';
+    })->name('log.index');
+    Route::get('/pengaturan', function () {
+        return 'Pengaturan Sistem';
+    })->name('pengaturan.index');
 });
 
 // -------------------------------------------------------------------------

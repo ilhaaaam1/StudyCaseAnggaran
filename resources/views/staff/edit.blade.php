@@ -27,8 +27,9 @@
       </div>
     </div>
 
-    <form action="{{ route('staff.rab.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
+    <form action="{{ route('staff.rab.update', $pengajuan->id_pengajuan) }}" method="POST" enctype="multipart/form-data" class="space-y-6">
       @csrf
+      @method('PUT')
 
       <!-- Card 1: Data Pokok Pengajuan -->
       <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
@@ -39,7 +40,7 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label class="block text-xs font-semibold text-slate-700 mb-1">Judul Pengajuan <span class="text-rose-500">*</span></label>
-            <input type="text" name="judul_pengajuan" value="{{ old('judul_pengajuan') }}" required
+            <input type="text" name="judul_pengajuan" value="{{ old('judul_pengajuan', $pengajuan->judul_pengajuan) }}" required
                    placeholder="Contoh: Pengadaan Laptop Divisi Operasional"
                    class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-sm focus:border-indigo-500">
             @error('judul_pengajuan') <p class="text-xs text-rose-600 mt-1">{{ $message }}</p> @enderror
@@ -50,7 +51,7 @@
             <select name="id_divisi" required class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-sm focus:border-indigo-500">
               <option value="">-- Pilih Unit Kerja --</option>
               @foreach($divisiList ?? [] as $d)
-                <option value="{{ $d->id_divisi }}" {{ old('id_divisi', Auth::user()->id_divisi) == $d->id_divisi ? 'selected' : '' }}>
+                <option value="{{ $d->id_divisi }}" {{ old('id_divisi', $pengajuan->id_divisi) == $d->id_divisi ? 'selected' : '' }}>
                   {{ $d->nama_divisi }}
                 </option>
               @endforeach
@@ -62,7 +63,7 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label class="block text-xs font-semibold text-slate-700 mb-1">Periode Penggunaan <span class="text-rose-500">*</span></label>
-            <input type="text" name="periode_penggunaan" value="{{ old('periode_penggunaan', date('F Y')) }}" required
+            <input type="text" name="periode_penggunaan" value="{{ old('periode_penggunaan', $pengajuan->periode_penggunaan) }}" required
                    placeholder="Contoh: Triwulan I 2026"
                    class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-sm focus:border-indigo-500">
             @error('periode_penggunaan') <p class="text-xs text-rose-600 mt-1">{{ $message }}</p> @enderror
@@ -71,9 +72,9 @@
           <div>
             <label class="block text-xs font-semibold text-slate-700 mb-1">Tingkat Prioritas <span class="text-rose-500">*</span></label>
             <select name="prioritas" required class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-sm focus:border-indigo-500">
-              <option value="Rendah" {{ old('prioritas') === 'Rendah' ? 'selected' : '' }}>Rendah</option>
-              <option value="Sedang" {{ old('prioritas', 'Sedang') === 'Sedang' ? 'selected' : '' }}>Sedang</option>
-              <option value="Tinggi" {{ old('prioritas') === 'Tinggi' ? 'selected' : '' }}>Tinggi</option>
+              <option value="Rendah" {{ old('prioritas', $pengajuan->prioritas) === 'Rendah' ? 'selected' : '' }}>Rendah</option>
+              <option value="Sedang" {{ old('prioritas', $pengajuan->prioritas) === 'Sedang' ? 'selected' : '' }}>Sedang</option>
+              <option value="Tinggi" {{ old('prioritas', $pengajuan->prioritas) === 'Tinggi' ? 'selected' : '' }}>Tinggi</option>
             </select>
             @error('prioritas') <p class="text-xs text-rose-600 mt-1">{{ $message }}</p> @enderror
           </div>
@@ -83,7 +84,7 @@
           <label class="block text-xs font-semibold text-slate-700 mb-1">Latar Belakang & Urgensi <span class="text-rose-500">*</span></label>
           <textarea name="latar_belakang" rows="3" required
                     placeholder="Uraikan justifikasi kebutuhan anggaran ini secara ringkas dan jelas..."
-                    class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-sm focus:border-indigo-500">{{ old('latar_belakang') }}</textarea>
+                    class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-sm focus:border-indigo-500">{{ old('latar_belakang', $pengajuan->latar_belakang) }}</textarea>
           @error('latar_belakang') <p class="text-xs text-rose-600 mt-1">{{ $message }}</p> @enderror
         </div>
       </div>
@@ -112,31 +113,61 @@
               </tr>
             </thead>
             <tbody id="bodyItem" class="divide-y divide-slate-100">
-              <tr class="item-row">
-                <td class="px-3 py-2.5 text-center text-slate-400 font-mono row-index">1</td>
-                <td class="px-3 py-2.5">
-                  <input type="text" name="items[0][uraian_barang]" required placeholder="Nama item / spek"
-                         class="w-full px-2.5 py-1.5 border border-slate-300 rounded-lg text-xs">
-                </td>
-                <td class="px-3 py-2.5">
-                  <input type="text" name="items[0][satuan]" required placeholder="Unit / Pcs / Bulan"
-                         class="w-full px-2.5 py-1.5 border border-slate-300 rounded-lg text-xs">
-                </td>
-                <td class="px-3 py-2.5">
-                  <input type="number" name="items[0][volume]" step="any" min="1" value="1" required oninput="hitungSubtotal(this)"
-                         class="input-volume w-full px-2.5 py-1.5 border border-slate-300 rounded-lg text-xs font-mono">
-                </td>
-                <td class="px-3 py-2.5">
-                  <input type="number" name="items[0][harga_satuan]" step="any" min="0" required oninput="hitungSubtotal(this)"
-                         placeholder="0" class="w-full px-2.5 py-1.5 border border-slate-300 rounded-lg text-xs font-mono">
-                </td>
-                <td class="px-3 py-2.5 text-right font-mono font-semibold text-slate-800 subtotal-text">
-                  Rp 0
-                </td>
-                <td class="px-3 py-2.5 text-center">
-                  <button type="button" onclick="hapusBaris(this)" class="text-rose-500 hover:text-rose-700 font-bold">&times;</button>
-                </td>
-              </tr>
+              @if($pengajuan->rincianItem && count($pengajuan->rincianItem) > 0)
+                @foreach($pengajuan->rincianItem as $index => $item)
+                  <tr class="item-row">
+                    <td class="px-3 py-2.5 text-center text-slate-400 font-mono row-index">{{ $index + 1 }}</td>
+                    <td class="px-3 py-2.5">
+                      <input type="text" name="items[{{ $index }}][uraian_barang]" value="{{ $item->uraian_barang }}" required placeholder="Nama item / spek"
+                             class="w-full px-2.5 py-1.5 border border-slate-300 rounded-lg text-xs">
+                    </td>
+                    <td class="px-3 py-2.5">
+                      <input type="text" name="items[{{ $index }}][satuan]" value="{{ $item->satuan }}" required placeholder="Unit / Pcs / Bulan"
+                             class="w-full px-2.5 py-1.5 border border-slate-300 rounded-lg text-xs">
+                    </td>
+                    <td class="px-3 py-2.5">
+                      <input type="number" name="items[{{ $index }}][volume]" step="any" min="1" value="{{ (float)$item->volume }}" required oninput="hitungSubtotal(this)"
+                             class="input-volume w-full px-2.5 py-1.5 border border-slate-300 rounded-lg text-xs font-mono">
+                    </td>
+                    <td class="px-3 py-2.5">
+                      <input type="number" name="items[{{ $index }}][harga_satuan]" step="any" min="0" value="{{ (float)$item->harga_satuan }}" required oninput="hitungSubtotal(this)"
+                             placeholder="0" class="w-full px-2.5 py-1.5 border border-slate-300 rounded-lg text-xs font-mono">
+                    </td>
+                    <td class="px-3 py-2.5 text-right font-mono font-semibold text-slate-800 subtotal-text">
+                      Rp {{ number_format((float)($item->volume * $item->harga_satuan), 0, ',', '.') }}
+                    </td>
+                    <td class="px-3 py-2.5 text-center">
+                      <button type="button" onclick="hapusBaris(this)" class="text-rose-500 hover:text-rose-700 font-bold">&times;</button>
+                    </td>
+                  </tr>
+                @endforeach
+              @else
+                <tr class="item-row">
+                  <td class="px-3 py-2.5 text-center text-slate-400 font-mono row-index">1</td>
+                  <td class="px-3 py-2.5">
+                    <input type="text" name="items[0][uraian_barang]" required placeholder="Nama item / spek"
+                           class="w-full px-2.5 py-1.5 border border-slate-300 rounded-lg text-xs">
+                  </td>
+                  <td class="px-3 py-2.5">
+                    <input type="text" name="items[0][satuan]" required placeholder="Unit / Pcs / Bulan"
+                           class="w-full px-2.5 py-1.5 border border-slate-300 rounded-lg text-xs">
+                  </td>
+                  <td class="px-3 py-2.5">
+                    <input type="number" name="items[0][volume]" step="any" min="1" value="1" required oninput="hitungSubtotal(this)"
+                           class="input-volume w-full px-2.5 py-1.5 border border-slate-300 rounded-lg text-xs font-mono">
+                  </td>
+                  <td class="px-3 py-2.5">
+                    <input type="number" name="items[0][harga_satuan]" step="any" min="0" required oninput="hitungSubtotal(this)"
+                           placeholder="0" class="w-full px-2.5 py-1.5 border border-slate-300 rounded-lg text-xs font-mono">
+                  </td>
+                  <td class="px-3 py-2.5 text-right font-mono font-semibold text-slate-800 subtotal-text">
+                    Rp 0
+                  </td>
+                  <td class="px-3 py-2.5 text-center">
+                    <button type="button" onclick="hapusBaris(this)" class="text-rose-500 hover:text-rose-700 font-bold">&times;</button>
+                  </td>
+                </tr>
+              @endif
             </tbody>
             <tfoot class="bg-slate-50 font-bold border-t border-slate-200">
               <tr>
@@ -178,7 +209,7 @@
   </div>
 
   <script>
-    let barisIndex = 1;
+    let barisIndex = {{ $pengajuan->rincianItem ? count($pengajuan->rincianItem) : 1 }};
 
     function tambahBarisItem() {
       const tbody = document.getElementById('bodyItem');

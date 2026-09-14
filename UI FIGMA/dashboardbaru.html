@@ -1,0 +1,791 @@
+<!doctype html>
+<html lang="id">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>SIRAB - Dashboard Finance (Tahap 1)</title>
+        <!-- Google Fonts -->
+        <link
+            href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+            rel="stylesheet"
+        />
+        <!-- Font Awesome Icons -->
+        <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+        />
+
+        <style>
+            :root {
+                --sidebar-bg: #1e255e;
+                --sidebar-active: #2b337c;
+                --main-bg: #f8f9fc;
+                --text-dark: #1e293b;
+                --text-muted: #64748b;
+                --primary-color: #2b337c;
+                --accent-orange: #f59e0b;
+                --border-color: #e2e8f0;
+            }
+
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+                font-family: "Inter", sans-serif;
+            }
+
+            body {
+                background-color: var(--main-bg);
+                display: flex;
+                height: 100vh;
+                overflow: hidden;
+            }
+
+            /* --- SIDEBAR --- */
+            aside {
+                width: 260px;
+                background-color: var(--sidebar-bg);
+                color: #ffffff;
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+                padding: 20px 15px;
+            }
+
+            .sidebar-brand {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                padding: 10px 10px 25px 10px;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            }
+
+            .brand-logo {
+                width: 36px;
+                height: 36px;
+                background-color: #f59e0b;
+                border-radius: 8px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: white;
+                font-size: 18px;
+            }
+
+            .brand-text h1 {
+                font-size: 16px;
+                font-weight: 700;
+                letter-spacing: 0.5px;
+            }
+
+            .brand-text p {
+                font-size: 10px;
+                color: #94a3b8;
+                letter-spacing: 0.5px;
+            }
+
+            .sidebar-menu {
+                margin-top: 20px;
+                flex: 1;
+            }
+
+            .menu-category {
+                font-size: 10px;
+                text-transform: uppercase;
+                color: #64748b;
+                padding: 0 10px 10px 10px;
+                letter-spacing: 0.8px;
+                font-weight: 600;
+            }
+
+            .menu-item {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 10px 12px;
+                color: #cbd5e1;
+                text-decoration: none;
+                border-radius: 8px;
+                margin-bottom: 4px;
+                font-size: 13px;
+                font-weight: 500;
+                transition: all 0.2s;
+            }
+
+            .menu-item-left {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+            }
+
+            .menu-item i {
+                font-size: 15px;
+                width: 18px;
+                text-align: center;
+            }
+
+            .menu-item:hover {
+                background-color: rgba(255, 255, 255, 0.05);
+                color: #ffffff;
+            }
+
+            .menu-item.active {
+                background-color: var(--sidebar-active);
+                color: #ffffff;
+            }
+
+            .badge-tahap {
+                background-color: #f59e0b;
+                color: #ffffff;
+                font-size: 10px;
+                padding: 2px 6px;
+                border-radius: 4px;
+                font-weight: 600;
+            }
+
+            .sidebar-profile {
+                background-color: rgba(0, 0, 0, 0.2);
+                padding: 12px;
+                border-radius: 10px;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+            }
+
+            .profile-info {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+
+            .profile-avatar {
+                width: 36px;
+                height: 36px;
+                background-color: #3b82f6;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: white;
+                font-weight: 600;
+                font-size: 13px;
+            }
+
+            .profile-text h4 {
+                font-size: 13px;
+                font-weight: 600;
+                color: #ffffff;
+            }
+
+            .profile-text p {
+                font-size: 11px;
+                color: #94a3b8;
+            }
+
+            .profile-logout {
+                color: #94a3b8;
+                font-size: 16px;
+                text-decoration: none;
+                transition: color 0.2s;
+            }
+
+            .profile-logout:hover {
+                color: #ffffff;
+            }
+
+            /* --- MAIN CONTENT AREA --- */
+            .main-container {
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+                overflow-y: auto;
+            }
+
+            /* Top Navbar */
+            header {
+                background-color: #ffffff;
+                padding: 12px 25px;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                border-bottom: 1px solid var(--border-color);
+            }
+
+            .breadcrumb {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                font-size: 13px;
+                color: var(--text-muted);
+            }
+
+            .breadcrumb span {
+                color: var(--text-dark);
+                font-weight: 500;
+            }
+
+            .header-right {
+                display: flex;
+                align-items: center;
+                gap: 20px;
+            }
+
+            .notif-icon {
+                position: relative;
+                color: var(--text-muted);
+                font-size: 16px;
+                cursor: pointer;
+            }
+
+            .notif-dot {
+                position: absolute;
+                top: -2px;
+                right: -2px;
+                width: 7px;
+                height: 7px;
+                background-color: #ef4444;
+                border-radius: 50%;
+            }
+
+            .user-nav {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                cursor: pointer;
+            }
+
+            .user-nav .avatar {
+                width: 32px;
+                height: 32px;
+                background-color: #3b82f6;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: white;
+                font-size: 12px;
+                font-weight: 600;
+            }
+
+            .user-nav .info h5 {
+                font-size: 13px;
+                color: var(--text-dark);
+                font-weight: 600;
+            }
+
+            .user-nav .info p {
+                font-size: 11px;
+                color: var(--text-muted);
+            }
+
+            .user-nav i {
+                font-size: 11px;
+                color: var(--text-muted);
+                margin-left: 5px;
+            }
+
+            .header-logout-icon {
+                color: var(--text-muted);
+                font-size: 16px;
+                text-decoration: none;
+                margin-left: 10px;
+            }
+
+            /* Content Body */
+            .content-body {
+                padding: 25px;
+            }
+
+            /* Alert Banner */
+            .alert-banner {
+                background-color: #f0fdf4;
+                border: 1px solid #bbf7d0;
+                color: #166534;
+                padding: 12px 16px;
+                border-radius: 8px;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                margin-bottom: 20px;
+                font-size: 13px;
+                font-weight: 500;
+            }
+
+            .alert-left {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+
+            .alert-left i {
+                color: #22c55e;
+                font-size: 15px;
+            }
+
+            .alert-close {
+                color: #166534;
+                cursor: pointer;
+                font-size: 14px;
+            }
+
+            /* Page Title Section */
+            .page-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: flex-start;
+                margin-bottom: 20px;
+            }
+
+            .page-title-box span {
+                font-size: 11px;
+                text-transform: uppercase;
+                color: var(--primary-color);
+                font-weight: 700;
+                letter-spacing: 0.5px;
+            }
+
+            .page-title-box h2 {
+                font-size: 22px;
+                color: var(--text-dark);
+                font-weight: 700;
+                margin-top: 2px;
+            }
+
+            .page-title-box p {
+                font-size: 13px;
+                color: var(--text-muted);
+                margin-top: 2px;
+            }
+
+            .btn-antrean {
+                background-color: #f59e0b;
+                color: white;
+                border: none;
+                padding: 10px 16px;
+                border-radius: 8px;
+                font-size: 13px;
+                font-weight: 600;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                cursor: pointer;
+                text-decoration: none;
+                box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+            }
+
+            /* Stats Grid Cards */
+            .stats-grid {
+                display: grid;
+                grid-template-columns: repeat(5, 1fr);
+                gap: 15px;
+                margin-bottom: 25px;
+            }
+
+            .stat-card {
+                background-color: #ffffff;
+                border: 1px solid var(--border-color);
+                border-radius: 10px;
+                padding: 18px;
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+                position: relative;
+            }
+
+            .stat-card-title {
+                font-size: 11px;
+                font-weight: 700;
+                text-transform: uppercase;
+                color: var(--text-muted);
+                letter-spacing: 0.5px;
+                margin-bottom: 8px;
+            }
+
+            .stat-card-value {
+                font-size: 24px;
+                font-weight: 700;
+                color: var(--text-dark);
+                margin-bottom: 6px;
+            }
+
+            .stat-card-value.orange {
+                color: #d97706;
+            }
+
+            .stat-card-value.blue {
+                color: #2563eb;
+            }
+
+            .stat-card-value.red {
+                color: #dc2626;
+            }
+
+            .stat-card-desc {
+                font-size: 12px;
+                color: var(--text-muted);
+            }
+
+            .stat-link {
+                font-size: 12px;
+                color: #2563eb;
+                text-decoration: none;
+                font-weight: 500;
+                display: inline-flex;
+                align-items: center;
+                gap: 45px;
+            }
+
+            .stat-link:hover {
+                text-decoration: underline;
+            }
+
+            /* Table Section */
+            .table-card {
+                background-color: #ffffff;
+                border: 1px solid var(--border-color);
+                border-radius: 10px;
+                padding: 20px;
+            }
+
+            .table-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: flex-start;
+                margin-bottom: 15px;
+            }
+
+            .table-title h3 {
+                font-size: 15px;
+                font-weight: 700;
+                color: var(--text-dark);
+            }
+
+            .table-title p {
+                font-size: 12px;
+                color: var(--text-muted);
+                margin-top: 2px;
+            }
+
+            .table-action-link {
+                font-size: 13px;
+                color: #2563eb;
+                text-decoration: none;
+                font-weight: 600;
+            }
+
+            .table-action-link:hover {
+                text-decoration: underline;
+            }
+
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                text-align: left;
+            }
+
+            th {
+                font-size: 11px;
+                text-transform: uppercase;
+                color: var(--text-muted);
+                font-weight: 700;
+                padding: 10px 12px;
+                border-bottom: 1px solid var(--border-color);
+                letter-spacing: 0.5px;
+            }
+
+            td {
+                font-size: 13px;
+                color: var(--text-dark);
+                padding: 14px 12px;
+                border-bottom: 1px solid var(--border-color);
+                font-weight: 400;
+            }
+
+            tr:last-child td {
+                border-bottom: none;
+            }
+
+            td.font-medium {
+                font-weight: 500;
+            }
+
+            .btn-review {
+                background-color: #f59e0b;
+                color: white;
+                border: none;
+                padding: 6px 12px;
+                border-radius: 6px;
+                font-size: 12px;
+                font-weight: 600;
+                cursor: pointer;
+                text-decoration: none;
+                display: inline-block;
+                box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+            }
+
+            .btn-review:hover {
+                background-color: #d97706;
+            }
+        </style>
+    </head>
+    <body>
+        <!-- SIDEBAR -->
+        <aside>
+            <div>
+                <div class="sidebar-brand">
+                    <div class="brand-logo">
+                        <i class="fa-solid fa-building-columns"></i>
+                    </div>
+                    <div class="brand-text">
+                        <h1>SIRAB</h1>
+                        <p>SISTEM INFORMASI RAB</p>
+                    </div>
+                </div>
+
+                <div class="sidebar-menu">
+                    <div class="menu-category" style="margin-top: 20px">
+                        Menu Reviewer Finance
+                    </div>
+                    <a href="#" class="active menu-item">
+                        <div class="menu-item-left">
+                            <i class="fa-solid fa-house"></i>
+                            <span>Dashboard Finance</span>
+                        </div>
+                    </a>
+                    <a href="#" class="menu-item">
+                        <div class="menu-item-left">
+                            <i class="fa-solid fa-folder-open"></i>
+                            <span>Antrean Verifikasi</span>
+                        </div>
+                        <span class="badge-tahap">Tahap 1</span>
+                    </a>
+                    <a href="#" class="menu-item">
+                        <div class="menu-item-left">
+                            <i class="fa-solid fa-wallet"></i>
+                            <span>Pencairan Dana</span>
+                        </div>
+                    </a>
+                    <a href="#" class="menu-item">
+                        <div class="menu-item-left">
+                            <i class="fa-solid fa-clock-rotate-left"></i>
+                            <span>Riwayat Review</span>
+                        </div>
+                    </a>
+
+                    <div class="menu-category" style="margin-top: 25px">
+                        Manajemen Data
+                    </div>
+                    <a href="#" class="menu-item">
+                        <div class="menu-item-left">
+                            <i class="fa-solid fa-layer-group"></i>
+                            <span>Master Kategori & Pagu</span>
+                        </div>
+                    </a>
+                    <a href="#" class="menu-item">
+                        <div class="menu-item-left">
+                            <i class="fa-solid fa-chart-pie"></i>
+                            <span>Rekapitulasi Laporan</span>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <div class="sidebar-profile">
+                <div class="profile-info">
+                    <div class="profile-avatar">AK</div>
+                    <div class="profile-text">
+                        <h4>Akun Finance</h4>
+                        <p>Bendahara · Finance</p>
+                    </div>
+                </div>
+                <a href="#" class="profile-logout"
+                    ><i class="fa-solid fa-arrow-right-from-bracket"></i
+                ></a>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTAINER -->
+        <div class="main-container">
+            <!-- HEADER NAVBAR -->
+            <header>
+                <div class="breadcrumb">
+                    SIRAB
+                    <i
+                        class="fa-solid fa-chevron-right"
+                        style="font-size: 10px"
+                    ></i>
+                    <span>Dashboard Finance (Tahap 1)</span>
+                </div>
+                <div class="header-right">
+                    <div class="notif-icon">
+                        <i class="fa-regular fa-bell"></i>
+                        <div class="notif-dot"></div>
+                    </div>
+                    <div class="user-nav">
+                        <div class="avatar">AK</div>
+                        <div class="info">
+                            <h5>Akun Finance</h5>
+                            <p>Bendahara · Finance</p>
+                        </div>
+                        <i class="fa-solid fa-chevron-down"></i>
+                    </div>
+                    <a href="#" class="header-logout-icon"
+                        ><i class="fa-solid fa-arrow-right-from-bracket"></i
+                    ></a>
+                </div>
+            </header>
+
+            <!-- CONTENT BODY -->
+            <div class="content-body">
+                <!-- Alert Banner -->
+                <div class="alert-banner">
+                    <div class="alert-left">
+                        <i class="fa-solid fa-circle-check"></i>
+                        <span>Selamat datang kembali, Akun Finance!</span>
+                    </div>
+                    <i class="fa-solid fa-xmark alert-close"></i>
+                </div>
+
+                <!-- Page Header -->
+                <div class="page-header">
+                    <div class="page-title-box">
+                        <span>Reviewer Anggaran Tahap 1 · Role: Finance</span>
+                        <h2>Dashboard Finance</h2>
+                        <p>
+                            Verifikasi ketersediaan pagu anggaran, validitas
+                            harga pasar, dan kelayakan item belanja sebelum
+                            diteruskan ke Pimpinan.
+                        </p>
+                    </div>
+                    <a href="#" class="btn-antrean">
+                        <i class="fa-solid fa-folder-open"></i> Lihat Antrean
+                        Pending (5)
+                    </a>
+                </div>
+
+                <!-- Stats Grid Cards -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div>
+                            <div class="stat-card-title">Antrean Review</div>
+                            <div class="stat-card-value orange">5</div>
+                        </div>
+                        <div class="stat-card-desc">
+                            Menunggu verifikasi Tahap 1
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div>
+                            <div class="stat-card-title">Menunggu Pimpinan</div>
+                            <div class="stat-card-value blue">1</div>
+                        </div>
+                        <div class="stat-card-desc">Diteruskan ke Pimpinan</div>
+                    </div>
+                    <div class="stat-card">
+                        <div>
+                            <div class="stat-card-title">Proses Pencairan</div>
+                            <div class="stat-card-value">2</div>
+                        </div>
+                        <a href="#" class="stat-link">Lihat Antrean →</a>
+                    </div>
+                    <div class="stat-card">
+                        <div>
+                            <div class="stat-card-title">Revisi / Ditolak</div>
+                            <div class="stat-card-value red">0</div>
+                        </div>
+                        <div class="stat-card-desc">Dikembalikan ke Staff</div>
+                    </div>
+                    <div class="stat-card">
+                        <div>
+                            <div class="stat-card-title">
+                                Total Nominal Pending
+                            </div>
+                            <div
+                                class="stat-card-value"
+                                style="font-size: 20px"
+                            >
+                                Rp 255.009.998
+                            </div>
+                        </div>
+                        <div class="stat-card-desc">
+                            Nilai antrean diverifikasi
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Table Section -->
+                <div class="table-card">
+                    <div class="table-header">
+                        <div class="table-title">
+                            <h3>Antrean Pengajuan Pending Terbaru</h3>
+                            <p>
+                                Periksa dan berikan keputusan persetujuan Tahap
+                                1
+                            </p>
+                        </div>
+                        <a href="#" class="table-action-link"
+                            >Buka Semua Antrean →</a
+                        >
+                    </div>
+
+                    <table>
+                        <thead>
+                            <tr>
+                                <th style="width: 15%">No. RAB</th>
+                                <th style="width: 15%">Pemohon</th>
+                                <th style="width: 18%">Unit Kerja</th>
+                                <th style="width: 25%">Judul Pengajuan</th>
+                                <th style="width: 15%">Estimasi Biaya</th>
+                                <th style="width: 12%; text-align: right">
+                                    Aksi Review
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="font-medium">RAB-2024-011</td>
+                                <td>Sari Dewi</td>
+                                <td style="color: var(--text-muted)">UPD</td>
+                                <td>Pengadaan Peralatan Kantor</td>
+                                <td style="font-weight: 600">Rp 45.000.000</td>
+                                <td style="text-align: right">
+                                    <a href="#" class="btn-review"
+                                        >Review Tahap 1</a
+                                    >
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="font-medium">RAB-2024-012</td>
+                                <td>Budi Santoso</td>
+                                <td style="color: var(--text-muted)">
+                                    Dinas Kesehatan
+                                </td>
+                                <td>Pembelian Obat-obatan</td>
+                                <td style="font-weight: 600">Rp 120.500.000</td>
+                                <td style="text-align: right">
+                                    <a href="#" class="btn-review"
+                                        >Review Tahap 1</a
+                                    >
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="font-medium">RAB-2024-013</td>
+                                <td>Rina Kusuma</td>
+                                <td style="color: var(--text-muted)">
+                                    Dinas Pendidikan
+                                </td>
+                                <td>Renovasi Ruang Kelas</td>
+                                <td style="font-weight: 600">Rp 89.500.000</td>
+                                <td style="text-align: right">
+                                    <a href="#" class="btn-review"
+                                        >Review Tahap 1</a
+                                    >
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

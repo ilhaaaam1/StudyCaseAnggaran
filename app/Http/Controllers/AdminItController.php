@@ -175,6 +175,12 @@ class AdminItController extends Controller
                 ->with('error', "Akun {$user->nama_lengkap} tidak dapat dihapus karena memiliki riwayat pengajuan RAB.");
         }
 
+        // Proteksi jika pernah menjadi reviewer (data jejak audit persetujuan)
+        if (\DB::table('alur_persetujuan')->where('id_reviewer', $id)->exists()) {
+            return redirect()->route('admin-it.users.index')
+                ->with('error', "Akun {$user->nama_lengkap} tidak dapat dihapus karena memiliki riwayat sebagai reviewer/penyetuju pengajuan RAB.");
+        }
+
         $nama = $user->nama_lengkap;
         $user->delete();
 

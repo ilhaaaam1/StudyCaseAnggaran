@@ -16,14 +16,14 @@
       <div class="text-xs font-semibold text-indigo-600 uppercase tracking-wider mb-1">
         Panel Administrator &bull; Reviewer Anggaran
       </div>
-      <h1 class="text-2xl font-bold text-slate-900">Dashboard &amp; Antrean Pengajuan RAB</h1>
+      <h1 class="text-2xl font-extrabold text-slate-800">Dashboard &amp; Antrean Pengajuan RAB</h1>
       <p class="text-sm text-slate-500 mt-1">
         Periode: {{ date('F Y') }} &bull; Tahun Anggaran {{ date('Y') }} &bull; Halo, <span class="font-semibold text-slate-700">{{ Auth::user()->nama_lengkap }}</span> ({{ Auth::user()->jabatan }})
       </p>
     </div>
     <div class="flex items-center gap-3 shrink-0">
       <a href="{{ route('admin.rab.index') }}" 
-         class="bg-[#1e293b] hover:bg-slate-800 text-white px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold flex items-center gap-2 shadow-sm transition-all">
+         class="bg-[#2e358b] hover:bg-[#222870] text-white px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold flex items-center gap-2 shadow-sm transition-all">
         <svg class="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
         </svg>
@@ -39,11 +39,11 @@
   <!-- Stats Grid (Figma dashboard.html 4 Cards) -->
   <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
     <!-- Card 1: TOTAL PENGAJUAN -->
-    <div class="bg-white border border-indigo-100 rounded-xl p-5 shadow-sm hover:shadow transition-shadow">
+    <div class="bg-white rounded-xl p-5 shadow-md border-none hover:shadow transition-shadow">
       <div class="text-xs font-bold text-slate-500 tracking-wider uppercase mb-2">
         TOTAL PENGAJUAN
       </div>
-      <div class="text-2xl font-bold text-slate-800 font-mono mb-1">
+      <div class="text-2xl font-bold text-[#8b8df7] font-mono mb-1">
         Rp {{ number_format($totalNominalPengajuan ?? 0, 0, ',', '.') }}
       </div>
       <div class="text-xs text-slate-400">
@@ -52,40 +52,40 @@
     </div>
 
     <!-- Card 2: DISETUJUI (ACC) -->
-    <div class="bg-emerald-50/70 border border-emerald-200 rounded-xl p-5 shadow-sm hover:shadow transition-shadow">
-      <div class="text-xs font-bold text-emerald-700 tracking-wider uppercase mb-2">
+    <div class="bg-white rounded-xl p-5 shadow-md border-none hover:shadow transition-shadow">
+      <div class="text-xs font-bold text-slate-500 tracking-wider uppercase mb-2">
         DISETUJUI (ACC)
       </div>
-      <div class="text-2xl font-bold text-emerald-700 font-mono mb-1">
+      <div class="text-2xl font-bold text-emerald-500 font-mono mb-1">
         Rp {{ number_format($totalAnggaranAcc ?? 0, 0, ',', '.') }}
       </div>
-      <div class="text-xs text-emerald-600">
+      <div class="text-xs text-slate-400">
         {{ $totalAcc ?? 0 }} dokumen disetujui
       </div>
     </div>
 
     <!-- Card 3: MENUNGGU REVIEW (Pending) -->
-    <div class="bg-amber-50/70 border border-amber-200 rounded-xl p-5 shadow-sm hover:shadow transition-shadow">
-      <div class="text-xs font-bold text-amber-700 tracking-wider uppercase mb-2">
+    <div class="bg-white rounded-xl p-5 shadow-md border-none hover:shadow transition-shadow">
+      <div class="text-xs font-bold text-slate-500 tracking-wider uppercase mb-2">
         MENUNGGU REVIEW
       </div>
-      <div class="text-2xl font-bold text-amber-700 font-mono mb-1">
+      <div class="text-2xl font-bold text-amber-500 font-mono mb-1">
         {{ $totalPending ?? 0 }} Dokumen
       </div>
-      <div class="text-xs text-amber-600">
+      <div class="text-xs text-slate-400">
         Antrean butuh evaluasi segera
       </div>
     </div>
 
     <!-- Card 4: DITOLAK / REVISI -->
-    <div class="bg-rose-50/70 border border-rose-200 rounded-xl p-5 shadow-sm hover:shadow transition-shadow">
-      <div class="text-xs font-bold text-rose-700 tracking-wider uppercase mb-2">
+    <div class="bg-white rounded-xl p-5 shadow-md border-none hover:shadow transition-shadow">
+      <div class="text-xs font-bold text-slate-500 tracking-wider uppercase mb-2">
         DITOLAK / REVISI
       </div>
-      <div class="text-2xl font-bold text-rose-700 font-mono mb-1">
+      <div class="text-2xl font-bold text-rose-500 font-mono mb-1">
         {{ $totalDitolak ?? 0 }} Dokumen
       </div>
-      <div class="text-xs text-rose-600">
+      <div class="text-xs text-slate-400">
         Pengajuan yang tidak disetujui
       </div>
     </div>
@@ -114,7 +114,7 @@
   <!-- Progress Bars Section (Figma layout: Distribusi Status & Realisasi) -->
   <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
     <!-- Distribusi Status -->
-    <div class="bg-white border border-slate-200 rounded-xl shadow-sm p-6">
+    <div class="bg-white rounded-xl shadow-md border-none bg-white p-6">
       <h2 class="font-semibold text-slate-800 text-sm mb-5">Distribusi Status Seluruh Pengajuan</h2>
       @php
         $totalAllAdmin = max(1, $totalPengajuan ?? 1);
@@ -134,7 +134,7 @@
         </div>
         <div>
           <div class="flex justify-between mb-1.5">
-            <span class="font-medium text-amber-600">Menunggu Review (Pending)</span>
+            <span class="font-medium text-slate-400">Menunggu Review (Pending)</span>
             <span class="text-slate-500 font-mono">{{ $totalPending ?? 0 }} dok ({{ $pctAdminPending }}%)</span>
           </div>
           <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
@@ -143,7 +143,7 @@
         </div>
         <div>
           <div class="flex justify-between mb-1.5">
-            <span class="font-medium text-rose-600">Ditolak</span>
+            <span class="font-medium text-slate-400">Ditolak</span>
             <span class="text-slate-500 font-mono">{{ $totalDitolak ?? 0 }} dok ({{ $pctAdminDitolak }}%)</span>
           </div>
           <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
@@ -154,7 +154,7 @@
     </div>
 
     <!-- Ringkasan Anggaran Disetujui -->
-    <div class="bg-white border border-slate-200 rounded-xl shadow-sm p-6 flex flex-col justify-between">
+    <div class="bg-white rounded-xl shadow-md border-none bg-white p-6 flex flex-col justify-between">
       <div>
         <div class="mb-4">
           <h2 class="font-semibold text-slate-800 text-sm">Alokasi &amp; Realisasi Anggaran</h2>
@@ -163,7 +163,7 @@
         <div class="space-y-3 text-xs">
           <div class="flex justify-between py-1.5 border-b border-slate-100">
             <span class="text-slate-500">Total Nominal Disetujui (ACC):</span>
-            <span class="font-bold text-emerald-700 font-mono-num">
+            <span class="font-bold text-emerald-500 font-mono-num">
               Rp {{ number_format($totalAnggaranAcc ?? 0, 0, ',', '.') }}
             </span>
           </div>
@@ -187,7 +187,7 @@
   </div>
 
   <!-- Table Card: Pengajuan Masuk Terbaru -->
-  <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden mb-8">
+  <div class="bg-white rounded-xl shadow-md border-none bg-white overflow-hidden mb-8">
     <div class="p-5 border-b border-slate-100 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
       <div>
         <h2 class="font-semibold text-slate-800 text-sm sm:text-base">Antrean Pengajuan RAB Terbaru</h2>
@@ -223,25 +223,25 @@
 
     <div class="overflow-x-auto table-container">
       <table class="w-full text-left text-sm whitespace-nowrap">
-        <thead class="text-[10px] text-slate-500 uppercase bg-slate-50 border-b border-slate-200 font-semibold">
+        <thead class="text-xs text-slate-700 uppercase font-bold bg-indigo-50 border-none font-semibold">
           <tr>
-            <th class="px-5 py-3.5">NO. RAB</th>
-            <th class="px-5 py-3.5">JUDUL PENGAJUAN</th>
-            <th class="px-5 py-3.5">PEMOHON</th>
-            <th class="px-5 py-3.5">DIVISI</th>
-            <th class="px-5 py-3.5">PRIORITAS</th>
-            <th class="px-5 py-3.5 text-right">TOTAL ANGGARAN</th>
-            <th class="px-5 py-3.5 text-center">STATUS</th>
-            <th class="px-5 py-3.5 text-center">TINDAKAN</th>
+            <th class="p-4">NO. RAB</th>
+            <th class="p-4">JUDUL PENGAJUAN</th>
+            <th class="p-4">PEMOHON</th>
+            <th class="p-4">DIVISI</th>
+            <th class="p-4">PRIORITAS</th>
+            <th class="p-4 text-right">TOTAL ANGGARAN</th>
+            <th class="p-4 text-center">STATUS</th>
+            <th class="p-4 text-center">TINDAKAN</th>
           </tr>
         </thead>
         <tbody class="divide-y divide-slate-100 text-xs">
           @forelse($pengajuanList as $item)
             <tr class="hover:bg-slate-50/80 transition-colors">
-              <td class="px-5 py-4 font-mono font-medium text-slate-700">
+              <td class="p-4 font-mono font-medium text-slate-700">
                 {{ $item->no_rab }}
               </td>
-              <td class="px-5 py-4">
+              <td class="p-4">
                 <div class="font-medium text-slate-900 max-w-xs truncate" title="{{ $item->judul_pengajuan }}">
                   {{ $item->judul_pengajuan }}
                 </div>
@@ -249,20 +249,20 @@
                   {{ $item->tanggal_pengajuan ? $item->tanggal_pengajuan->format('d/m/Y') : '-' }} &bull; Periode: {{ $item->periode_penggunaan }}
                 </div>
               </td>
-              <td class="px-5 py-4">
+              <td class="p-4">
                 <div class="font-semibold text-slate-800">{{ $item->pengguna->nama_lengkap ?? 'N/A' }}</div>
                 <div class="text-[10px] text-slate-400">{{ $item->pengguna->jabatan ?? '-' }}</div>
               </td>
-              <td class="px-5 py-4 text-slate-600">
+              <td class="p-4 text-slate-600">
                 {{ $item->divisi->nama_divisi ?? '-' }}
               </td>
-              <td class="px-5 py-4">
+              <td class="p-4">
                 @if($item->prioritas === 'Tinggi')
-                  <span class="inline-block px-2 py-0.5 text-[10px] font-semibold bg-rose-50 text-rose-600 border border-rose-100 rounded">
+                  <span class="inline-block px-2 py-0.5 text-[10px] font-semibold bg-rose-50 text-slate-400 border border-rose-100 rounded">
                     Tinggi
                   </span>
                 @elseif($item->prioritas === 'Sedang')
-                  <span class="inline-block px-2 py-0.5 text-[10px] font-semibold bg-amber-50 text-amber-600 border border-amber-100 rounded">
+                  <span class="inline-block px-2 py-0.5 text-[10px] font-semibold bg-amber-50 text-slate-400 border border-amber-100 rounded">
                     Sedang
                   </span>
                 @else
@@ -271,10 +271,10 @@
                   </span>
                 @endif
               </td>
-              <td class="px-5 py-4 text-right font-mono-num font-semibold text-slate-800">
+              <td class="p-4 text-right font-mono-num font-semibold text-slate-800">
                 Rp {{ number_format((float) $item->estimasi_total, 0, ',', '.') }}
               </td>
-              <td class="px-5 py-4 text-center">
+              <td class="p-4 text-center">
                 @if($item->status === 'ACC')
                   <span class="inline-flex items-center gap-1 text-[10px] font-medium bg-emerald-100 text-emerald-700 px-2.5 py-1 rounded-full">
                     <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Disetujui
@@ -289,9 +289,9 @@
                   </span>
                 @endif
               </td>
-              <td class="px-5 py-4 text-center">
+              <td class="p-4 text-center">
                 <a href="{{ route('admin.pengajuan.show', $item->id_pengajuan) }}" 
-                   class="inline-flex items-center gap-1 px-3 py-1.5 bg-[#1e293b] hover:bg-slate-800 text-white font-medium rounded-lg text-xs transition-colors shadow-sm cursor-pointer">
+                   class="inline-flex items-center gap-1 px-3 py-1.5 bg-[#2e358b] hover:bg-[#222870] text-white font-medium rounded-lg text-xs transition-colors shadow-sm cursor-pointer">
                   Review RAB &raquo;
                 </a>
               </td>
@@ -323,3 +323,4 @@
     @endif
   </div>
 @endsection
+

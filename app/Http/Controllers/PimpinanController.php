@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Enums\StatusPengajuan;
 use App\Models\AlurPersetujuan;
 use App\Models\PengajuanRab;
 use Illuminate\Http\RedirectResponse;
@@ -15,17 +16,17 @@ use Illuminate\View\View;
 class PimpinanController extends Controller
 {
     /**
-     * Tampilkan dashboard Pimpinan dengan ringkasan antrean ACC Finance dan status final.
+     * Tampilkan dashboard Pimpinan dengan ringkasan antrean persetujuan.
      */
     public function index(Request $request): View
     {
-        $totalAntreanAccFinance = PengajuanRab::where('status', 'ACC Finance')->count();
-        $totalAccFinal = PengajuanRab::where('status', 'ACC Final')->count();
-        $totalDitolakPimpinan = PengajuanRab::where('status', 'Ditolak Pimpinan')->count();
-        $totalAnggaranDisetujui = (float) PengajuanRab::where('status', 'ACC Final')->sum('estimasi_total');
+        $totalAntreanAccFinance = PengajuanRab::where('status', StatusPengajuan::MENUNGGU_PIMPINAN)->count();
+        $totalAccFinal = PengajuanRab::whereIn('status', [StatusPengajuan::PROSES_PENCAIRAN, StatusPengajuan::SELESAI])->count();
+        $totalDitolakPimpinan = PengajuanRab::where('status', StatusPengajuan::DITOLAK)->count();
+        $totalAnggaranDisetujui = (float) PengajuanRab::whereIn('status', [StatusPengajuan::PROSES_PENCAIRAN, StatusPengajuan::SELESAI])->sum('estimasi_total');
 
         $antreanTerbaru = PengajuanRab::with(['pengguna', 'divisi', 'alurPersetujuan.reviewer'])
-            ->where('status', 'ACC Finance')
+            ->where('status', StatusPengajuan::MENUNGGU_PIMPINAN)
             ->latest('tanggal_pengajuan')
             ->take(5)
             ->get();
@@ -40,14 +41,14 @@ class PimpinanController extends Controller
     }
 
     /**
-     * Tampilkan antrean pengajuan RAB yang membutuhkan persetujuan final Pimpinan (status: 'ACC Finance').
+     * Tampilkan antrean pengajuan RAB yang membutuhkan persetujuan final Pimpinan.
      */
     public function antrean(Request $request): View
     {
         $search = $request->input('q');
 
         $query = PengajuanRab::with(['pengguna', 'divisi', 'rincianItem', 'alurPersetujuan.reviewer'])
-            ->where('status', 'ACC Finance');
+            ->where('status', StatusPengajuan::MENUNGGU_PIMPINAN);
 
         if ($search) {
             $query->where(function ($q) use ($search): void {
@@ -81,7 +82,7 @@ class PimpinanController extends Controller
     }
 
     /**
-     * Proses keputusan persetujuan Final (Tahap 2) oleh Pimpinan (ACC Final / Ditolak Pimpinan).
+     * Proses keputusan persetujuan Final (Tahap 2) oleh Pimpinan.
      */
     public function processApproval(Request $request, int $id): RedirectResponse
     {
@@ -106,14 +107,14 @@ class PimpinanController extends Controller
         DB::transaction(function () use ($id, $pimpinanId, $validated): void {
             $pengajuan = PengajuanRab::lockForUpdate()->findOrFail($id);
 
-            // Validasi state: Pimpinan hanya boleh memproses pengajuan yang sudah berstatus 'ACC Finance'
-            if ($pengajuan->status !== 'ACC Finance') {
-                abort(422, 'Pengajuan ini belum di-ACC Finance atau sudah memiliki keputusan final.');
+            // Validasi state
+            if ($pengajuan->status !== StatusPengajuan::MENUNGGU_PIMPINAN) {
+                abort(422, 'Pengajuan ini belum diverifikasi Finance atau sudah memiliki keputusan final.');
             }
 
             $targetStatus = $validated['status_decision'] === 'ACC'
-                ? 'ACC Final'
-                : 'Ditolak Pimpinan';
+                ? StatusPengajuan::PROSES_PENCAIRAN
+                : StatusPengajuan::DITOLAK;
 
             // 1. Update status akhir di pengajuan_rab
             $pengajuan->update([
@@ -126,13 +127,13 @@ class PimpinanController extends Controller
                 'id_reviewer' => $pimpinanId,
                 'level_persetujuan' => 2,
                 'status_persetujuan' => $validated['status_decision'],
-                'catatan' => $validated['catatan'] ?? ($validated['status_decision'] === 'ACC' ? 'Persetujuan Final oleh Pimpinan (ACC Final)' : 'Ditolak oleh Pimpinan pada tahap final'),
+                'catatan' => $validated['catatan'] ?? ($validated['status_decision'] === 'ACC' ? 'Persetujuan Final oleh Pimpinan' : 'Ditolak oleh Pimpinan pada tahap final'),
                 'tanggal_proses' => now(),
             ]);
         });
 
         $message = $validated['status_decision'] === 'ACC'
-            ? 'Pengajuan RAB berhasil disetujui (ACC Final). Anggaran siap direalisasikan.'
+            ? 'Pengajuan RAB berhasil disetujui dan diteruskan ke Finance untuk Proses Pencairan.'
             : 'Pengajuan RAB telah ditolak oleh Pimpinan.';
 
         return redirect()->route('pimpinan.antrean')
@@ -148,7 +149,11 @@ class PimpinanController extends Controller
         $search = $request->input('q');
 
         $query = PengajuanRab::with(['pengguna', 'divisi', 'alurPersetujuan.reviewer'])
-            ->whereIn('status', ['ACC Final', 'Ditolak Pimpinan']);
+            ->whereIn('status', [
+                StatusPengajuan::PROSES_PENCAIRAN,
+                StatusPengajuan::SELESAI,
+                StatusPengajuan::DITOLAK,
+            ]);
 
         if ($statusFilter) {
             $query->where('status', $statusFilter);

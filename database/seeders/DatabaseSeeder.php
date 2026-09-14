@@ -101,6 +101,50 @@ class DatabaseSeeder extends Seeder
             ]
         );
 
+        $financePengguna = Pengguna::firstOrCreate(
+            ['email' => 'finance@sirab.local'],
+            [
+                'id_divisi' => $divKeuangan->id_divisi,
+                'nama_lengkap' => 'Akun Finance',
+                'jabatan' => 'Bendahara',
+                'password' => Hash::make('password'),
+                'role' => 'finance',
+            ]
+        );
+
+        $pimpinanPengguna = Pengguna::firstOrCreate(
+            ['email' => 'pimpinan@sirab.local'],
+            [
+                'id_divisi' => $divAdmin->id_divisi,
+                'nama_lengkap' => 'Akun Pimpinan',
+                'jabatan' => 'Kepala Sekolah',
+                'password' => Hash::make('password'),
+                'role' => 'pimpinan',
+            ]
+        );
+
+        User::firstOrCreate(
+            ['email' => 'finance@sirab.local'],
+            [
+                'name' => 'Akun Finance',
+                'password' => Hash::make('password'),
+                'role' => UserRole::FINANCE,
+                'division' => 'Keuangan',
+                'position' => 'Bendahara',
+            ]
+        );
+
+        User::firstOrCreate(
+            ['email' => 'pimpinan@sirab.local'],
+            [
+                'name' => 'Akun Pimpinan',
+                'password' => Hash::make('password'),
+                'role' => UserRole::PIMPINAN,
+                'division' => 'Administrasi',
+                'position' => 'Kepala Sekolah',
+            ]
+        );
+
         // 3. Seed Pengajuan RAB 1: Disetujui (ACC)
         $rab1 = PengajuanRab::firstOrCreate(
             ['no_rab' => 'RAB-2026-001'],

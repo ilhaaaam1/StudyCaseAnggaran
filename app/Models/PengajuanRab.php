@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Enums\StatusPengajuan;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -63,6 +64,7 @@ class PengajuanRab extends Model
         'latar_belakang',
         'estimasi_total',
         'status',
+        'bukti_pencairan',
         'tanggal_pengajuan',
     ];
 
@@ -76,6 +78,7 @@ class PengajuanRab extends Model
         return [
             'tanggal_pengajuan' => 'datetime',
             'estimasi_total' => 'decimal:2',
+            'status' => StatusPengajuan::class,
         ];
     }
 

@@ -22,7 +22,7 @@
       <div class="text-right">
         <span class="text-xs text-slate-400 block">Status Saat Ini:</span>
         <span class="px-3 py-1 rounded-full text-xs font-bold inline-block mt-1
-          {{ $pengajuan->status === 'ACC Final' ? 'bg-emerald-100 text-emerald-800' : ($pengajuan->status === 'ACC Finance' ? 'bg-blue-100 text-blue-800' : ($pengajuan->status === 'Pending' ? 'bg-amber-100 text-amber-800' : 'bg-rose-100 text-rose-800')) }}">
+          {{ $pengajuan->status === \App\Enums\StatusPengajuan::SELESAI || $pengajuan->status === \App\Enums\StatusPengajuan::PROSES_PENCAIRAN ? 'bg-emerald-100 text-emerald-800' : ($pengajuan->status === \App\Enums\StatusPengajuan::MENUNGGU_PIMPINAN ? 'bg-blue-100 text-blue-800' : ($pengajuan->status === \App\Enums\StatusPengajuan::MENUNGGU_FINANCE ? 'bg-amber-100 text-amber-800' : 'bg-rose-100 text-rose-800')) }}">
           {{ $pengajuan->status }}
         </span>
       </div>
@@ -64,6 +64,28 @@
         </tfoot>
       </table>
     </div>
+
+    <!-- Bukti Pencairan -->
+    @if($pengajuan->bukti_pencairan)
+    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm mt-6">
+      <h2 class="text-sm font-bold text-slate-900 uppercase tracking-wider border-b border-slate-100 pb-3 mb-4">
+        Bukti Pencairan Dana (Finance)
+      </h2>
+      <div class="flex items-center gap-4 bg-emerald-50 p-4 rounded-xl border border-emerald-100">
+        <div class="bg-emerald-100 p-3 rounded-full text-emerald-600">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+        </div>
+        <div class="flex-1">
+          <p class="text-sm font-semibold text-emerald-900">Dana telah dicairkan</p>
+          <p class="text-xs text-emerald-700 mt-0.5">Finance telah mengunggah bukti pencairan / transfer.</p>
+        </div>
+        <a href="{{ asset('storage/' . $pengajuan->bukti_pencairan) }}" target="_blank" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-lg transition-colors flex items-center gap-2">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+          Download Bukti
+        </a>
+      </div>
+    </div>
+    @endif
 
     <!-- Tracking Alur Persetujuan (Level 1 Finance & Level 2 Pimpinan) -->
     <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">

@@ -1,0 +1,514 @@
+<!doctype html>
+<html lang="id">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>POLITEKNIK NEGERI JEMBER - GATE</title>
+        <!-- Import Font dari Google -->
+        <link
+            href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap"
+            rel="stylesheet"
+        />
+        <!-- Font Awesome untuk Icon -->
+        <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+        />
+
+        <style>
+            :root {
+                --primary-purple: #8b8df7;
+                --primary-blue: #2e358b;
+                --text-dark: #000000;
+                --text-gray: #444444;
+                --btn-gray: #6d757f;
+                --bg-light: #ffffff;
+            }
+
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+                font-family: "Poppins", sans-serif;
+            }
+
+            body {
+                overflow-x: hidden;
+                background-color: var(--bg-light);
+            }
+
+            /* --- HERO SECTION --- */
+            .hero {
+                display: flex;
+                min-height: 120vh;
+                position: relative;
+                background: var(--bg-light);
+            }
+
+            .hero-left {
+                flex: 0 0 68%;
+                padding: 40px 80px;
+                display: flex;
+                flex-direction: column;
+                position: relative;
+            }
+
+            .hero-right {
+                flex: 0 0 32%;
+                background-color: var(--primary-purple);
+                padding: 40px;
+                position: relative;
+            }
+
+            .header-left {
+                margin-bottom: auto;
+            }
+            .logo-wrap {
+                display: flex;
+                align-items: center;
+                gap: 15px;
+            }
+
+            /* --- LOGO DIPERBESAR DISINI --- */
+            .logo-icon {
+                width: 65px; /* Diperbesar dari 45px */
+                height: 65px; /* Diperbesar dari 45px */
+                background-color: #fce700;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border: 2px solid #fff;
+                box-shadow: 0 0 0 1px #ddd;
+            }
+
+            .logo-icon .inner-circle {
+                width: 48px; /* Diperbesar dari 32px */
+                height: 48px; /* Diperbesar dari 32px */
+                background-color: #1e3a8a;
+                border-radius: 50%;
+                color: white;
+                font-size: 14px; /* Diperbesar dari 11px */
+                font-weight: bold;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .logo-text {
+                font-size: 24px; /* Diperbesar dari 18px */
+                font-weight: 600;
+                color: #4b5563;
+            }
+
+            .header-right {
+                text-align: right;
+                margin-right: 20px;
+            }
+            .menu-icon {
+                color: white;
+                font-size: 24px;
+                cursor: pointer;
+            }
+
+            /* --- BAGIAN KONTEN TEKS --- */
+            .main-content {
+                margin-top: -30px;
+                margin-bottom: auto;
+                position: relative;
+                max-width: 550px;
+            }
+
+            .bg-text {
+                position: absolute;
+                top: -45px;
+                left: -5px;
+                font-size: clamp(140px, 18vw, 200px);
+                font-weight: 800;
+                color: #aeb1fa;
+                z-index: 1;
+                line-height: 1;
+                letter-spacing: -2px;
+            }
+
+            .content-inner {
+                position: relative;
+                z-index: 2;
+            }
+            .content-inner h1 {
+                font-size: 42px;
+                font-weight: 800;
+                color: var(--text-dark);
+                line-height: 1.2;
+                margin-bottom: 25px;
+            }
+            .content-inner p {
+                font-size: 15px;
+                color: var(--text-gray);
+                line-height: 1.6;
+                margin-bottom: 30px;
+                max-width: 90%;
+            }
+
+            .btn-login {
+                display: inline-block;
+                background-color: var(--btn-gray);
+                color: white;
+                padding: 10px 24px;
+                border-radius: 4px;
+                text-decoration: none;
+                font-weight: 600;
+                font-size: 14px;
+                transition: background 0.3s;
+            }
+            .btn-login:hover {
+                background-color: #555c65;
+            }
+
+            /* --- GRAFIS & KLASE --- */
+            .hero-graphics {
+                position: absolute;
+                top: 45%;
+                left: 78%;
+                transform: translate(-50%, -50%);
+                width: 600px;
+                height: 600px;
+                pointer-events: none;
+                z-index: 10;
+            }
+
+            .mask {
+                position: absolute;
+                object-fit: cover;
+                border: 8px solid #fff;
+                box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+                background-color: #e2e8f0;
+            }
+
+            .mask-1 {
+                width: 220px;
+                height: 240px;
+                top: 80px;
+                left: 20px;
+                border-radius: 40px 10px 100px 10px;
+            }
+            .mask-2 {
+                width: 140px;
+                height: 190px;
+                top: 130px;
+                left: 250px;
+                border-radius: 80px 80px 15px 15px;
+            }
+            .mask-3 {
+                width: 160px;
+                height: 160px;
+                top: 340px;
+                left: 50px;
+                border-radius: 50%;
+            }
+            .mask-4 {
+                width: 210px;
+                height: 260px;
+                top: 290px;
+                left: 215px;
+                border-radius: 60px 60px 15px 60px;
+            }
+
+            /* Elemen Dekoratif Mengambang */
+            .float {
+                position: absolute;
+            }
+            .dot {
+                width: 8px;
+                height: 8px;
+                border-radius: 50%;
+            }
+            .dash {
+                width: 25px;
+                height: 4px;
+                border-radius: 2px;
+            }
+            .pill {
+                width: 45px;
+                height: 14px;
+                border-radius: 7px;
+            }
+
+            .dot-1 {
+                background-color: #00bcd4;
+                top: 290px;
+                left: -10px;
+            }
+            .dot-2 {
+                background-color: #ff9800;
+                top: 340px;
+                left: -30px;
+            }
+            .dot-3 {
+                background-color: #ffc107;
+                bottom: 120px;
+                left: 480px;
+            }
+            .dash-1 {
+                background-color: #00bcd4;
+                top: 70px;
+                left: 400px;
+            }
+            .dash-2 {
+                background-color: #8bc34a;
+                top: 160px;
+                left: 420px;
+            }
+            .pill-1 {
+                background-color: #ffc107;
+                top: 90px;
+                left: 270px;
+                width: 35px;
+                height: 10px;
+            }
+            .pill-2 {
+                background-color: #ffc107;
+                bottom: 130px;
+                left: -40px;
+            }
+            .pill-3 {
+                background-color: #8bc34a;
+                bottom: 40px;
+                left: 130px;
+                width: 35px;
+                height: 10px;
+            }
+
+            /* --- FOOTER SECTION --- */
+            .footer-top {
+                background-color: var(--primary-blue);
+                padding: 100px 80px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                color: #fff;
+            }
+
+            .footer-top-left h4 {
+                font-size: 16px;
+                font-weight: 600;
+                margin-bottom: 5px;
+                color: #f1f5f9;
+            }
+            .footer-top-left h2 {
+                font-size: 56px;
+                font-weight: 800;
+                line-height: 1.1;
+                letter-spacing: -1px;
+            }
+
+            .footer-top-right {
+                text-align: right;
+                display: flex;
+                flex-direction: column;
+                align-items: flex-end;
+            }
+
+            .footer-logo {
+                width: 120px;
+                height: 120px;
+                background-color: #facc15;
+                border-radius: 50%;
+                margin-bottom: 20px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                border: 3px solid #fff;
+            }
+            .footer-logo .seal-inner {
+                width: 100px;
+                height: 100px;
+                background-color: #1e3a8a;
+                border-radius: 50%;
+                color: #fff;
+                font-size: 22px;
+                font-weight: bold;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            .footer-top-right p {
+                font-size: 15px;
+                line-height: 1.6;
+                font-weight: 500;
+            }
+
+            .footer-bottom {
+                background-color: #fff;
+                padding: 25px 80px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+            .copyright {
+                font-size: 11px;
+                color: #000;
+                font-weight: 700;
+            }
+            .footer-links {
+                display: flex;
+                align-items: center;
+                gap: 40px;
+            }
+            .links {
+                display: flex;
+                gap: 20px;
+            }
+            .links a {
+                text-decoration: none;
+                color: #000;
+                font-size: 12px;
+                font-weight: 700;
+            }
+            .socials {
+                display: flex;
+                gap: 15px;
+            }
+            .socials a {
+                color: #000;
+                font-size: 16px;
+            }
+
+            @media (max-width: 1024px) {
+                .hero {
+                    flex-direction: column;
+                }
+                .hero-left {
+                    flex: 1;
+                    width: 100%;
+                    padding: 40px 30px;
+                }
+                .hero-right,
+                .hero-graphics {
+                    display: none;
+                }
+                .footer-top {
+                    flex-direction: column;
+                    align-items: flex-start;
+                    padding: 50px 30px;
+                    gap: 40px;
+                }
+                .footer-top-right {
+                    align-items: flex-start;
+                    text-align: left;
+                }
+                .footer-bottom {
+                    flex-direction: column;
+                    gap: 20px;
+                    padding: 25px 30px;
+                    text-align: center;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <section class="hero">
+            <div class="hero-left">
+                <header class="header-left">
+                    <div class="logo-wrap">
+                        <div class="logo-icon">
+                            <div class="inner-circle">POLI</div>
+                        </div>
+                        <span class="logo-text"
+                            >SMA Muhammadiyah 3 Tulangan</span
+                        >
+                    </div>
+                </header>
+
+                <div class="main-content">
+                    <div class="bg-text">GATE</div>
+                    <div class="content-inner">
+                        <h1>Aplikasi Politeknik<br />Negeri Jember</h1>
+                        <p>
+                            Portal berbasis Single Sign On (SSO) yang berfungsi
+                            sebagai pintu masuk ke dalam sistem informasi
+                            layanan terpadu.
+                        </p>
+                        <a href="#" class="btn-login">Login / Masuk</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="hero-right">
+                <header class="header-right">
+                    <i class="fa-solid fa-bars menu-icon"></i>
+                </header>
+            </div>
+
+            <div class="hero-graphics">
+                <!-- 4 GAMBAR SUDAH DIGANTI (Tema Kampus/IT) -->
+                <img
+                    src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=400&q=80"
+                    alt="Students"
+                    class="mask mask-1"
+                />
+                <img
+                    src="https://images.unsplash.com/photo-1517486808906-6ca8b3f04846?w=400&q=80"
+                    alt="Technology"
+                    class="mask mask-2"
+                />
+                <img
+                    src="https://images.unsplash.com/photo-1531482615713-2afd69097998?w=400&q=80"
+                    alt="Working"
+                    class="mask mask-3"
+                />
+                <img
+                    src="https://images.unsplash.com/photo-1571260899304-42507611e139?w=400&q=80"
+                    alt="Campus Building"
+                    class="mask mask-4"
+                />
+
+                <!-- Elemen Geometris -->
+                <div class="float dot dot-1"></div>
+                <div class="float dot dot-2"></div>
+                <div class="float dot dot-3"></div>
+                <div class="float dash dash-1"></div>
+                <div class="float dash dash-2"></div>
+                <div class="float pill pill-1"></div>
+                <div class="float pill pill-2"></div>
+                <div class="float pill pill-3"></div>
+            </div>
+        </section>
+
+        <footer>
+            <div class="footer-top">
+                <div class="footer-top-left">
+                    <h4>SMA Muhammadiyah 3 Tulangan</h4>
+                    <h2>When Learning is<br />Enjoyment</h2>
+                </div>
+                <div class="footer-top-right">
+                    <div class="footer-logo">
+                        <div class="seal-inner">POLI</div>
+                    </div>
+                    <p>
+                        Jl. Mastrip PO. BOX 164 Jember, 68101<br />Telp. (0331)
+                        333532 Jember, Indonesia
+                    </p>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <div class="copyright">
+                    © TIK SMA Muhammadiyah 3 Tulangan 2023. All rights reserved.
+                </div>
+                <div class="footer-links">
+                    <div class="links">
+                        <a href="#">Official Site</a>
+                        <a href="#">Support & Dokumentasi</a>
+                    </div>
+                    <div class="socials">
+                        <a href="#"><i class="fa-brands fa-twitter"></i></a>
+                        <a href="#"><i class="fa-brands fa-youtube"></i></a>
+                        <a href="#"><i class="fa-brands fa-facebook-f"></i></a>
+                        <a href="#"><i class="fa-brands fa-instagram"></i></a>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </body>
+</html>

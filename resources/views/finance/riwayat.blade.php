@@ -23,11 +23,12 @@
   </div>
 
   <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-    <div class="p-4 border-b border-slate-100 flex items-center gap-2">
+    <div class="p-4 border-b border-slate-100 flex flex-wrap items-center gap-2">
       <a href="{{ route('finance.riwayat') }}" class="px-3 py-1.5 rounded-lg text-xs font-semibold {{ empty($statusFilter) ? 'bg-slate-800 text-white' : 'bg-slate-100 text-slate-600' }}">Semua</a>
-      <a href="{{ route('finance.riwayat', ['status' => 'ACC Finance']) }}" class="px-3 py-1.5 rounded-lg text-xs font-semibold {{ $statusFilter === 'ACC Finance' ? 'bg-blue-600 text-white' : 'bg-blue-50 text-blue-800' }}">ACC Finance</a>
-      <a href="{{ route('finance.riwayat', ['status' => 'ACC Final']) }}" class="px-3 py-1.5 rounded-lg text-xs font-semibold {{ $statusFilter === 'ACC Final' ? 'bg-emerald-600 text-white' : 'bg-emerald-50 text-emerald-800' }}">ACC Final</a>
-      <a href="{{ route('finance.riwayat', ['status' => 'Ditolak Finance']) }}" class="px-3 py-1.5 rounded-lg text-xs font-semibold {{ $statusFilter === 'Ditolak Finance' ? 'bg-rose-600 text-white' : 'bg-rose-50 text-rose-800' }}">Ditolak Finance</a>
+      <a href="{{ route('finance.riwayat', ['status' => \App\Enums\StatusPengajuan::MENUNGGU_PIMPINAN]) }}" class="px-3 py-1.5 rounded-lg text-xs font-semibold {{ $statusFilter === \App\Enums\StatusPengajuan::MENUNGGU_PIMPINAN ? 'bg-blue-600 text-white' : 'bg-blue-50 text-blue-800' }}">Menunggu Pimpinan</a>
+      <a href="{{ route('finance.riwayat', ['status' => \App\Enums\StatusPengajuan::PROSES_PENCAIRAN]) }}" class="px-3 py-1.5 rounded-lg text-xs font-semibold {{ $statusFilter === \App\Enums\StatusPengajuan::PROSES_PENCAIRAN ? 'bg-indigo-600 text-white' : 'bg-indigo-50 text-indigo-800' }}">Pencairan</a>
+      <a href="{{ route('finance.riwayat', ['status' => \App\Enums\StatusPengajuan::SELESAI]) }}" class="px-3 py-1.5 rounded-lg text-xs font-semibold {{ $statusFilter === \App\Enums\StatusPengajuan::SELESAI ? 'bg-emerald-600 text-white' : 'bg-emerald-50 text-emerald-800' }}">Selesai</a>
+      <a href="{{ route('finance.riwayat', ['status' => \App\Enums\StatusPengajuan::REVISI]) }}" class="px-3 py-1.5 rounded-lg text-xs font-semibold {{ $statusFilter === \App\Enums\StatusPengajuan::REVISI ? 'bg-rose-600 text-white' : 'bg-rose-50 text-rose-800' }}">Revisi/Ditolak</a>
     </div>
 
     <div class="overflow-x-auto">
@@ -51,7 +52,7 @@
               <td class="px-5 py-3.5 text-right font-mono font-bold text-slate-900">Rp {{ number_format((float) $item->estimasi_total, 0, ',', '.') }}</td>
               <td class="px-5 py-3.5 text-center">
                 <span class="px-2.5 py-1 rounded-full text-[10px] font-bold 
-                  {{ $item->status === 'ACC Final' ? 'bg-emerald-100 text-emerald-800' : ($item->status === 'ACC Finance' ? 'bg-blue-100 text-blue-800' : 'bg-rose-100 text-rose-800') }}">
+                  {{ $item->status === \App\Enums\StatusPengajuan::SELESAI || $item->status === \App\Enums\StatusPengajuan::PROSES_PENCAIRAN ? 'bg-emerald-100 text-emerald-800' : ($item->status === \App\Enums\StatusPengajuan::MENUNGGU_PIMPINAN ? 'bg-blue-100 text-blue-800' : 'bg-rose-100 text-rose-800') }}">
                   {{ $item->status }}
                 </span>
               </td>

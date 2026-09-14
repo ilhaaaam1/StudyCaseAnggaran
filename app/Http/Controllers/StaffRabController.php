@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Enums\StatusPengajuan;
 use App\Http\Requests\StoreRabRequest;
 use App\Models\Divisi;
 use App\Models\DokumenPendukung;
@@ -13,6 +14,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 
 class StaffRabController extends Controller
@@ -25,11 +27,11 @@ class StaffRabController extends Controller
         $userId = (int) Auth::id();
 
         $totalPengajuan = PengajuanRab::where('id_pengguna', $userId)->count();
-        $totalPending = PengajuanRab::where('id_pengguna', $userId)->where('status', 'Pending')->count();
-        $totalAccFinance = PengajuanRab::where('id_pengguna', $userId)->where('status', 'ACC Finance')->count();
-        $totalAccFinal = PengajuanRab::where('id_pengguna', $userId)->where('status', 'ACC Final')->count();
+        $totalPending = PengajuanRab::where('id_pengguna', $userId)->where('status', StatusPengajuan::MENUNGGU_FINANCE)->count();
+        $totalAccFinance = PengajuanRab::where('id_pengguna', $userId)->where('status', StatusPengajuan::MENUNGGU_PIMPINAN)->count();
+        $totalAccFinal = PengajuanRab::where('id_pengguna', $userId)->whereIn('status', [StatusPengajuan::PROSES_PENCAIRAN, StatusPengajuan::SELESAI])->count();
         $totalDitolak = PengajuanRab::where('id_pengguna', $userId)
-            ->whereIn('status', ['Ditolak Finance', 'Ditolak Pimpinan'])
+            ->whereIn('status', [StatusPengajuan::REVISI, StatusPengajuan::DITOLAK])
             ->count();
         $totalAnggaranDiajukan = (float) PengajuanRab::where('id_pengguna', $userId)->sum('estimasi_total');
 
@@ -66,7 +68,7 @@ class StaffRabController extends Controller
     }
 
     /**
-     * Simpan pengajuan RAB baru (Status awal: 'Pending').
+     * Simpan pengajuan RAB baru (Status awal: 'Menunggu Verifikasi Finance').
      */
     public function store(StoreRabRequest $request): RedirectResponse
     {
@@ -82,7 +84,9 @@ class StaffRabController extends Controller
                 $noRab = sprintf('RAB-%s-%03d', $year, $countThisYear);
             }
 
-            // 1. Simpan data header pengajuan RAB dengan status awal 'Pending'
+            $status = ($request->input('action') === 'draft') ? StatusPengajuan::DRAFT : StatusPengajuan::MENUNGGU_FINANCE;
+
+            // 1. Simpan data header pengajuan RAB dengan status awal
             $pengajuanRab = PengajuanRab::create([
                 'id_pengguna' => $user->id_pengguna,
                 'id_divisi' => (int) $request->input('id_divisi'),
@@ -92,7 +96,7 @@ class StaffRabController extends Controller
                 'prioritas' => $request->input('prioritas'),
                 'latar_belakang' => $request->input('latar_belakang'),
                 'estimasi_total' => 0,
-                'status' => 'Pending',
+                'status' => $status,
                 'tanggal_pengajuan' => now(),
             ]);
 
@@ -137,8 +141,14 @@ class StaffRabController extends Controller
             return $pengajuanRab;
         });
 
-        return redirect()->route('staff.riwayat')
-            ->with('success', "Pengajuan RAB {$pengajuan->no_rab} berhasil dibuat dengan status Pending dan menunggu verifikasi Finance.");
+        $msg = ($request->input('action') === 'draft')
+            ? "Draft RAB {$pengajuan->no_rab} berhasil disimpan."
+            : "Pengajuan RAB {$pengajuan->no_rab} berhasil dibuat dengan status Menunggu Verifikasi Finance.";
+
+        $redirectRoute = ($request->input('action') === 'draft') ? 'staff.draft' : 'staff.riwayat';
+
+        return redirect()->route($redirectRoute)
+            ->with('success', $msg);
     }
 
     /**
@@ -187,5 +197,148 @@ class StaffRabController extends Controller
         $pengajuanList = $query->latest('tanggal_pengajuan')->paginate(10)->withQueryString();
 
         return view('staff.riwayat', compact('pengajuanList', 'statusFilter', 'search'));
+    }
+
+    /**
+     * Tampilkan daftar draft pengajuan RAB.
+     */
+    public function draft(Request $request): View
+    {
+        $userId = (int) Auth::id();
+
+        $draftList = PengajuanRab::with(['divisi'])
+            ->where('id_pengguna', $userId)
+            ->where('status', StatusPengajuan::DRAFT)
+            ->latest('tanggal_pengajuan')
+            ->paginate(10);
+
+        return view('staff.draft', compact('draftList'));
+    }
+
+    /**
+     * Tampilkan form edit RAB.
+     */
+    public function edit(int $id): View
+    {
+        $userId = (int) Auth::id();
+
+        $pengajuan = PengajuanRab::with(['rincianItem'])
+            ->where('id_pengguna', $userId)
+            ->whereIn('status', [StatusPengajuan::DRAFT, StatusPengajuan::REVISI])
+            ->findOrFail($id);
+
+        $divisiList = Divisi::orderBy('nama_divisi')->get();
+
+        return view('staff.edit', compact('pengajuan', 'divisiList'));
+    }
+
+    /**
+     * Update pengajuan RAB yang sudah ada (dari Draft / Revisi).
+     */
+    public function update(StoreRabRequest $request, int $id): RedirectResponse
+    {
+        $userId = (int) Auth::id();
+
+        $pengajuan = PengajuanRab::where('id_pengguna', $userId)
+            ->whereIn('status', [StatusPengajuan::DRAFT, StatusPengajuan::REVISI])
+            ->findOrFail($id);
+
+        DB::transaction(function () use ($request, $pengajuan) {
+            $status = ($request->input('action') === 'draft') ? StatusPengajuan::DRAFT : StatusPengajuan::MENUNGGU_FINANCE;
+
+            // 1. Update data header pengajuan RAB
+            $pengajuan->update([
+                'id_divisi' => (int) $request->input('id_divisi'),
+                'judul_pengajuan' => $request->input('judul_pengajuan'),
+                'periode_penggunaan' => $request->input('periode_penggunaan'),
+                'prioritas' => $request->input('prioritas'),
+                'latar_belakang' => $request->input('latar_belakang'),
+                'status' => $status,
+                'tanggal_pengajuan' => ($status === StatusPengajuan::MENUNGGU_FINANCE && $pengajuan->status === StatusPengajuan::DRAFT) ? now() : $pengajuan->tanggal_pengajuan,
+            ]);
+
+            // 2. Hapus rincian item lama, simpan rincian item baru
+            $pengajuan->rincianItem()->delete();
+
+            $totalEstimasi = 0;
+            $items = $request->input('items', []);
+
+            foreach ($items as $item) {
+                $vol = (float) $item['volume'];
+                $hrg = (float) $item['harga_satuan'];
+                $subtotal = $vol * $hrg;
+                $totalEstimasi += $subtotal;
+
+                RincianItem::create([
+                    'id_pengajuan' => $pengajuan->id_pengajuan,
+                    'uraian_barang' => $item['uraian_barang'],
+                    'satuan' => $item['satuan'],
+                    'volume' => $vol,
+                    'harga_satuan' => $hrg,
+                    'total_harga' => $subtotal,
+                ]);
+            }
+
+            // Update total estimasi
+            $pengajuan->update(['estimasi_total' => $totalEstimasi]);
+
+            // 3. Simpan dokumen pendukung baru (jika ada upload)
+            if ($request->hasFile('dokumen_pendukung')) {
+                // Delete old ones
+                foreach ($pengajuan->dokumenPendukung as $doc) {
+                    Storage::disk('public')->delete($doc->path_file);
+                    $doc->delete();
+                }
+
+                $file = $request->file('dokumen_pendukung');
+                $namaAsli = $file->getClientOriginalName();
+                $path = $file->store('dokumen_rab', 'public');
+
+                DokumenPendukung::create([
+                    'id_pengajuan' => $pengajuan->id_pengajuan,
+                    'nama_file' => $namaAsli,
+                    'tipe_dokumen' => $file->getClientMimeType(),
+                    'path_file' => $path,
+                    'waktu_unggah' => now(),
+                ]);
+            }
+        });
+
+        $msg = ($request->input('action') === 'draft')
+            ? "Draft RAB {$pengajuan->no_rab} berhasil diperbarui."
+            : "Pengajuan RAB {$pengajuan->no_rab} berhasil dikirim ke Finance.";
+
+        $redirectRoute = ($request->input('action') === 'draft') ? 'staff.draft' : 'staff.riwayat';
+
+        return redirect()->route($redirectRoute)->with('success', $msg);
+    }
+
+    /**
+     * Hapus draft pengajuan RAB.
+     */
+    public function destroy(int $id): RedirectResponse
+    {
+        $userId = (int) Auth::id();
+
+        $pengajuan = PengajuanRab::where('id_pengguna', $userId)
+            ->where('status', StatusPengajuan::DRAFT)
+            ->findOrFail($id);
+
+        DB::transaction(function () use ($pengajuan) {
+            foreach ($pengajuan->dokumenPendukung as $doc) {
+                Storage::disk('public')->delete($doc->path_file);
+            }
+            $pengajuan->delete();
+        });
+
+        return redirect()->route('staff.draft')->with('success', "Draft RAB {$pengajuan->no_rab} berhasil dihapus.");
+    }
+
+    /**
+     * Tampilkan panduan / SOP pengajuan RAB.
+     */
+    public function panduan(): View
+    {
+        return view('staff.panduan');
     }
 }

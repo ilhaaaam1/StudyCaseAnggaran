@@ -17,6 +17,9 @@
       <div>
         <div class="text-xs font-semibold text-indigo-600 uppercase tracking-wider">Persetujuan Tingkat Eksekutif (Tahap 2 Final)</div>
         <h1 class="text-2xl font-bold text-slate-900 font-mono mt-0.5">{{ $pengajuan->no_rab }}</h1>
+        <div class="mt-2 inline-block px-2 py-0.5 rounded-full text-[10px] font-bold {{ $pengajuan->status === \App\Enums\StatusPengajuan::SELESAI || $pengajuan->status === \App\Enums\StatusPengajuan::PROSES_PENCAIRAN ? 'bg-emerald-100 text-emerald-800' : ($pengajuan->status === \App\Enums\StatusPengajuan::MENUNGGU_PIMPINAN ? 'bg-blue-100 text-blue-800' : ($pengajuan->status === \App\Enums\StatusPengajuan::MENUNGGU_FINANCE ? 'bg-amber-100 text-amber-800' : 'bg-rose-100 text-rose-800')) }}">
+          {{ $pengajuan->status }}
+        </div>
         <p class="text-sm font-semibold text-slate-700 mt-1">{{ $pengajuan->judul_pengajuan }}</p>
         <p class="text-xs text-slate-500 mt-0.5">Pemohon: <span class="font-medium text-slate-700">{{ $pengajuan->pengguna->nama_lengkap ?? 'Staf' }}</span> ({{ $pengajuan->divisi->nama_divisi ?? '-' }})</p>
       </div>
@@ -81,11 +84,11 @@
     </div>
 
     <!-- Form Keputusan Final Pimpinan -->
-    @if($pengajuan->status === 'ACC Finance')
+    @if($pengajuan->status === \App\Enums\StatusPengajuan::MENUNGGU_PIMPINAN)
       <div class="bg-white p-6 rounded-2xl border border-indigo-200 shadow-sm bg-indigo-50/20">
         <h2 class="text-sm font-bold text-slate-900 uppercase tracking-wider mb-2">Formulir Keputusan Final Pimpinan</h2>
         <p class="text-xs text-slate-500 mb-4">
-          Bila disetujui, status akan menjadi <strong>ACC Final</strong> dan dana anggaran dapat direalisasikan. Bila ditolak, status menjadi <strong>Ditolak Pimpinan</strong>.
+          Bila disetujui, status akan diteruskan ke Finance untuk <strong>Proses Pencairan</strong>. Bila ditolak, status menjadi <strong>Ditolak</strong>.
         </p>
 
         <form action="{{ route('pimpinan.approve', $pengajuan->id_pengajuan) }}" method="POST" class="space-y-4">
@@ -98,14 +101,14 @@
 
           <div class="flex items-center justify-end gap-3 pt-2">
             <button type="submit" name="status" value="Ditolak"
-                    onclick="return confirm('Apakah Anda yakin ingin MENOLAK pengajuan RAB ini pada tahap final?');"
+                    onclick="return confirm('Apakah Anda yakin ingin MENOLAK pengajuan RAB ini secara permanen?');"
                     class="px-5 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-semibold shadow-sm">
               Tolak Pengajuan
             </button>
             <button type="submit" name="status" value="ACC"
-                    onclick="return confirm('Apakah Anda yakin ingin memberikan persetujuan akhir (ACC Final)?');"
+                    onclick="return confirm('Apakah Anda yakin ingin memberikan persetujuan akhir dan meneruskan ke proses pencairan?');"
                     class="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-semibold shadow-sm">
-              Setujui (ACC Final)
+              Setujui &amp; Lanjutkan ke Pencairan
             </button>
           </div>
         </form>

@@ -24,11 +24,12 @@
   <!-- Filter & Table -->
   <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
     <div class="p-4 border-b border-slate-100 flex flex-wrap items-center justify-between gap-3">
-      <div class="flex items-center gap-2">
-        <a href="{{ route('staff.riwayat') }}" class="px-3 py-1.5 rounded-lg text-xs font-semibold {{ empty($statusFilter) ? 'bg-slate-800 text-white' : 'bg-slate-100 text-slate-600' }}">Semua</a>
-        <a href="{{ route('staff.riwayat', ['status' => 'Pending']) }}" class="px-3 py-1.5 rounded-lg text-xs font-semibold {{ $statusFilter === 'Pending' ? 'bg-amber-600 text-white' : 'bg-amber-50 text-amber-800' }}">Pending Finance</a>
-        <a href="{{ route('staff.riwayat', ['status' => 'ACC Finance']) }}" class="px-3 py-1.5 rounded-lg text-xs font-semibold {{ $statusFilter === 'ACC Finance' ? 'bg-blue-600 text-white' : 'bg-blue-50 text-blue-800' }}">ACC Finance</a>
-        <a href="{{ route('staff.riwayat', ['status' => 'ACC Final']) }}" class="px-3 py-1.5 rounded-lg text-xs font-semibold {{ $statusFilter === 'ACC Final' ? 'bg-emerald-600 text-white' : 'bg-emerald-50 text-emerald-800' }}">ACC Final</a>
+      <div class="flex flex-wrap items-center gap-2">
+        <a href="{{ route('staff.riwayat') }}" class="px-3 py-1.5 rounded-lg text-xs font-semibold {{ empty($statusFilter) ? 'bg-slate-800 text-white' : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50' }}">Semua</a>
+        <a href="{{ route('staff.riwayat', ['status' => \App\Enums\StatusPengajuan::MENUNGGU_FINANCE]) }}" class="px-3 py-1.5 rounded-lg text-xs font-semibold {{ $statusFilter === \App\Enums\StatusPengajuan::MENUNGGU_FINANCE ? 'bg-amber-600 text-white' : 'bg-amber-50 text-amber-800' }}">Pending Finance</a>
+        <a href="{{ route('staff.riwayat', ['status' => \App\Enums\StatusPengajuan::MENUNGGU_PIMPINAN]) }}" class="px-3 py-1.5 rounded-lg text-xs font-semibold {{ $statusFilter === \App\Enums\StatusPengajuan::MENUNGGU_PIMPINAN ? 'bg-blue-600 text-white' : 'bg-blue-50 text-blue-800' }}">Menunggu Pimpinan</a>
+        <a href="{{ route('staff.riwayat', ['status' => \App\Enums\StatusPengajuan::PROSES_PENCAIRAN]) }}" class="px-3 py-1.5 rounded-lg text-xs font-semibold {{ $statusFilter === \App\Enums\StatusPengajuan::PROSES_PENCAIRAN ? 'bg-indigo-600 text-white' : 'bg-indigo-50 text-indigo-800' }}">Pencairan</a>
+        <a href="{{ route('staff.riwayat', ['status' => \App\Enums\StatusPengajuan::SELESAI]) }}" class="px-3 py-1.5 rounded-lg text-xs font-semibold {{ $statusFilter === \App\Enums\StatusPengajuan::SELESAI ? 'bg-emerald-600 text-white' : 'bg-emerald-50 text-emerald-800' }}">Selesai</a>
       </div>
       <form method="GET" action="{{ route('staff.riwayat') }}" class="flex items-center gap-2">
         <input type="text" name="q" value="{{ $search ?? '' }}" placeholder="Cari No. RAB / Judul..." class="px-3 py-1.5 border border-slate-300 rounded-xl text-xs">
@@ -55,14 +56,26 @@
               <td class="px-5 py-3.5 font-medium text-slate-900">{{ $rab->judul_pengajuan }}</td>
               <td class="px-5 py-3.5 font-mono font-semibold text-slate-800">Rp {{ number_format((float) $rab->estimasi_total, 0, ',', '.') }}</td>
               <td class="px-5 py-3.5 text-center">
-                @if($rab->status === 'Pending')
-                  <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800">Menunggu Review Finance</span>
-                @elseif($rab->status === 'ACC Finance')
-                  <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-blue-100 text-blue-800">ACC Finance (Menunggu Pimpinan)</span>
-                @elseif($rab->status === 'ACC Final')
-                  <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">ACC Final (Disetujui)</span>
+                @if($rab->status === \App\Enums\StatusPengajuan::MENUNGGU_FINANCE)
+                  <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-200">
+                    Menunggu Review Finance
+                  </span>
+                @elseif($rab->status === \App\Enums\StatusPengajuan::MENUNGGU_PIMPINAN)
+                  <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold bg-blue-100 text-blue-800 border border-blue-200">
+                    Menunggu Pimpinan
+                  </span>
+                @elseif($rab->status === \App\Enums\StatusPengajuan::PROSES_PENCAIRAN)
+                  <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold bg-indigo-100 text-indigo-800 border border-indigo-200">
+                    Proses Pencairan
+                  </span>
+                @elseif($rab->status === \App\Enums\StatusPengajuan::SELESAI)
+                  <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
+                    Selesai
+                  </span>
                 @else
-                  <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-rose-100 text-rose-800">{{ $rab->status }}</span>
+                  <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold bg-rose-100 text-rose-800 border border-rose-200">
+                    {{ $rab->status }}
+                  </span>
                 @endif
               </td>
               <td class="px-5 py-3.5 text-center font-mono text-slate-500">{{ $rab->tanggal_pengajuan ? $rab->tanggal_pengajuan->format('d/m/Y') : '-' }}</td>

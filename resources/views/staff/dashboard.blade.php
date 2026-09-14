@@ -88,23 +88,9 @@
               <td class="px-5 py-3.5 text-slate-900 font-medium">{{ $item->judul_pengajuan }}</td>
               <td class="px-5 py-3.5 font-mono font-semibold text-slate-800">Rp {{ number_format((float) $item->estimasi_total, 0, ',', '.') }}</td>
               <td class="px-5 py-3.5 text-center">
-                @if($item->status === 'Pending')
-                  <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-200">
-                    Menunggu Finance
+                  <span class="px-2.5 py-1 rounded-full text-[10px] font-bold {{ $item->status->badge() }}">
+                    {{ $item->status->label() }}
                   </span>
-                @elseif($item->status === 'ACC Finance')
-                  <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold bg-blue-100 text-blue-800 border border-blue-200">
-                    ACC Finance (Menunggu Pimpinan)
-                  </span>
-                @elseif($item->status === 'ACC Final')
-                  <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
-                    ACC Final
-                  </span>
-                @else
-                  <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold bg-rose-100 text-rose-800 border border-rose-200">
-                    {{ $item->status }}
-                  </span>
-                @endif
               </td>
               <td class="px-5 py-3.5 text-center text-slate-500 font-mono">{{ $item->tanggal_pengajuan ? $item->tanggal_pengajuan->format('d/m/Y') : '-' }}</td>
               <td class="px-5 py-3.5 text-center">

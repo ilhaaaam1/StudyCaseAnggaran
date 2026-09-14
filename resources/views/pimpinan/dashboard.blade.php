@@ -31,25 +31,25 @@
   <!-- Metric Cards -->
   <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
     <div class="bg-blue-50/70 border border-blue-200 rounded-xl p-5 shadow-sm">
-      <div class="text-[11px] font-bold text-blue-800 uppercase tracking-wider mb-1">ANTREAN FINAL (ACC FINANCE)</div>
+      <div class="text-[11px] font-bold text-blue-800 uppercase tracking-wider mb-1">MENUNGGU KEPUTUSAN</div>
       <div class="text-2xl font-bold text-blue-700 font-mono">{{ $totalAntreanAccFinance ?? 0 }}</div>
       <div class="text-xs text-blue-600 mt-1">Menunggu persetujuan Pimpinan</div>
     </div>
 
     <div class="bg-emerald-50/70 border border-emerald-200 rounded-xl p-5 shadow-sm">
-      <div class="text-[11px] font-bold text-emerald-800 uppercase tracking-wider mb-1">ACC FINAL (DISETUJUI)</div>
+      <div class="text-[11px] font-bold text-emerald-800 uppercase tracking-wider mb-1">DISETUJUI</div>
       <div class="text-2xl font-bold text-emerald-700 font-mono">{{ $totalAccFinal ?? 0 }}</div>
-      <div class="text-xs text-emerald-600 mt-1">Pengajuan sah &amp; terealisasi</div>
+      <div class="text-xs text-emerald-600 mt-1">Diteruskan ke pencairan</div>
     </div>
 
     <div class="bg-rose-50/70 border border-rose-200 rounded-xl p-5 shadow-sm">
-      <div class="text-[11px] font-bold text-rose-800 uppercase tracking-wider mb-1">DITOLAK PIMPINAN</div>
+      <div class="text-[11px] font-bold text-rose-800 uppercase tracking-wider mb-1">DITOLAK</div>
       <div class="text-2xl font-bold text-rose-700 font-mono">{{ $totalDitolakPimpinan ?? 0 }}</div>
-      <div class="text-xs text-rose-600 mt-1">Ditolak pada tahap final</div>
+      <div class="text-xs text-rose-600 mt-1">Ditolak secara permanen</div>
     </div>
 
     <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
-      <div class="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">TOTAL ANGGARAN ACC FINAL</div>
+      <div class="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">TOTAL ANGGARAN DISETUJUI</div>
       <div class="text-2xl font-bold text-indigo-700 font-mono">Rp {{ number_format($totalAnggaranDisetujui ?? 0, 0, ',', '.') }}</div>
       <div class="text-xs text-slate-400 mt-1">Akumulasi anggaran disetujui</div>
     </div>
@@ -89,14 +89,14 @@
               <td class="px-5 py-3.5 text-right font-mono font-bold text-slate-900">Rp {{ number_format((float) $item->estimasi_total, 0, ',', '.') }}</td>
               <td class="px-5 py-3.5 text-center">
                 <a href="{{ route('pimpinan.show', $item->id_pengajuan) }}" class="px-3 py-1 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-semibold">
-                  Tinjau &amp; ACC Final
+                  Tinjau &amp; Keputusan
                 </a>
               </td>
             </tr>
           @empty
             <tr>
               <td colspan="6" class="px-5 py-8 text-center text-slate-400">
-                Tidak ada antrean ACC Finance yang menunggu review.
+                Tidak ada antrean yang menunggu review.
               </td>
             </tr>
           @endforelse
