@@ -234,6 +234,20 @@ class AdminRabController extends Controller
     }
 
     /**
+     * Preview file dokumen pendukung secara inline (untuk iframe/tab browser).
+     */
+    public function previewDokumen(int $idDokumen): StreamedResponse
+    {
+        $dokumen = DokumenPendukung::findOrFail($idDokumen);
+
+        if (! Storage::disk('public')->exists($dokumen->path_file)) {
+            abort(404, 'File dokumen pendukung tidak ditemukan di server.');
+        }
+
+        return Storage::disk('public')->response($dokumen->path_file, $dokumen->nama_file);
+    }
+
+    /**
      * Download file fisik dokumen pendukung.
      */
     public function downloadDokumen(int $idDokumen): StreamedResponse

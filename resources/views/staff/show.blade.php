@@ -77,24 +77,25 @@
               $extension = pathinfo($dokumen->path_file, PATHINFO_EXTENSION);
               $isImage = in_array(strtolower($extension), ['jpg', 'jpeg', 'png']);
               $isPdf = strtolower($extension) === 'pdf';
-              $fileUrl = Storage::url($dokumen->path_file);
+              $previewUrl = asset('storage/' . $dokumen->path_file);
+              $downloadUrl = asset('storage/' . $dokumen->path_file);
             @endphp
             <div class="border border-slate-200 rounded-xl p-4 flex flex-col items-center justify-center bg-slate-50 relative group">
               @if($isImage)
-                <img src="{{ $fileUrl }}" alt="{{ $dokumen->nama_file }}" class="max-h-48 object-contain rounded-lg mb-3 shadow-sm border border-slate-200" />
+                <img src="{{ $previewUrl }}" alt="{{ $dokumen->nama_file }}" class="max-h-48 object-contain rounded-lg mb-3 shadow-sm border border-slate-200" />
                 <p class="text-xs text-slate-600 font-medium truncate w-full text-center" title="{{ $dokumen->nama_file }}">{{ $dokumen->nama_file }}</p>
                 <div class="mt-3 flex gap-2">
-                  <a href="{{ $fileUrl }}" target="_blank" class="text-xs px-3 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">Lihat Penuh</a>
-                  <a href="{{ $fileUrl }}" download="{{ $dokumen->nama_file }}" class="text-xs px-3 py-1.5 bg-slate-200 text-slate-700 rounded-lg hover:bg-slate-300 transition">Unduh</a>
+                  <a href="{{ $previewUrl }}" target="_blank" class="text-xs px-3 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">Lihat Penuh</a>
+                  <a href="{{ $downloadUrl }}" download class="text-xs px-3 py-1.5 bg-slate-200 text-slate-700 rounded-lg hover:bg-slate-300 transition">Unduh</a>
                 </div>
               @elseif($isPdf)
                 <div class="w-full h-48 mb-3 border border-slate-200 rounded-lg overflow-hidden bg-white">
-                  <iframe src="{{ $fileUrl }}" class="w-full h-full" title="{{ $dokumen->nama_file }}"></iframe>
+                  <iframe src="{{ $previewUrl }}" class="w-full h-full" title="{{ $dokumen->nama_file }}"></iframe>
                 </div>
                 <p class="text-xs text-slate-600 font-medium truncate w-full text-center" title="{{ $dokumen->nama_file }}">{{ $dokumen->nama_file }}</p>
                 <div class="mt-3 flex gap-2">
-                  <a href="{{ $fileUrl }}" target="_blank" class="text-xs px-3 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">Buka Tab Baru</a>
-                  <a href="{{ $fileUrl }}" download="{{ $dokumen->nama_file }}" class="text-xs px-3 py-1.5 bg-slate-200 text-slate-700 rounded-lg hover:bg-slate-300 transition">Unduh PDF</a>
+                  <a href="{{ $previewUrl }}" target="_blank" class="text-xs px-3 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">Buka Tab Baru</a>
+                  <a href="{{ $downloadUrl }}" download class="text-xs px-3 py-1.5 bg-slate-200 text-slate-700 rounded-lg hover:bg-slate-300 transition">Unduh PDF</a>
                 </div>
               @else
                 <div class="w-16 h-16 bg-slate-200 rounded-full flex items-center justify-center mb-3">
@@ -102,7 +103,7 @@
                 </div>
                 <p class="text-xs text-slate-600 font-medium truncate w-full text-center" title="{{ $dokumen->nama_file }}">{{ $dokumen->nama_file }}</p>
                 <div class="mt-3">
-                  <a href="{{ $fileUrl }}" download="{{ $dokumen->nama_file }}" class="text-xs px-3 py-1.5 bg-slate-200 text-slate-700 rounded-lg hover:bg-slate-300 transition">Unduh File</a>
+                  <a href="{{ $downloadUrl }}" download class="text-xs px-3 py-1.5 bg-slate-200 text-slate-700 rounded-lg hover:bg-slate-300 transition">Unduh File</a>
                 </div>
               @endif
             </div>

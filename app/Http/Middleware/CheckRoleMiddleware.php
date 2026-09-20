@@ -25,6 +25,13 @@ class CheckRoleMiddleware
 
         $user = Auth::user();
 
+        // PRESENTASI: Modifikasi Middleware Otorisasi
+        // Jika route membutuhkan role 'pimpinan', tapi user saat ini (misal finance) memiliki delegasi pimpinan yang aktif,
+        // maka berikan akses (bypass pengecekan role default).
+        if (in_array('pimpinan', $roles, true) && $user->hasActiveDelegation()) {
+            return $next($request);
+        }
+
         // Cek apakah role pengguna saat ini terdaftar di parameter roles
         if (! in_array($user->role, $roles, true)) {
             abort(403, 'Akses ditolak. Anda tidak memiliki izin untuk mengakses halaman ini.');

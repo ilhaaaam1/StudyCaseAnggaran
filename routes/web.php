@@ -97,9 +97,10 @@ Route::middleware(['auth', 'role:pimpinan'])->prefix('pimpinan')->name('pimpinan
 
     // New placeholder routes
     Route::get('/statistik', [PimpinanController::class, 'statistik'])->name('statistik.index');
-    Route::get('/delegasi', function () {
-        return 'Delegasi Wewenang';
-    })->name('delegasi.index');
+    Route::get('/delegasi', [PimpinanController::class, 'delegasiIndex'])->name('delegasi.index');
+    Route::post('/delegasi', [PimpinanController::class, 'delegasiStore'])->name('delegasi.store');
+    Route::delete('/delegasi/{id}', [PimpinanController::class, 'delegasiDestroy'])->name('delegasi.destroy');
+    Route::put('/delegasi/{id}/batal', [PimpinanController::class, 'delegasiCancel'])->name('delegasi.cancel');
 });
 
 // -------------------------------------------------------------------------
@@ -121,19 +122,17 @@ Route::middleware(['auth', 'role:admin_it,admin'])->prefix('admin-it')->name('ad
     Route::post('/divisi', [AdminItController::class, 'divisiStore'])->name('divisi.store');
     Route::delete('/divisi/{id}', [AdminItController::class, 'divisiDestroy'])->name('divisi.destroy');
 
-    // New placehoder routes
-    Route::get('/log-aktivitas', function () {
-        return 'Log Aktivitas';
-    })->name('log.index');
-    Route::get('/pengaturan', function () {
-        return 'Pengaturan Sistem';
-    })->name('pengaturan.index');
+    // New placeholder routes
+    Route::get('/log-aktivitas', [AdminItController::class, 'logIndex'])->name('log.index');
+    Route::get('/pengaturan', [AdminItController::class, 'pengaturanIndex'])->name('pengaturan.index');
+    Route::put('/pengaturan', [AdminItController::class, 'pengaturanUpdate'])->name('pengaturan.update');
 });
 
 // -------------------------------------------------------------------------
 // Rute Dokumen Bersama (Terautentikasi Semua Role)
 // -------------------------------------------------------------------------
 Route::middleware('auth')->group(function (): void {
+    Route::get('/dokumen/{id}/preview', [AdminRabController::class, 'previewDokumen'])->name('dokumen.preview');
     Route::get('/dokumen/{id}/download', [AdminRabController::class, 'downloadDokumen'])->name('dokumen.download');
 });
 

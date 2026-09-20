@@ -4,12 +4,15 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Models\ActivityLog;
 use App\Models\Divisi;
 use App\Models\PengajuanRab;
 use App\Models\Pengguna;
+use App\Models\Setting;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 
 class AdminItController extends Controller
@@ -111,6 +114,8 @@ class AdminItController extends Controller
             'jabatan' => $jabatan,
         ]);
 
+        ActivityLog::log("Menambahkan pengguna baru: {$validated['nama_lengkap']} ({$validated['role']}).");
+
         return redirect()->route('admin-it.users.index')
             ->with('success', "Akun {$validated['nama_lengkap']} berhasil didaftarkan dengan role {$validated['role']}.");
     }
@@ -161,6 +166,8 @@ class AdminItController extends Controller
 
         $user->update($updateData);
 
+        ActivityLog::log("Memperbarui data pengguna: {$user->nama_lengkap}.");
+
         return redirect()->route('admin-it.users.index')
             ->with('success', "Data akun {$user->nama_lengkap} berhasil diperbarui.");
     }
@@ -183,6 +190,8 @@ class AdminItController extends Controller
 
         $nama = $user->nama_lengkap;
         $user->delete();
+
+        ActivityLog::log("Menghapus pengguna: {$nama}.");
 
         return redirect()->route('admin-it.users.index')
             ->with('success', "Akun {$nama} berhasil dihapus dari sistem.");
@@ -228,5 +237,78 @@ class AdminItController extends Controller
 
         return redirect()->route('admin-it.divisi.index')
             ->with('success', "Divisi {$nama} berhasil dihapus.");
+    }
+
+    // -------------------------------------------------------------------------
+    // AUDIT TRAIL / LOG AKTIVITAS
+    // -------------------------------------------------------------------------
+
+    public function logIndex(Request $request): View
+    {
+        $search = $request->input('q');
+
+        $query = ActivityLog::with('user');
+
+        if ($search) {
+            $query->where('activity', 'like', "%{$search}%")
+                ->orWhereHas('user', function ($q) use ($search) {
+                    $q->where('nama_lengkap', 'like', "%{$search}%")
+                        ->orWhere('role', 'like', "%{$search}%");
+                });
+        }
+
+        $logs = $query->latest()->paginate(15)->withQueryString();
+
+        return view('admin_it.log_aktivitas', compact('logs', 'search'));
+    }
+
+    // -------------------------------------------------------------------------
+    // PENGATURAN SISTEM
+    // -------------------------------------------------------------------------
+
+    public function pengaturanIndex(): View
+    {
+        $settings = [
+            'app_name' => Setting::getSetting('app_name', 'SIRAB Kelompok-3'),
+            'academic_year' => Setting::getSetting('academic_year', '2025/2026'),
+            'admin_email' => Setting::getSetting('admin_email', 'admin@sekolah.sch.id'),
+            'maintenance_mode' => Setting::getSetting('maintenance_mode', '0'),
+            'app_logo' => Setting::getSetting('app_logo', ''),
+        ];
+
+        return view('admin_it.pengaturan', compact('settings'));
+    }
+
+    public function pengaturanUpdate(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'app_name' => 'required|string|max:150',
+            'academic_year' => 'required|string|max:20',
+            'admin_email' => 'required|email|max:150',
+            'maintenance_mode' => 'nullable|in:1,0',
+            'app_logo' => 'nullable|image|mimes:jpg,jpeg,png,svg|max:2048',
+        ]);
+
+        Setting::setSetting('app_name', $validated['app_name']);
+        Setting::setSetting('academic_year', $validated['academic_year']);
+        Setting::setSetting('admin_email', $validated['admin_email']);
+        Setting::setSetting('maintenance_mode', $request->has('maintenance_mode') ? '1' : '0');
+
+        if ($request->hasFile('app_logo')) {
+            $file = $request->file('app_logo');
+            $path = $file->store('settings', 'public');
+
+            // Delete old logo if exists
+            $oldLogo = Setting::getSetting('app_logo');
+            if ($oldLogo && Storage::disk('public')->exists($oldLogo)) {
+                Storage::disk('public')->delete($oldLogo);
+            }
+
+            Setting::setSetting('app_logo', $path);
+        }
+
+        ActivityLog::log('Memperbarui konfigurasi pengaturan sistem.');
+
+        return redirect()->route('admin-it.pengaturan.index')->with('success', 'Pengaturan sistem berhasil diperbarui.');
     }
 }

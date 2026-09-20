@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 
 use App\Enums\StatusPengajuan;
 use App\Http\Requests\StoreRabRequest;
+use App\Models\ActivityLog;
 use App\Models\Divisi;
 use App\Models\DokumenPendukung;
 use App\Models\PengajuanRab;
@@ -144,6 +145,8 @@ class StaffRabController extends Controller
         $msg = ($request->input('action') === 'draft')
             ? "Draft RAB {$pengajuan->no_rab} berhasil disimpan."
             : "Pengajuan RAB {$pengajuan->no_rab} berhasil dibuat dengan status Menunggu Verifikasi Finance.";
+
+        ActivityLog::log($msg);
 
         $redirectRoute = ($request->input('action') === 'draft') ? 'staff.draft' : 'staff.riwayat';
 

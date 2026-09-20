@@ -78,24 +78,25 @@
               $extension = pathinfo($dokumen->path_file, PATHINFO_EXTENSION);
               $isImage = in_array(strtolower($extension), ['jpg', 'jpeg', 'png']);
               $isPdf = strtolower($extension) === 'pdf';
-              $fileUrl = Storage::url($dokumen->path_file);
+              $previewUrl = asset('storage/' . $dokumen->path_file);
+              $downloadUrl = asset('storage/' . $dokumen->path_file);
             @endphp
             <div class="border border-slate-200 rounded-xl p-4 flex flex-col items-center justify-center bg-slate-50 relative group">
               @if($isImage)
-                <img src="{{ $fileUrl }}" alt="{{ $dokumen->nama_file }}" class="max-h-48 object-contain rounded-lg mb-3 shadow-sm border border-slate-200" />
+                <img src="{{ $previewUrl }}" alt="{{ $dokumen->nama_file }}" class="max-h-48 object-contain rounded-lg mb-3 shadow-sm border border-slate-200" />
                 <p class="text-xs text-slate-600 font-medium truncate w-full text-center" title="{{ $dokumen->nama_file }}">{{ $dokumen->nama_file }}</p>
                 <div class="mt-3 flex gap-2">
-                  <a href="{{ $fileUrl }}" target="_blank" class="text-xs px-3 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">Lihat Penuh</a>
-                  <a href="{{ $fileUrl }}" download="{{ $dokumen->nama_file }}" class="text-xs px-3 py-1.5 bg-slate-200 text-slate-700 rounded-lg hover:bg-slate-300 transition">Unduh</a>
+                  <a href="{{ $previewUrl }}" target="_blank" class="text-xs px-3 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">Lihat Penuh</a>
+                  <a href="{{ $downloadUrl }}" download class="text-xs px-3 py-1.5 bg-slate-200 text-slate-700 rounded-lg hover:bg-slate-300 transition">Unduh</a>
                 </div>
               @elseif($isPdf)
                 <div class="w-full h-48 mb-3 border border-slate-200 rounded-lg overflow-hidden bg-white">
-                  <iframe src="{{ $fileUrl }}" class="w-full h-full" title="{{ $dokumen->nama_file }}"></iframe>
+                  <iframe src="{{ $previewUrl }}" class="w-full h-full" title="{{ $dokumen->nama_file }}"></iframe>
                 </div>
                 <p class="text-xs text-slate-600 font-medium truncate w-full text-center" title="{{ $dokumen->nama_file }}">{{ $dokumen->nama_file }}</p>
                 <div class="mt-3 flex gap-2">
-                  <a href="{{ $fileUrl }}" target="_blank" class="text-xs px-3 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">Buka Tab Baru</a>
-                  <a href="{{ $fileUrl }}" download="{{ $dokumen->nama_file }}" class="text-xs px-3 py-1.5 bg-slate-200 text-slate-700 rounded-lg hover:bg-slate-300 transition">Unduh PDF</a>
+                  <a href="{{ $previewUrl }}" target="_blank" class="text-xs px-3 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">Buka Tab Baru</a>
+                  <a href="{{ $downloadUrl }}" download class="text-xs px-3 py-1.5 bg-slate-200 text-slate-700 rounded-lg hover:bg-slate-300 transition">Unduh PDF</a>
                 </div>
               @else
                 <div class="w-16 h-16 bg-slate-200 rounded-full flex items-center justify-center mb-3">
@@ -103,7 +104,7 @@
                 </div>
                 <p class="text-xs text-slate-600 font-medium truncate w-full text-center" title="{{ $dokumen->nama_file }}">{{ $dokumen->nama_file }}</p>
                 <div class="mt-3">
-                  <a href="{{ $fileUrl }}" download="{{ $dokumen->nama_file }}" class="text-xs px-3 py-1.5 bg-slate-200 text-slate-700 rounded-lg hover:bg-slate-300 transition">Unduh File</a>
+                  <a href="{{ $downloadUrl }}" class="text-xs px-3 py-1.5 bg-slate-200 text-slate-700 rounded-lg hover:bg-slate-300 transition">Unduh File</a>
                 </div>
               @endif
             </div>
@@ -122,27 +123,106 @@
           Bila disetujui, status akan menjadi <strong>Menunggu Persetujuan Pimpinan</strong>. Bila ditolak, akan dikembalikan ke Staff dengan status <strong>Revisi / Ditolak</strong>.
         </p>
 
-        <form action="{{ route('finance.approve', $pengajuan->id_pengajuan) }}" method="POST" class="space-y-4">
-          @csrf
-          <div>
-            <label class="block text-xs font-semibold text-slate-700 mb-1">Catatan / Evaluasi Finansial</label>
-            <textarea name="catatan" rows="3" placeholder="Masukkan catatan ketersediaan anggaran atau catatan penyesuaian..."
-                      class="w-full px-3.5 py-2 border border-slate-300 rounded-xl text-xs focus:border-indigo-500"></textarea>
-          </div>
+        {{-- PRESENTASI: Menambahkan x-data untuk state control modal dan logika submit --}}
+        <div x-data="{ 
+            showModal: false, 
+            actionValue: '', 
+            actionTitle: '',
+            actionText: '', 
+            actionColor: '',
+            submitForm() {
+                // PRESENTASI: Fungsi untuk memasukkan nilai status ke dalam form tersembunyi dan men-submit form secara programatik
+                $refs.statusInput.value = this.actionValue;
+                $refs.approvalForm.submit();
+            }
+        }">
+          <form x-ref="approvalForm" action="{{ route('finance.approve', $pengajuan->id_pengajuan) }}" method="POST" class="space-y-4">
+            @csrf
+            {{-- PRESENTASI: Input hidden untuk menampung status persetujuan yang diatur dari modal --}}
+            <input type="hidden" name="status" x-ref="statusInput">
+            
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Catatan / Evaluasi Finansial</label>
+              <textarea name="catatan" rows="3" placeholder="Masukkan catatan ketersediaan anggaran atau catatan penyesuaian..."
+                        class="w-full px-3.5 py-2 border border-slate-300 rounded-xl text-xs focus:border-indigo-500"></textarea>
+            </div>
 
-          <div class="flex items-center justify-end gap-3 pt-2">
-            <button type="submit" name="status" value="Ditolak"
-                    onclick="return confirm('Apakah Anda yakin ingin MENOLAK/REVISI pengajuan RAB ini?');"
-                    class="px-5 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-semibold shadow-sm">
-              Tolak / Revisi
-            </button>
-            <button type="submit" name="status" value="ACC"
-                    onclick="return confirm('Apakah Anda yakin ingin menyetujui dan meneruskan ke Pimpinan?');"
-                    class="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-semibold shadow-sm">
-              Setujui & Teruskan &rarr;
-            </button>
+            <div class="flex items-center justify-end gap-3 pt-2">
+              {{-- PRESENTASI: Mencegah submit otomatis bawaan dan membuka modal konfirmasi penolakan --}}
+              <button type="button" 
+                      @click="showModal = true; actionValue = 'Ditolak'; actionTitle = 'Tolak / Revisi Pengajuan?'; actionText = 'Apakah Anda yakin ingin MENOLAK/REVISI pengajuan RAB ini?'; actionColor = 'bg-rose-600 hover:bg-rose-700'"
+                      class="px-5 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-semibold shadow-sm transition-colors">
+                Tolak / Revisi
+              </button>
+              
+              {{-- PRESENTASI: Mencegah submit otomatis bawaan dan membuka modal konfirmasi persetujuan --}}
+              <button type="button" 
+                      @click="showModal = true; actionValue = 'ACC'; actionTitle = 'Konfirmasi Persetujuan'; actionText = 'Apakah Anda yakin ingin menyetujui dan meneruskan ke Pimpinan?'; actionColor = 'bg-[#2e358b] hover:bg-blue-900'"
+                      class="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-semibold shadow-sm transition-colors">
+                Setujui & Teruskan &rarr;
+              </button>
+            </div>
+          </form>
+
+          {{-- PRESENTASI: Komponen Custom Modal UI (Tailwind CSS) yang baru ditambahkan untuk menggantikan browser alert bawaan --}}
+          <div x-show="showModal" style="display: none;" class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+              <!-- Background Overlay -->
+              <div x-show="showModal" 
+                   x-transition:enter="transition ease-out duration-300"
+                   x-transition:enter-start="opacity-0 backdrop-blur-none"
+                   x-transition:enter-end="opacity-100 backdrop-blur-sm"
+                   x-transition:leave="transition ease-in duration-200"
+                   x-transition:leave-start="opacity-100 backdrop-blur-sm"
+                   x-transition:leave-end="opacity-0 backdrop-blur-none"
+                   class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm transition-opacity" 
+                   @click="showModal = false"></div>
+
+              <!-- Modal Card Container -->
+              <div class="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
+                  <div x-show="showModal" 
+                       x-transition:enter="transition ease-out duration-300"
+                       x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                       x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
+                       x-transition:leave="transition ease-in duration-200"
+                       x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
+                       x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                       class="relative transform overflow-hidden rounded-2xl bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-md">
+                      
+                      <!-- Modal Body -->
+                      <div class="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
+                          <div class="sm:flex sm:items-start">
+                              <div class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-blue-50 sm:mx-0 sm:h-10 sm:w-10">
+                                  <svg class="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 5.25h.008v.008H12v-.008z" />
+                                  </svg>
+                              </div>
+                              <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
+                                  <h3 class="text-lg font-bold leading-6 text-slate-900" id="modal-title" x-text="actionTitle"></h3>
+                                  <div class="mt-2">
+                                      <p class="text-sm text-slate-500" x-text="actionText"></p>
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
+                      
+                      <!-- Modal Footer (Actions) -->
+                      <div class="bg-slate-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6 gap-2">
+                          <button type="button" 
+                                  @click="submitForm()" 
+                                  :class="actionColor"
+                                  class="inline-flex w-full justify-center rounded-xl px-4 py-2 text-sm font-semibold text-white shadow-sm sm:w-auto transition-colors">
+                              Ya, Lanjutkan
+                          </button>
+                          <button type="button" 
+                                  @click="showModal = false" 
+                                  class="mt-3 inline-flex w-full justify-center rounded-xl bg-white px-4 py-2 text-sm font-semibold text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 hover:bg-slate-50 sm:mt-0 sm:w-auto transition-colors">
+                              Batal
+                          </button>
+                      </div>
+                  </div>
+              </div>
           </div>
-        </form>
+        </div>
       </div>
     @elseif($pengajuan->status === \App\Enums\StatusPengajuan::PROSES_PENCAIRAN)
       <div class="mt-6 bg-indigo-50 p-6 rounded-2xl border border-indigo-100 shadow-sm">

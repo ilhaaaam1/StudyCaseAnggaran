@@ -5,8 +5,11 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Enums\StatusPengajuan;
+use App\Models\ActivityLog;
 use App\Models\AlurPersetujuan;
+use App\Models\DelegationAuthority;
 use App\Models\PengajuanRab;
+use App\Models\Pengguna;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -82,7 +85,7 @@ class PimpinanController extends Controller
     }
 
     /**
-     * Proses keputusan persetujuan Final (Tahap 2) oleh Pimpinan.
+     * Proses keputusan persetujuan Final (Tahap 2) oleh Pimpinan atau Delegasi.
      */
     public function processApproval(Request $request, int $id): RedirectResponse
     {
@@ -102,9 +105,14 @@ class PimpinanController extends Controller
             'status_decision.required' => 'Keputusan persetujuan final Pimpinan wajib ditentukan.',
         ]);
 
-        $pimpinanId = (int) Auth::id();
+        $user = Auth::user();
+        $pimpinanId = (int) $user->id_pengguna;
 
-        DB::transaction(function () use ($id, $pimpinanId, $validated): void {
+        // PRESENTASI: Pengecekan otorisasi delegasi dalam Controller Pimpinan
+        // Jika user yang mengeksekusi bukan ber-role pimpinan, kita anggap ia adalah penerima delegasi.
+        $isDelegated = $user->role !== 'pimpinan' && $user->hasActiveDelegation();
+
+        DB::transaction(function () use ($id, $pimpinanId, $validated, $isDelegated, $user): void {
             $pengajuan = PengajuanRab::lockForUpdate()->findOrFail($id);
 
             // Validasi state
@@ -121,13 +129,29 @@ class PimpinanController extends Controller
                 'status' => $targetStatus,
             ]);
 
+            // PRESENTASI: Modifikasi pencatatan log approval agar mencerminkan tindakan delegasi
+            // Jika didelegasikan, kita menambahkan teks "(Atas nama Pimpinan)" ke dalam catatan sistem.
+            $defaultCatatan = $validated['status_decision'] === 'ACC'
+                ? 'Persetujuan Final oleh Pimpinan'
+                : 'Ditolak oleh Pimpinan pada tahap final';
+
+            if ($isDelegated) {
+                $defaultCatatan = $validated['status_decision'] === 'ACC'
+                    ? 'Disetujui oleh '.$user->nama_lengkap.' (Atas nama Pimpinan)'
+                    : 'Ditolak oleh '.$user->nama_lengkap.' (Atas nama Pimpinan)';
+            }
+
+            $catatanText = ! empty($validated['catatan'])
+                ? $validated['catatan'].($isDelegated ? "\n[Diproses Atas Nama Pimpinan]" : '')
+                : $defaultCatatan;
+
             // 2. Catat log persetujuan level 2 di alur_persetujuan
             AlurPersetujuan::create([
                 'id_pengajuan' => $id,
                 'id_reviewer' => $pimpinanId,
                 'level_persetujuan' => 2,
                 'status_persetujuan' => $validated['status_decision'],
-                'catatan' => $validated['catatan'] ?? ($validated['status_decision'] === 'ACC' ? 'Persetujuan Final oleh Pimpinan' : 'Ditolak oleh Pimpinan pada tahap final'),
+                'catatan' => $catatanText,
                 'tanggal_proses' => now(),
             ]);
         });
@@ -135,6 +159,12 @@ class PimpinanController extends Controller
         $message = $validated['status_decision'] === 'ACC'
             ? 'Pengajuan RAB berhasil disetujui dan diteruskan ke Finance untuk Proses Pencairan.'
             : 'Pengajuan RAB telah ditolak oleh Pimpinan.';
+
+        $logMsg = $isDelegated
+            ? "Melakukan verifikasi Final (Atas nama Pimpinan) pada Pengajuan RAB #{$id} dengan keputusan {$validated['status_decision']}."
+            : "Melakukan verifikasi Final (Pimpinan) pada Pengajuan RAB #{$id} dengan keputusan {$validated['status_decision']}.";
+
+        ActivityLog::log($logMsg);
 
         return redirect()->route('pimpinan.antrean')
             ->with('success', $message);
@@ -177,16 +207,16 @@ class PimpinanController extends Controller
     public function statistik(Request $request): View
     {
         $filterWaktu = $request->input('filter_waktu', 'bulan_ini');
-        
+
         $baseQuery = PengajuanRab::query();
         $now = now();
-        
+
         if ($filterWaktu === 'bulan_ini') {
             $baseQuery->whereMonth('tanggal_pengajuan', $now->month)
-                      ->whereYear('tanggal_pengajuan', $now->year);
+                ->whereYear('tanggal_pengajuan', $now->year);
         } elseif ($filterWaktu === 'kuartal_ini') {
             $baseQuery->whereRaw('QUARTER(tanggal_pengajuan) = ?', [$now->quarter])
-                      ->whereYear('tanggal_pengajuan', $now->year);
+                ->whereYear('tanggal_pengajuan', $now->year);
         } elseif ($filterWaktu === 'tahun_ini') {
             $baseQuery->whereYear('tanggal_pengajuan', $now->year);
         }
@@ -253,5 +283,63 @@ class PimpinanController extends Controller
             'dataDivisi',
             'riwayatPencairan'
         ));
+    }
+
+    /**
+     * Tampilkan halaman Delegasi Wewenang.
+     */
+    public function delegasiIndex(Request $request): View
+    {
+        $delegations = DelegationAuthority::with('delegateTo')
+            ->where('user_id', Auth::id())
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        // Ambil semua pengguna selain diri sendiri untuk dropdown
+        $users = Pengguna::where('id_pengguna', '!=', Auth::id())->get();
+
+        return view('pimpinan.delegasi', compact('delegations', 'users'));
+    }
+
+    /**
+     * Simpan delegasi wewenang baru.
+     */
+    public function delegasiStore(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'delegate_to_user_id' => 'required|exists:pengguna,id_pengguna',
+            'start_date' => 'required|date',
+            'end_date' => 'required|date|after_or_equal:start_date',
+            'reason' => 'nullable|string|max:1000',
+        ]);
+
+        $validated['user_id'] = Auth::id();
+        $validated['status'] = 'Aktif';
+
+        DelegationAuthority::create($validated);
+
+        return redirect()->route('pimpinan.delegasi.index')->with('success', 'Delegasi wewenang berhasil ditambahkan.');
+    }
+
+    /**
+     * Batalkan delegasi (Ubah status jadi Dibatalkan).
+     */
+    public function delegasiCancel(int $id): RedirectResponse
+    {
+        $delegation = DelegationAuthority::where('user_id', Auth::id())->findOrFail($id);
+        $delegation->update(['status' => 'Dibatalkan']);
+
+        return redirect()->route('pimpinan.delegasi.index')->with('success', 'Delegasi wewenang berhasil dibatalkan.');
+    }
+
+    /**
+     * Hapus permanen riwayat delegasi.
+     */
+    public function delegasiDestroy(int $id): RedirectResponse
+    {
+        $delegation = DelegationAuthority::where('user_id', Auth::id())->findOrFail($id);
+        $delegation->delete();
+
+        return redirect()->route('pimpinan.delegasi.index')->with('success', 'Riwayat delegasi berhasil dihapus.');
     }
 }

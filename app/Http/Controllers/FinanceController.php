@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Enums\StatusPengajuan;
+use App\Models\ActivityLog;
 use App\Models\AlurPersetujuan;
 use App\Models\PengajuanRab;
 use Illuminate\Http\RedirectResponse;
@@ -121,6 +122,8 @@ class FinanceController extends Controller
                 'status' => StatusPengajuan::SELESAI,
             ]);
 
+            ActivityLog::log("Mengunggah bukti pencairan untuk Pengajuan RAB {$pengajuan->no_rab}.");
+
             return redirect()->route('finance.pencairan')->with('success', 'Bukti pencairan berhasil diunggah. Pengajuan telah selesai.');
         }
 
@@ -197,6 +200,8 @@ class FinanceController extends Controller
         $message = $validated['status_decision'] === 'ACC'
             ? 'Pengajuan RAB berhasil di-ACC Finance dan diteruskan ke Pimpinan untuk persetujuan akhir.'
             : 'Pengajuan RAB telah ditolak oleh Finance dan dikembalikan ke Staff.';
+
+        ActivityLog::log("Melakukan verifikasi Tahap 1 (Finance) pada Pengajuan RAB #{$id} dengan keputusan {$validated['status_decision']}.");
 
         return redirect()->route('finance.antrean')
             ->with('success', $message);

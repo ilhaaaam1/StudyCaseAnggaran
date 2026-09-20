@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Http\Requests\LoginRequest;
+use App\Models\ActivityLog;
 use App\Models\Pengguna;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -35,6 +36,8 @@ class AuthController extends Controller
 
         if (Auth::attempt($credentials, $remember)) {
             $request->session()->regenerate();
+
+            ActivityLog::log('Berhasil login ke dalam sistem.');
 
             /** @var Pengguna $user */
             $user = Auth::user();
@@ -68,6 +71,10 @@ class AuthController extends Controller
      */
     public function logout(Request $request): RedirectResponse
     {
+        if (Auth::check()) {
+            ActivityLog::log('Logout dari sistem.');
+        }
+
         Auth::logout();
 
         $request->session()->invalidate();

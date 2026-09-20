@@ -65,8 +65,9 @@
             <span>Pengaturan Sistem</span>
           </div>
         </a>
+      @endif
 
-      @elseif($userRole === 'finance')
+      @if($userRole === 'finance')
         <!-- Finance Menu -->
         <div class="text-[10px] uppercase text-slate-400 px-2.5 pb-2 tracking-wide font-semibold mt-4 mb-1">
           Menu Reviewer Finance
@@ -112,25 +113,42 @@
             <span>Rekapitulasi Laporan</span>
           </div>
         </a>
+      @endif
 
-      @elseif($userRole === 'pimpinan')
+      {{-- PRESENTASI: Mengubah blok if menjadi dinamis agar menu Pimpinan juga muncul bagi user (Finance) yang memiliki Delegasi Aktif --}}
+      @if($userRole === 'pimpinan' || (Auth::check() && Auth::user()->hasActiveDelegation()))
         <!-- Pimpinan Menu -->
-        <div class="text-[10px] uppercase text-slate-400 px-2.5 pb-2 tracking-wide font-semibold mt-4 mb-1">
-          Menu Reviewer Final
+        <div class="text-[10px] uppercase text-slate-400 px-2.5 pb-2 tracking-wide font-semibold mt-4 mb-1 flex items-center justify-between">
+          <span>Menu Reviewer Final</span>
+          {{-- PRESENTASI: Menambahkan badge khusus untuk menandakan bahwa menu ini muncul berkat delegasi (jika rolenya bukan pimpinan asli) --}}
+          @if($userRole !== 'pimpinan')
+            <span class="bg-indigo-600 text-white text-[8px] px-1.5 py-0.5 rounded font-bold uppercase tracking-widest">Delegated</span>
+          @endif
         </div>
+        
+        @if($userRole === 'pimpinan')
         <a href="{{ route('pimpinan.dashboard') }}" class="flex items-center justify-between px-3 py-2.5 rounded-lg mb-1 text-[13px] font-medium transition-all {{ request()->routeIs('pimpinan.dashboard') ? 'bg-[#2b337c] text-white' : 'text-slate-300 hover:bg-white/5 hover:text-white' }}">
           <div class="flex items-center gap-3">
             <i class="fa-solid fa-house w-[18px] text-center text-[15px]"></i>
             <span>Dashboard Pimpinan</span>
           </div>
         </a>
+        @endif
+        
         <a href="{{ route('pimpinan.antrean') }}" class="flex items-center justify-between px-3 py-2.5 rounded-lg mb-1 text-[13px] font-medium transition-all {{ request()->routeIs('pimpinan.antrean*') || request()->routeIs('pimpinan.show') ? 'bg-[#2b337c] text-white' : 'text-slate-300 hover:bg-white/5 hover:text-white' }}">
           <div class="flex items-center gap-3">
             <i class="fa-solid fa-folder-open w-[18px] text-center text-[15px]"></i>
             <span>Antrean Persetujuan</span>
           </div>
-          <span class="bg-blue-500 text-white text-[10px] px-1.5 py-0.5 rounded font-semibold tracking-wide">Tahap 2</span>
+          {{-- PRESENTASI: Badge pada menu Antrean, berbeda jika diakses oleh penerima delegasi --}}
+          @if($userRole !== 'pimpinan')
+            <span class="bg-indigo-500 text-white text-[10px] px-1.5 py-0.5 rounded font-semibold tracking-wide">Delegated</span>
+          @else
+            <span class="bg-blue-500 text-white text-[10px] px-1.5 py-0.5 rounded font-semibold tracking-wide">Tahap 2</span>
+          @endif
         </a>
+        
+        @if($userRole === 'pimpinan')
         <a href="{{ route('pimpinan.riwayat') }}" class="flex items-center justify-between px-3 py-2.5 rounded-lg mb-1 text-[13px] font-medium transition-all {{ request()->routeIs('pimpinan.riwayat') ? 'bg-[#2b337c] text-white' : 'text-slate-300 hover:bg-white/5 hover:text-white' }}">
           <div class="flex items-center gap-3">
             <i class="fa-solid fa-clock-rotate-left w-[18px] text-center text-[15px]"></i>
@@ -149,8 +167,10 @@
             <span>Delegasi Wewenang</span>
           </div>
         </a>
+        @endif
+      @endif
 
-      @else
+      @if(in_array($userRole, ['staff', 'user']) && !$userRole === 'pimpinan')
         <!-- Staff Menu -->
         <div class="text-[10px] uppercase text-slate-400 px-2.5 pb-2 tracking-wide font-semibold mt-4 mb-1">
           Menu Pemohon / Staf

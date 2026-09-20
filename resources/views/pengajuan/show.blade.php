@@ -117,16 +117,41 @@
           <h2 class="text-xs font-bold text-slate-700 tracking-wide uppercase border-b border-slate-100 pb-2 mb-3">
             Dokumen Lampiran
           </h2>
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            @foreach($pengajuan->dokumenPendukung as $doc)
-              <div class="flex items-center justify-between p-3 border border-slate-100 bg-slate-50 rounded-lg text-xs">
-                <div class="flex items-center gap-2 truncate">
-                  <span>📄</span>
-                  <span class="text-slate-800 font-medium truncate">{{ $doc->nama_file }}</span>
-                </div>
-                <a href="{{ asset('storage/' . $doc->path_file) }}" target="_blank" class="text-indigo-600 hover:underline shrink-0 text-[11px] font-semibold">
-                  Buka &rarr;
-                </a>
+          <div class="grid grid-cols-1 gap-3">
+            @foreach($pengajuan->dokumenPendukung as $dokumen)
+              @php
+                $extension = pathinfo($dokumen->path_file, PATHINFO_EXTENSION);
+                $isImage = in_array(strtolower($extension), ['jpg', 'jpeg', 'png']);
+                $isPdf = strtolower($extension) === 'pdf';
+                $previewUrl = asset('storage/' . $dokumen->path_file);
+                $downloadUrl = asset('storage/' . $dokumen->path_file);
+              @endphp
+              <div class="border border-slate-200 rounded-xl p-4 flex flex-col items-center justify-center bg-slate-50 relative group">
+                @if($isImage)
+                  <img src="{{ $previewUrl }}" alt="{{ $dokumen->nama_file }}" class="max-h-48 object-contain rounded-lg mb-3 shadow-sm border border-slate-200" />
+                  <p class="text-xs text-slate-600 font-medium truncate w-full text-center" title="{{ $dokumen->nama_file }}">{{ $dokumen->nama_file }}</p>
+                  <div class="mt-3 flex gap-2">
+                    <a href="{{ $previewUrl }}" target="_blank" class="text-xs px-3 py-1.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition">Lihat Penuh</a>
+                    <a href="{{ $downloadUrl }}" download class="text-xs px-3 py-1.5 bg-slate-200 text-slate-700 rounded-lg hover:bg-slate-300 transition">Unduh</a>
+                  </div>
+                @elseif($isPdf)
+                  <div class="w-full h-48 mb-3 border border-slate-200 rounded-lg overflow-hidden bg-white">
+                    <iframe src="{{ $previewUrl }}" class="w-full h-full" title="{{ $dokumen->nama_file }}"></iframe>
+                  </div>
+                  <p class="text-xs text-slate-600 font-medium truncate w-full text-center" title="{{ $dokumen->nama_file }}">{{ $dokumen->nama_file }}</p>
+                  <div class="mt-3 flex gap-2">
+                    <a href="{{ $previewUrl }}" target="_blank" class="text-xs px-3 py-1.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition">Buka Tab Baru</a>
+                    <a href="{{ $downloadUrl }}" download class="text-xs px-3 py-1.5 bg-slate-200 text-slate-700 rounded-lg hover:bg-slate-300 transition">Unduh PDF</a>
+                  </div>
+                @else
+                  <div class="w-16 h-16 bg-slate-200 rounded-full flex items-center justify-center mb-3">
+                    <svg class="w-8 h-8 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+                  </div>
+                  <p class="text-xs text-slate-600 font-medium truncate w-full text-center" title="{{ $dokumen->nama_file }}">{{ $dokumen->nama_file }}</p>
+                  <div class="mt-3">
+                    <a href="{{ $downloadUrl }}" download class="text-xs px-3 py-1.5 bg-slate-200 text-slate-700 rounded-lg hover:bg-slate-300 transition">Unduh File</a>
+                  </div>
+                @endif
               </div>
             @endforeach
           </div>

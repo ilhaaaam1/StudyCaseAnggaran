@@ -325,7 +325,7 @@
                     <div class="text-[10px] text-slate-400">Format: {{ $dokumen->tipe_dokumen ?? 'BERKAS' }} &bull; Diunggah: {{ $dokumen->waktu_unggah ? $dokumen->waktu_unggah->format('d/m/Y H:i') : '-' }}</div>
                   </div>
                 </div>
-                <a href="{{ route('dokumen.download', $dokumen->id_dokumen) }}" 
+                <a href="{{ asset('storage/' . $dokumen->path_file) }}" download
                    class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-semibold rounded-lg text-xs transition-colors shrink-0">
                   <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>

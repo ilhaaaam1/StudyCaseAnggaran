@@ -157,7 +157,7 @@
                 </div>
               </div>
             </div>
-            <a href="{{ route('dokumen.download', $dokumen->id_dokumen) }}" 
+            <a href="{{ asset('storage/' . $dokumen->path_file) }}" download
                class="inline-flex items-center gap-1 px-3.5 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-lg shadow-sm transition-colors shrink-0 cursor-pointer">
               <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
@@ -213,64 +213,133 @@
       </div>
     </div>
 
-    <form action="{{ route('admin.pengajuan.approve', $pengajuan->id_pengajuan) }}" method="POST" class="space-y-5">
-      @csrf
+    {{-- PRESENTASI: Menambahkan x-data untuk state control modal dan logika form submit (Alpine.js) --}}
+    <div x-data="{ 
+        showModal: false,
+        submitForm() {
+            // PRESENTASI: Fungsi submit form programatik saat dikonfirmasi dari modal
+            $refs.approvalForm.submit();
+        }
+    }">
+      <form x-ref="approvalForm" action="{{ route('admin.pengajuan.approve', $pengajuan->id_pengajuan) }}" method="POST" class="space-y-5">
+        @csrf
 
-      <!-- Pilihan Keputusan: ACC atau Ditolak -->
-      <div>
-        <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">
-          Keputusan Administrator <span class="text-rose-500">*</span>
-        </label>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <label class="relative flex items-center gap-3 p-4 rounded-xl border-2 border-slate-200 hover:border-emerald-300 bg-slate-50/50 has-[:checked]:border-emerald-600 has-[:checked]:bg-emerald-50/40 cursor-pointer transition-all">
-            <input type="radio" name="status" value="ACC" required class="text-emerald-600 focus:ring-emerald-500 h-4 w-4"
-                   {{ old('status', $pengajuan->status === 'ACC' ? 'ACC' : '') === 'ACC' ? 'checked' : '' }}>
-            <div>
-              <div class="text-sm font-bold text-slate-800 flex items-center gap-1.5">
-                <span class="w-2 h-2 rounded-full bg-emerald-500"></span> Setujui (ACC)
-              </div>
-              <div class="text-xs text-slate-500 mt-0.5">Pengajuan disetujui sesuai spesifikasi dan pagu anggaran.</div>
-            </div>
+        <!-- Pilihan Keputusan: ACC atau Ditolak -->
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">
+            Keputusan Administrator <span class="text-rose-500">*</span>
           </label>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <label class="relative flex items-center gap-3 p-4 rounded-xl border-2 border-slate-200 hover:border-emerald-300 bg-slate-50/50 has-[:checked]:border-emerald-600 has-[:checked]:bg-emerald-50/40 cursor-pointer transition-all">
+              <input type="radio" name="status" value="ACC" required class="text-emerald-600 focus:ring-emerald-500 h-4 w-4"
+                     {{ old('status', $pengajuan->status === 'ACC' ? 'ACC' : '') === 'ACC' ? 'checked' : '' }}>
+              <div>
+                <div class="text-sm font-bold text-slate-800 flex items-center gap-1.5">
+                  <span class="w-2 h-2 rounded-full bg-emerald-500"></span> Setujui (ACC)
+                </div>
+                <div class="text-xs text-slate-500 mt-0.5">Pengajuan disetujui sesuai spesifikasi dan pagu anggaran.</div>
+              </div>
+            </label>
 
-          <label class="relative flex items-center gap-3 p-4 rounded-xl border-2 border-slate-200 hover:border-rose-300 bg-slate-50/50 has-[:checked]:border-rose-600 has-[:checked]:bg-rose-50/40 cursor-pointer transition-all">
-            <input type="radio" name="status" value="Ditolak" required class="text-rose-600 focus:ring-rose-500 h-4 w-4"
-                   {{ old('status', $pengajuan->status === 'Ditolak' ? 'Ditolak' : '') === 'Ditolak' ? 'checked' : '' }}>
-            <div>
-              <div class="text-sm font-bold text-slate-800 flex items-center gap-1.5">
-                <span class="w-2 h-2 rounded-full bg-rose-500"></span> Tolak Pengajuan
+            <label class="relative flex items-center gap-3 p-4 rounded-xl border-2 border-slate-200 hover:border-rose-300 bg-slate-50/50 has-[:checked]:border-rose-600 has-[:checked]:bg-rose-50/40 cursor-pointer transition-all">
+              <input type="radio" name="status" value="Ditolak" required class="text-rose-600 focus:ring-rose-500 h-4 w-4"
+                     {{ old('status', $pengajuan->status === 'Ditolak' ? 'Ditolak' : '') === 'Ditolak' ? 'checked' : '' }}>
+              <div>
+                <div class="text-sm font-bold text-slate-800 flex items-center gap-1.5">
+                  <span class="w-2 h-2 rounded-full bg-rose-500"></span> Tolak Pengajuan
+                </div>
+                <div class="text-xs text-slate-500 mt-0.5">Pengajuan ditolak dengan alasan penolakan pada catatan.</div>
               </div>
-              <div class="text-xs text-slate-500 mt-0.5">Pengajuan ditolak dengan alasan penolakan pada catatan.</div>
-            </div>
-          </label>
+            </label>
+          </div>
         </div>
-      </div>
 
-      <!-- Catatan Administrator -->
-      <div>
-        <label for="catatan" class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
-          Catatan / Pertimbangan Verifikasi
-        </label>
-        <textarea name="catatan" id="catatan" rows="3"
-                  placeholder="Tuliskan catatan rekomendasi, justifikasi persetujuan, atau alasan penolakan untuk pemohon..."
-                  class="w-full px-3.5 py-2.5 rounded-lg border border-slate-300 text-sm text-slate-800 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors">{{ old('catatan') }}</textarea>
-      </div>
+        <!-- Catatan Administrator -->
+        <div>
+          <label for="catatan" class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
+            Catatan / Pertimbangan Verifikasi
+          </label>
+          <textarea name="catatan" id="catatan" rows="3"
+                    placeholder="Tuliskan catatan rekomendasi, justifikasi persetujuan, atau alasan penolakan untuk pemohon..."
+                    class="w-full px-3.5 py-2.5 rounded-lg border border-slate-300 text-sm text-slate-800 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors">{{ old('catatan') }}</textarea>
+        </div>
 
-      <!-- Submit Button -->
-      <div class="flex items-center justify-end gap-3 pt-2">
-        <a href="{{ route('admin.dashboard') }}" 
-           class="px-5 py-2.5 rounded-xl border border-slate-300 text-sm font-semibold text-slate-700 hover:bg-slate-100 transition-colors">
-          Batal
-        </a>
-        <button type="submit" onclick="return confirm('Apakah Anda yakin ingin menyimpan keputusan persetujuan untuk pengajuan ini?')"
-                class="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold shadow-md shadow-indigo-100 transition-all cursor-pointer">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-          </svg>
-          Simpan Keputusan Persetujuan
-        </button>
+        <!-- Submit Button -->
+        <div class="flex items-center justify-end gap-3 pt-2">
+          <a href="{{ route('admin.dashboard') }}" 
+             class="px-5 py-2.5 rounded-xl border border-slate-300 text-sm font-semibold text-slate-700 hover:bg-slate-100 transition-colors">
+            Batal
+          </a>
+          {{-- PRESENTASI: Menahan submit default form dan memunculkan modal custom untuk validasi aksi pengguna --}}
+          <button type="button" 
+                  @click="showModal = true"
+                  class="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold shadow-md shadow-indigo-100 transition-all cursor-pointer">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+            </svg>
+            Simpan Keputusan Persetujuan
+          </button>
+        </div>
+      </form>
+
+      {{-- PRESENTASI: Komponen Custom Modal UI (Tailwind CSS) yang ditambahkan untuk mempercantik UI confirm bawaan browser --}}
+      <div x-show="showModal" style="display: none;" class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+          <!-- Background Overlay (Backdrop blur tipis) -->
+          <div x-show="showModal" 
+               x-transition:enter="transition ease-out duration-300"
+               x-transition:enter-start="opacity-0 backdrop-blur-none"
+               x-transition:enter-end="opacity-100 backdrop-blur-sm"
+               x-transition:leave="transition ease-in duration-200"
+               x-transition:leave-start="opacity-100 backdrop-blur-sm"
+               x-transition:leave-end="opacity-0 backdrop-blur-none"
+               class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm transition-opacity" 
+               @click="showModal = false"></div>
+
+          <!-- Modal Card Container -->
+          <div class="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
+              <div x-show="showModal" 
+                   x-transition:enter="transition ease-out duration-300"
+                   x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                   x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
+                   x-transition:leave="transition ease-in duration-200"
+                   x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
+                   x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                   class="relative transform overflow-hidden rounded-2xl bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-md">
+                  
+                  <!-- Modal Body -->
+                  <div class="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
+                      <div class="sm:flex sm:items-start">
+                          <div class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-indigo-50 sm:mx-0 sm:h-10 sm:w-10">
+                              <svg class="h-6 w-6 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                              </svg>
+                          </div>
+                          <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left w-full">
+                              <h3 class="text-lg font-bold leading-6 text-slate-900" id="modal-title">Konfirmasi Penyimpanan</h3>
+                              <div class="mt-2">
+                                  <p class="text-sm text-slate-500">Apakah Anda yakin ingin menyimpan keputusan persetujuan untuk pengajuan ini?</p>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+                  
+                  <!-- Modal Footer (Actions) -->
+                  <div class="bg-slate-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6 gap-2">
+                      <button type="button" 
+                              @click="submitForm()" 
+                              class="inline-flex w-full justify-center rounded-xl bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-700 sm:w-auto transition-colors">
+                          Ya, Lanjutkan
+                      </button>
+                      <button type="button" 
+                              @click="showModal = false" 
+                              class="mt-3 inline-flex w-full justify-center rounded-xl bg-white px-4 py-2 text-sm font-semibold text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 hover:bg-slate-50 sm:mt-0 sm:w-auto transition-colors">
+                          Batal
+                      </button>
+                  </div>
+              </div>
+          </div>
       </div>
-    </form>
+    </div>
   </div>
 </div>
 @endsection

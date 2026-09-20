@@ -42,7 +42,7 @@ class StorePengajuanRabRequest extends FormRequest
             'rincian.*.harga_satuan' => ['required', 'numeric', 'min:0'],
 
             // Validasi Dokumen Pendukung (File Upload)
-            'dokumen.*' => ['nullable', 'file', 'max:10240'],
+            'dokumen.*' => ['nullable', 'file', 'mimes:pdf,jpg,jpeg,png', 'max:5120'],
         ];
     }
 
