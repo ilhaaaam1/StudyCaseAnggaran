@@ -31,78 +31,29 @@
 </div>
 
 <!-- Metric Cards Grid -->
-<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
     <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
         <div class="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">TOTAL DIAJUKAN</div>
-        <div class="text-xl font-bold text-slate-800 font-mono">Rp {{ number_format($totalAnggaranDiajukan ?? 0, 0, ',', '.') }}</div>
-        <div class="text-[10px] text-slate-400 mt-1">{{ $totalPengajuan ?? 0 }} berkas</div>
+        <div class="text-2xl font-bold text-slate-800 font-mono">Rp {{ number_format($totalAnggaranDiajukan ?? 0, 0, ',', '.') }}</div>
+        <div class="text-xs text-slate-400 mt-1">{{ $totalPengajuan ?? 0 }} berkas pengajuan</div>
+    </div>
+
+    <div class="bg-amber-50/70 border border-amber-200 rounded-xl p-5 shadow-sm">
+        <div class="text-[11px] font-bold text-amber-800 uppercase tracking-wider mb-1">REVIEW FINANCE (PENDING)</div>
+        <div class="text-2xl font-bold text-amber-700 font-mono">{{ $totalPending ?? 0 }}</div>
+        <div class="text-xs text-amber-600 mt-1">Menunggu verifikasi Tahap 1</div>
     </div>
 
     <div class="bg-blue-50/70 border border-blue-200 rounded-xl p-5 shadow-sm">
-        <div class="text-[11px] font-bold text-blue-800 uppercase tracking-wider mb-1">MENUNGGU REVIEW</div>
-        <div class="text-2xl font-bold text-blue-700 font-mono">{{ ($totalPending ?? 0) + ($totalAccFinance ?? 0) }}</div>
-        <div class="text-[10px] text-blue-600 mt-1">Finance &amp; Pimpinan</div>
+        <div class="text-[11px] font-bold text-blue-800 uppercase tracking-wider mb-1">REVIEW PIMPINAN (ACC FINANCE)</div>
+        <div class="text-2xl font-bold text-blue-700 font-mono">{{ $totalAccFinance ?? 0 }}</div>
+        <div class="text-xs text-blue-600 mt-1">Lolos Tahap 1, antre Tahap 2</div>
     </div>
 
     <div class="bg-emerald-50/70 border border-emerald-200 rounded-xl p-5 shadow-sm">
         <div class="text-[11px] font-bold text-emerald-800 uppercase tracking-wider mb-1">DISETUJUI (ACC FINAL)</div>
         <div class="text-2xl font-bold text-emerald-700 font-mono">{{ $totalAccFinal ?? 0 }}</div>
-        <div class="text-[10px] text-emerald-600 mt-1">Anggaran disetujui penuh</div>
-    </div>
-
-    {{-- PRESENTASI: Memisahkan card untuk Revisi --}}
-    <div class="bg-amber-50/70 border border-amber-200 rounded-xl p-5 shadow-sm">
-        <div class="text-[11px] font-bold text-amber-800 uppercase tracking-wider mb-1">REVISI (PERLU PERBAIKAN)</div>
-        <div class="text-2xl font-bold text-amber-700 font-mono">{{ $totalRevisi ?? 0 }}</div>
-        <div class="text-[10px] text-amber-600 mt-1">Dikembalikan untuk diperbaiki</div>
-    </div>
-
-    {{-- PRESENTASI: Memisahkan card untuk Ditolak --}}
-    <div class="bg-rose-50/70 border border-rose-200 rounded-xl p-5 shadow-sm">
-        <div class="text-[11px] font-bold text-rose-800 uppercase tracking-wider mb-1">DITOLAK PERMANEN</div>
-        <div class="text-2xl font-bold text-rose-700 font-mono">{{ $totalDitolak ?? 0 }}</div>
-        <div class="text-[10px] text-rose-600 mt-1">Ditolak dan tidak bisa direvisi</div>
-    </div>
-</div>
-
-{{-- PRESENTASI: Mengubah card redundan menjadi Alokasi Kategori Anggaran --}}
-<div class="bg-white border border-slate-200 rounded-xl shadow-sm p-5 sm:p-6 mb-8">
-    <h2 class="font-semibold text-slate-800 text-sm mb-4 flex items-center justify-between">
-        <span>Alokasi Kategori Anggaran</span>
-        <span class="text-xs font-normal text-slate-400">Total: {{ $totalPengajuan ?? 0 }} Dokumen</span>
-    </h2>
-    
-    {{-- PRESENTASI: Struktur loop Kategori Anggaran menggunakan flexbox dan dinamis dari controller --}}
-    <div class="flex flex-col text-sm">
-        @forelse($alokasiKategori as $item)
-            @php
-                // Warna ikon bergantian secara otomatis berdasarkan indeks
-                $colors = [
-                    'bg-blue-100 text-blue-700', 
-                    'bg-emerald-100 text-emerald-700', 
-                    'bg-amber-100 text-amber-700', 
-                    'bg-purple-100 text-purple-700',
-                    'bg-rose-100 text-rose-700'
-                ];
-                $colorClass = $colors[$loop->index % count($colors)];
-            @endphp
-            <div class="flex justify-between items-center py-3 {{ !$loop->last ? 'border-b border-slate-100' : '' }}">
-                <div class="flex items-center gap-3">
-                    <div class="p-2 rounded-lg {{ $colorClass }}">
-                        <svg fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 9.776c.112-.017.227-.026.344-.026h15.812c.117 0 .232.009.344.026m-16.5 0a2.25 2.25 0 00-1.883 2.542l.857 6a2.25 2.25 0 002.227 1.932H19.05a2.25 2.25 0 002.227-1.932l.857-6a2.25 2.25 0 00-1.883-2.542m-16.5 0V6A2.25 2.25 0 016 3.75h3.879a1.5 1.5 0 011.06.44l2.122 2.12a1.5 1.5 0 001.06.44H18A2.25 2.25 0 0120.25 9v.776" />
-                        </svg>
-                    </div>
-                    <span class="font-medium text-gray-700">{{ $item->kategori_anggaran ?: 'Tanpa Kategori' }}</span>
-                </div>
-                <div class="text-right">
-                    <div class="font-bold text-gray-900">Rp {{ number_format($item->total_rupiah, 0, ',', '.') }}</div>
-                    <div class="text-[11px] text-gray-500 font-medium">{{ $item->jumlah_dokumen }} Pengajuan</div>
-                </div>
-            </div>
-        @empty
-            <div class="py-4 text-center text-slate-500 text-sm">Belum ada pengajuan untuk ditampilkan.</div>
-        @endforelse
+        <div class="text-xs text-emerald-600 mt-1">Anggaran disetujui penuh</div>
     </div>
 </div>
 

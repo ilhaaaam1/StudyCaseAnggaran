@@ -46,11 +46,9 @@
           </div>
 
           <div>
-            {{-- PRESENTASI: Penyesuaian Label Field Divisi --}}
-            {{-- Mengubah label 'Unit Kerja / Divisi' menjadi 'Bidang / Bagian' agar lebih cocok untuk lingkungan sekolah --}}
-            <label class="block text-xs font-semibold text-slate-700 mb-1">Bidang / Bagian <span class="text-rose-500">*</span></label>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Unit Kerja / Divisi <span class="text-rose-500">*</span></label>
             <select name="id_divisi" required class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-sm focus:border-indigo-500">
-              <option value="">-- Pilih Bidang / Bagian --</option>
+              <option value="">-- Pilih Unit Kerja --</option>
               @foreach($divisiList ?? [] as $d)
                 <option value="{{ $d->id_divisi }}" {{ old('id_divisi', Auth::user()->id_divisi) == $d->id_divisi ? 'selected' : '' }}>
                   {{ $d->nama_divisi }}
@@ -71,17 +69,13 @@
           </div>
 
           <div>
-            {{-- PRESENTASI: Mengganti Input Dropdown Prioritas --}}
-            {{-- Dropdown prioritas yang subjektif dihapus dan diganti dengan Kategori Anggaran yang lebih objektif. --}}
-            <label class="block text-xs font-semibold text-slate-700 mb-1">Kategori Anggaran <span class="text-rose-500">*</span></label>
-            <select name="kategori_anggaran" required class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-sm focus:border-indigo-500">
-              <option value="" disabled selected>-- Pilih Kategori --</option>
-              <option value="Operasional Rutin" {{ old('kategori_anggaran') === 'Operasional Rutin' ? 'selected' : '' }}>Operasional Rutin</option>
-              <option value="Pengadaan Barang/Aset" {{ old('kategori_anggaran') === 'Pengadaan Barang/Aset' ? 'selected' : '' }}>Pengadaan Barang/Aset</option>
-              <option value="Pemeliharaan & Perbaikan" {{ old('kategori_anggaran') === 'Pemeliharaan & Perbaikan' ? 'selected' : '' }}>Pemeliharaan & Perbaikan</option>
-              <option value="Kegiatan / Acara" {{ old('kategori_anggaran') === 'Kegiatan / Acara' ? 'selected' : '' }}>Kegiatan / Acara</option>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Tingkat Prioritas <span class="text-rose-500">*</span></label>
+            <select name="prioritas" required class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-sm focus:border-indigo-500">
+              <option value="Rendah" {{ old('prioritas') === 'Rendah' ? 'selected' : '' }}>Rendah</option>
+              <option value="Sedang" {{ old('prioritas', 'Sedang') === 'Sedang' ? 'selected' : '' }}>Sedang</option>
+              <option value="Tinggi" {{ old('prioritas') === 'Tinggi' ? 'selected' : '' }}>Tinggi</option>
             </select>
-            @error('kategori_anggaran') <p class="text-xs text-rose-600 mt-1">{{ $message }}</p> @enderror
+            @error('prioritas') <p class="text-xs text-rose-600 mt-1">{{ $message }}</p> @enderror
           </div>
         </div>
 

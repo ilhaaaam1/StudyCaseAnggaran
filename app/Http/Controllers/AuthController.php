@@ -56,15 +56,12 @@ class AuthController extends Controller
      */
     private function getDashboardRoute(Pengguna $user): string
     {
-        // PRESENTASI: Memperbaiki bug routing post-login
-        // Sebelumnya, role 'user' diarahkan ke 'user.dashboard' (view lama). 
-        // Disamakan dengan rute sidebar yang mengarah ke 'staff.dashboard' agar memuat view yang sudah dirombak.
         return match ($user->role) {
             'admin' => 'admin.dashboard',
             'admin_it' => 'admin-it.dashboard',
             'finance' => 'finance.dashboard',
             'pimpinan' => 'pimpinan.dashboard',
-            'user', 'staff' => 'staff.dashboard',
+            'user' => 'user.dashboard',
             default => 'staff.dashboard',
         };
     }

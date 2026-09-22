@@ -29,9 +29,9 @@
           <tr>
             <th class="px-5 py-3.5 w-10 text-center">#</th>
             <th class="px-5 py-3.5">No. RAB</th>
-            <th class="px-5 py-3.5">Pemohon &amp; Bidang</th>
+            <th class="px-5 py-3.5">Pemohon &amp; Divisi</th>
             <th class="px-5 py-3.5">Judul Pengajuan</th>
-            <th class="px-5 py-3.5">Kategori Anggaran</th>
+            <th class="px-5 py-3.5">Prioritas</th>
             <th class="px-5 py-3.5 text-right">Estimasi Total</th>
             <th class="px-5 py-3.5 text-center">Tanggal Diajukan</th>
             <th class="px-5 py-3.5 text-center">Aksi</th>
@@ -48,8 +48,8 @@
               </td>
               <td class="px-5 py-3.5 text-slate-800">{{ $item->judul_pengajuan }}</td>
               <td class="px-5 py-3.5">
-                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-700">
-                  {{ $item->kategori_anggaran }}
+                <span class="px-2 py-0.5 rounded text-[10px] font-bold {{ $item->prioritas === 'Tinggi' ? 'bg-rose-100 text-rose-800' : ($item->prioritas === 'Sedang' ? 'bg-amber-100 text-amber-800' : 'bg-slate-100 text-slate-700') }}">
+                  {{ $item->prioritas }}
                 </span>
               </td>
               <td class="px-5 py-3.5 text-right font-mono font-bold text-slate-900">

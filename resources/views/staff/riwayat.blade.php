@@ -24,14 +24,12 @@
   <!-- Filter & Table -->
   <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
     <div class="p-4 border-b border-slate-100 flex flex-wrap items-center justify-between gap-3">
-      {{-- PRESENTASI: Menambahkan filter Revisi & Ditolak serta sinkronisasi warna state aktif/non-aktif --}}
       <div class="flex flex-wrap items-center gap-2">
-        <a href="{{ route('staff.riwayat') }}" class="px-3 py-1.5 rounded-lg text-xs font-semibold {{ empty($statusFilter) || $statusFilter === 'semua' ? 'bg-slate-800 text-white' : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50' }}">Semua</a>
-        <a href="{{ route('staff.riwayat', ['status' => \App\Enums\StatusPengajuan::MENUNGGU_FINANCE]) }}" class="px-3 py-1.5 rounded-lg text-xs font-semibold {{ $statusFilter === \App\Enums\StatusPengajuan::MENUNGGU_FINANCE ? 'bg-blue-600 text-white' : 'bg-blue-100 text-blue-700 hover:bg-blue-200' }}">Menunggu Finance</a>
-        <a href="{{ route('staff.riwayat', ['status' => \App\Enums\StatusPengajuan::MENUNGGU_PIMPINAN]) }}" class="px-3 py-1.5 rounded-lg text-xs font-semibold {{ $statusFilter === \App\Enums\StatusPengajuan::MENUNGGU_PIMPINAN ? 'bg-indigo-600 text-white' : 'bg-indigo-100 text-indigo-700 hover:bg-indigo-200' }}">Menunggu Pimpinan</a>
-        <a href="{{ route('staff.riwayat', ['status' => \App\Enums\StatusPengajuan::REVISI]) }}" class="px-3 py-1.5 rounded-lg text-xs font-semibold {{ $statusFilter === \App\Enums\StatusPengajuan::REVISI ? 'bg-orange-500 text-white' : 'bg-orange-100 text-orange-700 hover:bg-orange-200' }}">Revisi</a>
-        <a href="{{ route('staff.riwayat', ['status' => \App\Enums\StatusPengajuan::DITOLAK]) }}" class="px-3 py-1.5 rounded-lg text-xs font-semibold {{ $statusFilter === \App\Enums\StatusPengajuan::DITOLAK ? 'bg-red-600 text-white' : 'bg-red-100 text-red-700 hover:bg-red-200' }}">Ditolak</a>
-        <a href="{{ route('staff.riwayat', ['status' => \App\Enums\StatusPengajuan::SELESAI]) }}" class="px-3 py-1.5 rounded-lg text-xs font-semibold {{ $statusFilter === \App\Enums\StatusPengajuan::SELESAI ? 'bg-green-600 text-white' : 'bg-green-100 text-green-700 hover:bg-green-200' }}">Selesai</a>
+        <a href="{{ route('staff.riwayat') }}" class="px-3 py-1.5 rounded-lg text-xs font-semibold {{ empty($statusFilter) ? 'bg-slate-800 text-white' : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50' }}">Semua</a>
+        <a href="{{ route('staff.riwayat', ['status' => \App\Enums\StatusPengajuan::MENUNGGU_FINANCE]) }}" class="px-3 py-1.5 rounded-lg text-xs font-semibold {{ $statusFilter === \App\Enums\StatusPengajuan::MENUNGGU_FINANCE ? 'bg-amber-600 text-white' : 'bg-amber-50 text-amber-800' }}">Pending Finance</a>
+        <a href="{{ route('staff.riwayat', ['status' => \App\Enums\StatusPengajuan::MENUNGGU_PIMPINAN]) }}" class="px-3 py-1.5 rounded-lg text-xs font-semibold {{ $statusFilter === \App\Enums\StatusPengajuan::MENUNGGU_PIMPINAN ? 'bg-blue-600 text-white' : 'bg-blue-50 text-blue-800' }}">Menunggu Pimpinan</a>
+        <a href="{{ route('staff.riwayat', ['status' => \App\Enums\StatusPengajuan::PROSES_PENCAIRAN]) }}" class="px-3 py-1.5 rounded-lg text-xs font-semibold {{ $statusFilter === \App\Enums\StatusPengajuan::PROSES_PENCAIRAN ? 'bg-indigo-600 text-white' : 'bg-indigo-50 text-indigo-800' }}">Pencairan</a>
+        <a href="{{ route('staff.riwayat', ['status' => \App\Enums\StatusPengajuan::SELESAI]) }}" class="px-3 py-1.5 rounded-lg text-xs font-semibold {{ $statusFilter === \App\Enums\StatusPengajuan::SELESAI ? 'bg-emerald-600 text-white' : 'bg-emerald-50 text-emerald-800' }}">Selesai</a>
       </div>
       <form method="GET" action="{{ route('staff.riwayat') }}" class="flex items-center gap-2">
         <input type="text" name="q" value="{{ $search ?? '' }}" placeholder="Cari No. RAB / Judul..." class="px-3 py-1.5 border border-slate-300 rounded-xl text-xs">
@@ -58,36 +56,24 @@
               <td class="px-5 py-3.5 font-medium text-slate-900">{{ $rab->judul_pengajuan }}</td>
               <td class="px-5 py-3.5 font-mono font-semibold text-slate-800">Rp {{ number_format((float) $rab->estimasi_total, 0, ',', '.') }}</td>
               <td class="px-5 py-3.5 text-center">
-                {{-- PRESENTASI: Menyesuaikan warna badge dengan Dashboard (Konsistensi UI/UX) --}}
                 @if($rab->status === \App\Enums\StatusPengajuan::MENUNGGU_FINANCE)
-                  {{-- PRESENTASI: Menunggu Review menggunakan nuansa Biru (Blue) --}}
-                  <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold bg-blue-100 text-blue-700 border border-blue-200">
+                  <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-200">
                     Menunggu Review Finance
                   </span>
                 @elseif($rab->status === \App\Enums\StatusPengajuan::MENUNGGU_PIMPINAN)
-                  <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold bg-indigo-100 text-indigo-700 border border-indigo-200">
+                  <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold bg-blue-100 text-blue-800 border border-blue-200">
                     Menunggu Pimpinan
                   </span>
                 @elseif($rab->status === \App\Enums\StatusPengajuan::PROSES_PENCAIRAN)
-                  <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold bg-purple-100 text-purple-700 border border-purple-200">
+                  <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold bg-indigo-100 text-indigo-800 border border-indigo-200">
                     Proses Pencairan
                   </span>
                 @elseif($rab->status === \App\Enums\StatusPengajuan::SELESAI)
-                  <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold bg-green-100 text-green-700 border border-green-200">
+                  <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
                     Selesai
                   </span>
-                @elseif($rab->status === \App\Enums\StatusPengajuan::REVISI)
-                  {{-- PRESENTASI: Memisahkan warna Revisi menjadi Orange --}}
-                  <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold bg-orange-100 text-orange-700 border border-orange-200">
-                    Revisi
-                  </span>
-                @elseif($rab->status === \App\Enums\StatusPengajuan::DITOLAK)
-                  {{-- PRESENTASI: Memisahkan warna Ditolak menjadi Merah (Red) --}}
-                  <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold bg-red-100 text-red-700 border border-red-200">
-                    Ditolak Permanen
-                  </span>
                 @else
-                  <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold bg-slate-100 text-slate-700 border border-slate-200">
+                  <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold bg-rose-100 text-rose-800 border border-rose-200">
                     {{ $rab->status }}
                   </span>
                 @endif

@@ -18,12 +18,6 @@
         <div class="text-xs font-semibold text-indigo-600 uppercase tracking-wider">Detail Pengajuan RAB</div>
         <h1 class="text-2xl font-bold text-slate-900 font-mono">{{ $pengajuan->no_rab }}</h1>
         <p class="text-sm font-semibold text-slate-700 mt-1">{{ $pengajuan->judul_pengajuan }}</p>
-        {{-- PRESENTASI: Menampilkan Kategori Anggaran di Halaman Detail --}}
-        <div class="mt-2 flex items-center gap-2">
-            <span class="px-2.5 py-1 bg-slate-100 text-slate-600 text-[10px] font-bold rounded-lg border border-slate-200">
-                <i class="fa-solid fa-tag mr-1"></i> {{ $pengajuan->kategori_anggaran ?? 'Tanpa Kategori' }}
-            </span>
-        </div>
       </div>
       <div class="text-right">
         <span class="text-xs text-slate-400 block">Status Saat Ini:</span>
@@ -31,18 +25,6 @@
           {{ $pengajuan->status === \App\Enums\StatusPengajuan::SELESAI || $pengajuan->status === \App\Enums\StatusPengajuan::PROSES_PENCAIRAN ? 'bg-emerald-100 text-emerald-800' : ($pengajuan->status === \App\Enums\StatusPengajuan::MENUNGGU_PIMPINAN ? 'bg-blue-100 text-blue-800' : ($pengajuan->status === \App\Enums\StatusPengajuan::MENUNGGU_FINANCE ? 'bg-amber-100 text-amber-800' : 'bg-rose-100 text-rose-800')) }}">
           {{ $pengajuan->status }}
         </span>
-
-        {{-- PRESENTASI: Tombol Edit Dinamis --}}
-        {{-- Tombol edit HANYA ditampilkan apabila status pengajuan masih berada di tahap awal, --}}
-        {{-- yaitu 'Menunggu Verifikasi Finance', 'Draft', atau 'Revisi'. Jika sudah diproses, tombol akan hilang. --}}
-        @if(in_array($pengajuan->status, [\App\Enums\StatusPengajuan::MENUNGGU_FINANCE, \App\Enums\StatusPengajuan::DRAFT, \App\Enums\StatusPengajuan::REVISI]))
-          <div class="mt-3">
-            <a href="{{ route('staff.rab.edit', $pengajuan->id_pengajuan) }}" class="inline-flex items-center gap-1.5 px-4 py-1.5 bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold rounded-lg transition-colors shadow-sm">
-              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
-              Edit Pengajuan
-            </a>
-          </div>
-        @endif
       </div>
     </div>
 

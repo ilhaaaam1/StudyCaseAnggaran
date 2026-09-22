@@ -47,12 +47,10 @@
             <span>Manajemen Pengguna</span>
           </div>
         </a>
-        {{-- PRESENTASI: Perubahan Nama Menu Sidebar --}}
-        {{-- Menu Admin IT 'Master Divisi' disesuaikan namanya menjadi 'Master Bidang/Bagian' --}}
         <a href="{{ route('admin-it.divisi.index') }}" class="flex items-center justify-between px-3 py-2.5 rounded-lg mb-1 text-[13px] font-medium transition-all {{ request()->routeIs('admin-it.divisi.*') ? 'bg-[#2b337c] text-white' : 'text-slate-300 hover:bg-white/5 hover:text-white' }}">
           <div class="flex items-center gap-3">
             <i class="fa-solid fa-sitemap w-[18px] text-center text-[15px]"></i>
-            <span>Master Bidang/Bagian</span>
+            <span>Master Divisi</span>
           </div>
         </a>
         <a href="{{ route('admin-it.log.index') }}" class="flex items-center justify-between px-3 py-2.5 rounded-lg mb-1 text-[13px] font-medium transition-all {{ request()->routeIs('admin-it.log.*') ? 'bg-[#2b337c] text-white' : 'text-slate-300 hover:bg-white/5 hover:text-white' }}">
@@ -117,15 +115,12 @@
         </a>
       @endif
 
-      {{-- PRESENTASI: Logika IF Sidebar Memunculkan Menu Dinamis --}}
-      {{-- Menampilkan menu "Antrean Persetujuan Tahap 2" JIKA role user adalah 'Pimpinan' --}}
-      {{-- ATAU user yang sedang login menerima delegasi wewenang yang aktif --}}
-      @if($userRole === 'pimpinan' || (auth()->check() && auth()->user()->hasActiveDelegation()))
+      {{-- PRESENTASI: Mengubah blok if menjadi dinamis agar menu Pimpinan juga muncul bagi user (Finance) yang memiliki Delegasi Aktif --}}
+      @if($userRole === 'pimpinan' || (Auth::check() && Auth::user()->hasActiveDelegation()))
         <!-- Pimpinan Menu -->
         <div class="text-[10px] uppercase text-slate-400 px-2.5 pb-2 tracking-wide font-semibold mt-4 mb-1 flex items-center justify-between">
           <span>Menu Reviewer Final</span>
-          {{-- PRESENTASI: Penanda visual (Badge) "Delegated" --}}
-          {{-- Badge ini dimunculkan agar user (misal Finance) sadar bahwa menu ini adalah menu tambahan dari pimpinan --}}
+          {{-- PRESENTASI: Menambahkan badge khusus untuk menandakan bahwa menu ini muncul berkat delegasi (jika rolenya bukan pimpinan asli) --}}
           @if($userRole !== 'pimpinan')
             <span class="bg-indigo-600 text-white text-[8px] px-1.5 py-0.5 rounded font-bold uppercase tracking-widest">Delegated</span>
           @endif
@@ -145,6 +140,7 @@
             <i class="fa-solid fa-folder-open w-[18px] text-center text-[15px]"></i>
             <span>Antrean Persetujuan</span>
           </div>
+          {{-- PRESENTASI: Badge pada menu Antrean, berbeda jika diakses oleh penerima delegasi --}}
           @if($userRole !== 'pimpinan')
             <span class="bg-indigo-500 text-white text-[10px] px-1.5 py-0.5 rounded font-semibold tracking-wide">Delegated</span>
           @else
@@ -174,7 +170,7 @@
         @endif
       @endif
 
-      @if(in_array($userRole, ['staff', 'user']))
+      @if(in_array($userRole, ['staff', 'user']) && !$userRole === 'pimpinan')
         <!-- Staff Menu -->
         <div class="text-[10px] uppercase text-slate-400 px-2.5 pb-2 tracking-wide font-semibold mt-4 mb-1">
           Menu Pemohon / Staf

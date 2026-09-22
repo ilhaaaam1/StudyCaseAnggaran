@@ -31,17 +31,10 @@ class StaffRabController extends Controller
         $totalPending = PengajuanRab::where('id_pengguna', $userId)->where('status', StatusPengajuan::MENUNGGU_FINANCE)->count();
         $totalAccFinance = PengajuanRab::where('id_pengguna', $userId)->where('status', StatusPengajuan::MENUNGGU_PIMPINAN)->count();
         $totalAccFinal = PengajuanRab::where('id_pengguna', $userId)->whereIn('status', [StatusPengajuan::PROSES_PENCAIRAN, StatusPengajuan::SELESAI])->count();
-        // PRESENTASI: Memisahkan perhitungan untuk Revisi dan Ditolak secara independen
-        $totalDitolak = PengajuanRab::where('id_pengguna', $userId)->where('status', StatusPengajuan::DITOLAK)->count();
-        $totalRevisi = PengajuanRab::where('id_pengguna', $userId)->where('status', StatusPengajuan::REVISI)->count();
-        
+        $totalDitolak = PengajuanRab::where('id_pengguna', $userId)
+            ->whereIn('status', [StatusPengajuan::REVISI, StatusPengajuan::DITOLAK])
+            ->count();
         $totalAnggaranDiajukan = (float) PengajuanRab::where('id_pengguna', $userId)->sum('estimasi_total');
-
-        // PRESENTASI: Query GroupBy dan Aggregate (SUM/COUNT) untuk mendapatkan data statistik nominal per kategori
-        $alokasiKategori = PengajuanRab::where('id_pengguna', $userId)
-            ->selectRaw('kategori_anggaran, SUM(estimasi_total) as total_rupiah, COUNT(id_pengajuan) as jumlah_dokumen')
-            ->groupBy('kategori_anggaran')
-            ->get();
 
         $pengajuanTerbaru = PengajuanRab::with(['divisi', 'alurPersetujuan.reviewer'])
             ->where('id_pengguna', $userId)
@@ -55,9 +48,7 @@ class StaffRabController extends Controller
             'totalAccFinance',
             'totalAccFinal',
             'totalDitolak',
-            'totalRevisi',
             'totalAnggaranDiajukan',
-            'alokasiKategori',
             'pengajuanTerbaru'
         ));
     }
@@ -103,7 +94,7 @@ class StaffRabController extends Controller
                 'no_rab' => $noRab,
                 'judul_pengajuan' => $request->input('judul_pengajuan'),
                 'periode_penggunaan' => $request->input('periode_penggunaan'),
-                'kategori_anggaran' => $request->input('kategori_anggaran'),
+                'prioritas' => $request->input('prioritas'),
                 'latar_belakang' => $request->input('latar_belakang'),
                 'estimasi_total' => 0,
                 'status' => $status,
@@ -195,8 +186,7 @@ class StaffRabController extends Controller
         $query = PengajuanRab::with(['divisi', 'alurPersetujuan.reviewer'])
             ->where('id_pengguna', $userId);
 
-        // PRESENTASI: Memastikan filter status ditangkap dengan benar, mengabaikan filter jika user memilih 'semua'
-        if ($statusFilter && $statusFilter !== 'semua') {
+        if ($statusFilter) {
             $query->where('status', $statusFilter);
         }
 
@@ -235,18 +225,10 @@ class StaffRabController extends Controller
     {
         $userId = (int) Auth::id();
 
-        // PRESENTASI: Proteksi Kepemilikan (Authorization)
-        // Mengecek bahwa yang mengedit adalah user pembuatnya sendiri ($pengajuan->id_pengguna == auth()->id())
         $pengajuan = PengajuanRab::with(['rincianItem'])
             ->where('id_pengguna', $userId)
+            ->whereIn('status', [StatusPengajuan::DRAFT, StatusPengajuan::REVISI])
             ->findOrFail($id);
-
-        // PRESENTASI: Proteksi Akses Edit (Validasi Status)
-        // Mengecek logika bahwa Staff HANYA bisa mengedit jika statusnya 'Menunggu Verifikasi Finance'
-        // (serta Draft/Revisi). Jika statusnya sudah diproses, akses langsung diblokir.
-        if (!in_array($pengajuan->status, [StatusPengajuan::MENUNGGU_FINANCE, StatusPengajuan::DRAFT, StatusPengajuan::REVISI])) {
-            abort(403, 'Pengajuan sudah diproses dan tidak dapat diedit');
-        }
 
         $divisiList = Divisi::orderBy('nama_divisi')->get();
 
@@ -254,21 +236,15 @@ class StaffRabController extends Controller
     }
 
     /**
-     * Update pengajuan RAB yang sudah ada (dari Draft / Revisi / Menunggu Verifikasi Finance).
+     * Update pengajuan RAB yang sudah ada (dari Draft / Revisi).
      */
     public function update(StoreRabRequest $request, int $id): RedirectResponse
     {
         $userId = (int) Auth::id();
 
-        // PRESENTASI: Proteksi Kepemilikan (Authorization) pada proses Update
-        // Sama seperti edit, kita pastikan data yang di-update milik user tersebut.
-        $pengajuan = PengajuanRab::where('id_pengguna', $userId)->findOrFail($id);
-
-        // PRESENTASI: Validasi Status di proses Update (Backend Security)
-        // Mencegah eksploitasi jika user memanipulasi request form secara paksa
-        if (!in_array($pengajuan->status, [StatusPengajuan::MENUNGGU_FINANCE, StatusPengajuan::DRAFT, StatusPengajuan::REVISI])) {
-            abort(403, 'Pengajuan sudah diproses dan tidak dapat diedit');
-        }
+        $pengajuan = PengajuanRab::where('id_pengguna', $userId)
+            ->whereIn('status', [StatusPengajuan::DRAFT, StatusPengajuan::REVISI])
+            ->findOrFail($id);
 
         DB::transaction(function () use ($request, $pengajuan) {
             $status = ($request->input('action') === 'draft') ? StatusPengajuan::DRAFT : StatusPengajuan::MENUNGGU_FINANCE;
@@ -278,7 +254,7 @@ class StaffRabController extends Controller
                 'id_divisi' => (int) $request->input('id_divisi'),
                 'judul_pengajuan' => $request->input('judul_pengajuan'),
                 'periode_penggunaan' => $request->input('periode_penggunaan'),
-                'kategori_anggaran' => $request->input('kategori_anggaran'),
+                'prioritas' => $request->input('prioritas'),
                 'latar_belakang' => $request->input('latar_belakang'),
                 'status' => $status,
                 'tanggal_pengajuan' => ($status === StatusPengajuan::MENUNGGU_FINANCE && $pengajuan->status === StatusPengajuan::DRAFT) ? now() : $pengajuan->tanggal_pengajuan,

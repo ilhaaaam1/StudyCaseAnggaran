@@ -151,29 +151,20 @@ class FinanceController extends Controller
      */
     public function processApproval(Request $request, int $id): RedirectResponse
     {
-        // PRESENTASI: Memisahkan Logika Revisi dan Ditolak Permanen di level Finance
-        $rawStatus = (string) ($request->input('action') ?? $request->input('status') ?? '');
-        
-        $statusDecision = 'ACC'; // Default
-        if (strcasecmp($rawStatus, 'revisi') === 0) {
-            $statusDecision = 'Revisi';
-        } elseif (strcasecmp($rawStatus, 'ditolak') === 0 || str_contains(strtolower($rawStatus), 'tolak')) {
+        // Normalisasi input status
+        $rawStatus = (string) ($request->input('status') ?? $request->input('status_persetujuan') ?? '');
+        $statusDecision = 'ACC';
+        if (strcasecmp($rawStatus, 'ditolak') === 0 || str_contains(strtolower($rawStatus), 'tolak')) {
             $statusDecision = 'Ditolak';
         }
 
         $request->merge(['status_decision' => $statusDecision]);
 
-        // PRESENTASI: Catatan diwajibkan jika keputusan adalah Revisi atau Ditolak
         $validated = $request->validate([
-            'status_decision' => ['required', 'in:ACC,Revisi,Ditolak'],
-            'catatan' => [
-                $statusDecision === 'ACC' ? 'nullable' : 'required', 
-                'string', 
-                'max:2000'
-            ],
+            'status_decision' => ['required', 'in:ACC,Ditolak'],
+            'catatan' => ['nullable', 'string', 'max:2000'],
         ], [
             'status_decision.required' => 'Keputusan persetujuan Finance wajib ditentukan.',
-            'catatan.required' => 'Catatan/Evaluasi wajib diisi untuk penolakan atau revisi.',
         ]);
 
         $reviewerId = (int) Auth::id();
@@ -186,14 +177,9 @@ class FinanceController extends Controller
                 abort(422, 'Pengajuan ini tidak dalam status Menunggu Verifikasi Finance.');
             }
 
-            // PRESENTASI: Menentukan target status berdasarkan aksi yang dipilih
-            if ($validated['status_decision'] === 'ACC') {
-                $targetStatus = StatusPengajuan::MENUNGGU_PIMPINAN;
-            } elseif ($validated['status_decision'] === 'Revisi') {
-                $targetStatus = StatusPengajuan::REVISI;
-            } else {
-                $targetStatus = StatusPengajuan::DITOLAK;
-            }
+            $targetStatus = $validated['status_decision'] === 'ACC'
+                ? StatusPengajuan::MENUNGGU_PIMPINAN
+                : StatusPengajuan::REVISI;
 
             // 1. Update status di pengajuan_rab
             $pengajuan->update([
@@ -211,19 +197,14 @@ class FinanceController extends Controller
             ]);
         });
 
-        // PRESENTASI: Pesan sukses yang disesuaikan berdasarkan aksi
-        $message = 'Pengajuan RAB berhasil diproses.';
-        if ($validated['status_decision'] === 'ACC') {
-            $message = 'Pengajuan RAB berhasil di-ACC Finance dan diteruskan ke Pimpinan.';
-        } elseif ($validated['status_decision'] === 'Revisi') {
-            $message = 'Pengajuan RAB dikembalikan ke Staff untuk direvisi.';
-        } else {
-            $message = 'Pengajuan RAB telah ditolak permanen oleh Finance.';
-        }
+        $message = $validated['status_decision'] === 'ACC'
+            ? 'Pengajuan RAB berhasil di-ACC Finance dan diteruskan ke Pimpinan untuk persetujuan akhir.'
+            : 'Pengajuan RAB telah ditolak oleh Finance dan dikembalikan ke Staff.';
 
         ActivityLog::log("Melakukan verifikasi Tahap 1 (Finance) pada Pengajuan RAB #{$id} dengan keputusan {$validated['status_decision']}.");
 
-        return redirect()->route('finance.antrean')->with('success', $message);
+        return redirect()->route('finance.antrean')
+            ->with('success', $message);
     }
 
     /**
