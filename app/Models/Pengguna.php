@@ -150,12 +150,13 @@ class Pengguna extends Authenticatable
         return $this->hasMany(AlurPersetujuan::class, 'id_reviewer', 'id_pengguna');
     }
 
-    // PRESENTASI: Mengecek apakah pengguna saat ini menerima delegasi yang berstatus aktif
-    // Fungsi ini memeriksa record pada tabel delegation_authorities di mana user saat ini (delegate_to_user_id)
-    // menjadi penerima delegasi, statusnya 'Aktif', dan tanggal hari ini (now) berada di antara start_date dan end_date.
+    // PRESENTASI: Logika Pengecekan Delegasi (Metode Pengecekan Aktif)
+    // Fungsi ini mengecek apakah user yang sedang login memiliki record delegasi 
+    // di tabel delegation_authorities dengan status 'Aktif' dan memvalidasi
+    // tanggal hari ini berada di antara start_date dan end_date.
     public function hasActiveDelegation(): bool
     {
-        return DelegationAuthority::where('delegate_to_user_id', $this->id_pengguna)
+        return \App\Models\DelegationAuthority::where('delegate_to_user_id', $this->id_pengguna)
             ->where('status', 'Aktif')
             ->whereDate('start_date', '<=', now())
             ->whereDate('end_date', '>=', now())

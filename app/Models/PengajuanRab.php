@@ -60,7 +60,7 @@ class PengajuanRab extends Model
         'no_rab',
         'judul_pengajuan',
         'periode_penggunaan',
-        'prioritas',
+        'kategori_anggaran',
         'latar_belakang',
         'estimasi_total',
         'status',

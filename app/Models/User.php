@@ -57,4 +57,16 @@ class User extends Authenticatable
     {
         return $this->hasMany(Rab::class, 'approved_by');
     }
+
+    // PRESENTASI: Pengecekan status delegasi aktif
+    // Method ini mengecek apakah pengguna yang sedang login menerima delegasi wewenang
+    // yang masih berlaku (berdasarkan tanggal mulai dan selesai serta status aktif).
+    public function hasActiveDelegation(): bool
+    {
+        return \App\Models\DelegationAuthority::where('delegate_to_user_id', $this->id)
+            ->where('status', 'Aktif')
+            ->whereDate('start_date', '<=', now())
+            ->whereDate('end_date', '>=', now())
+            ->exists();
+    }
 }

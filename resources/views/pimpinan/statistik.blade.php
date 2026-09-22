@@ -71,33 +71,33 @@
       </div>
     </div>
 
-    <!-- Pie Chart: Alokasi per Divisi -->
-    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
-      <h2 class="text-base font-bold text-slate-900 mb-1">Alokasi Anggaran per Divisi</h2>
-      <p class="text-xs text-slate-500 mb-6">Berdasarkan data anggaran yang disetujui pada filter terpilih.</p>
-      <div class="relative h-64 w-full flex items-center justify-center">
+    <!-- Pie Chart: Alokasi per Bidang -->
+    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+      <h2 class="text-base font-bold text-slate-900 mb-1">Alokasi Anggaran per Bidang</h2>
+      <p class="text-xs text-slate-500 mb-6">Distribusi dana berdasarkan bidang sekolah (RAB disetujui).</p>
+      <div class="relative h-64 flex items-center justify-center">
         @if(array_sum($dataDivisi) > 0)
           <canvas id="pieChart"></canvas>
         @else
-          <div class="text-center text-slate-400 text-sm">Belum ada data alokasi anggaran disetujui.</div>
+          <div class="text-slate-400 text-xs italic">Belum ada data pencairan untuk ditampilkan.</div>
         @endif
       </div>
     </div>
-    
   </div>
 
-  <!-- Riwayat Pencairan Terkini -->
-  <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden mb-8">
-    <div class="p-6 border-b border-slate-100">
-      <h2 class="text-base font-bold text-slate-900 mb-1">Riwayat Pencairan Terkini</h2>
-      <p class="text-xs text-slate-500">5 pengajuan terakhir yang telah dicairkan dananya oleh Finance.</p>
+  <!-- Pengajuan Terbaru (Disetujui) -->
+  <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden mb-10">
+    <div class="p-5 border-b border-slate-100 flex items-center justify-between">
+      <h2 class="text-sm font-bold text-slate-900 uppercase tracking-wider">Pengajuan Baru Selesai (30 Hari Terakhir)</h2>
+      <a href="{{ route('pimpinan.riwayat') }}" class="text-xs font-semibold text-indigo-600 hover:text-indigo-800">Lihat Semua Riwayat &rarr;</a>
     </div>
     <div class="overflow-x-auto">
       <table class="w-full text-left text-xs border-collapse">
         <thead class="bg-slate-50 text-slate-600 uppercase font-semibold border-b border-slate-200">
           <tr>
-            <th class="px-5 py-3">No. RAB</th>
-            <th class="px-5 py-3">Divisi</th>
+            <th class="px-5 py-3 w-10 text-center">#</th>
+            <th class="px-5 py-3">No. RAB &amp; Judul</th>
+            <th class="px-5 py-3">Bidang</th>
             <th class="px-5 py-3 text-right">Nominal Cair</th>
             <th class="px-5 py-3 text-center">Tanggal Cair</th>
             <th class="px-5 py-3 text-center">Aksi</th>
@@ -273,7 +273,7 @@
         });
       }
 
-      // Data Alokasi per Divisi
+      // Data Alokasi per Bidang
       const pieCtx = document.getElementById('pieChart');
       if (pieCtx) {
         new Chart(pieCtx, {

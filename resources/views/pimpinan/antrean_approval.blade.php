@@ -29,7 +29,7 @@
           <tr>
             <th class="px-5 py-3.5 w-10 text-center">#</th>
             <th class="px-5 py-3.5">No. RAB</th>
-            <th class="px-5 py-3.5">Pemohon &amp; Divisi</th>
+            <th class="px-5 py-3.5">Pemohon &amp; Bidang</th>
             <th class="px-5 py-3.5">Judul Pengajuan</th>
             <th class="px-5 py-3.5 text-right">Estimasi Biaya</th>
             <th class="px-5 py-3.5 text-center">Status Tahap 1</th>

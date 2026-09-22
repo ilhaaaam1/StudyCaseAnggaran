@@ -156,7 +156,7 @@ class DatabaseSeeder extends Seeder
                 'prioritas' => 'Tinggi',
                 'latar_belakang' => 'Peningkatan kapasitas infrastruktur server dan peremajaan switch jaringan untuk operasional kantor.',
                 'estimasi_total' => 148500000.00,
-                'status' => 'ACC',
+                'status' => 'Selesai',
                 'tanggal_pengajuan' => now()->subDays(5),
             ]
         );
@@ -221,7 +221,7 @@ class DatabaseSeeder extends Seeder
                 'prioritas' => 'Sedang',
                 'latar_belakang' => 'Pelatihan sertifikasi keamanan informasi ISO 27001 untuk memperkuat tata kelola TI.',
                 'estimasi_total' => 25000000.00,
-                'status' => 'Pending',
+                'status' => 'Menunggu Verifikasi Finance',
                 'tanggal_pengajuan' => now()->subDay(),
             ]
         );
@@ -283,7 +283,7 @@ class DatabaseSeeder extends Seeder
                 'prioritas' => 'Tinggi',
                 'latar_belakang' => 'Promosi kampanye akhir tahun di media sosial dan partisipasi pameran industri nasional.',
                 'estimasi_total' => 65000000.00,
-                'status' => 'Pending',
+                'status' => 'Menunggu Verifikasi Finance',
                 'tanggal_pengajuan' => now()->subHours(6),
             ]
         );
