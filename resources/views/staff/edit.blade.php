@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Buat Pengajuan RAB Baru - SIRAB Kelompok-3')
+@section('title', 'Edit Pengajuan RAB Sekolah - ' . $pengajuan->no_rab)
 
 @section('content')
   <!-- Breadcrumb -->
@@ -9,111 +9,296 @@
     <span>/</span>
     <a href="{{ route('staff.dashboard') }}" class="hover:text-slate-800">Dashboard Staf</a>
     <span>/</span>
-    <span class="text-slate-800 font-medium">Buat Pengajuan RAB</span>
+    <span class="text-slate-800 font-medium">Edit Pengajuan RAB</span>
   </div>
 
   <div class="max-w-5xl mx-auto mb-10">
-    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm mb-6 flex items-center justify-between">
+    <!-- Header Banner -->
+    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
       <div>
-        <span class="text-xs font-semibold text-indigo-600 uppercase tracking-wider">Formulir Pengajuan RAB</span>
-        <h1 class="text-2xl font-bold text-slate-900 mt-0.5">Buat Rencana Anggaran Biaya</h1>
-        <p class="text-xs text-slate-500 mt-1">Isi identitas pengajuan, rincian barang/jasa, dan lampirkan dokumen pendukung.</p>
+        <div class="inline-flex items-center gap-2 px-2.5 py-1 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-700 border border-indigo-200 mb-2">
+          <i class="fa-solid fa-school text-[11px]"></i> Manajemen Anggaran Sekolah
+        </div>
+        <h1 class="text-2xl font-bold text-slate-900 mt-0.5">Edit Pengajuan Rencana Anggaran Biaya (RAB)</h1>
+        <p class="text-xs text-slate-500 mt-1">Perbarui data pokok kegiatan sekolah, rentang jadwal pelaksanaan, dan rincian belanja anggaran.</p>
       </div>
-      <div class="text-right">
-        <span class="text-[10px] text-slate-400 font-semibold block uppercase">Nomor RAB Otomatis</span>
-        <span class="font-mono text-base font-bold text-indigo-700 bg-indigo-50 px-3 py-1 rounded-lg border border-indigo-200 inline-block">
-          {{ $autoNoRab ?? 'RAB-'.date('Y').'-AUTO' }}
+      <div class="sm:text-right shrink-0">
+        <span class="text-[10px] text-slate-400 font-semibold block uppercase">Nomor Registrasi RAB</span>
+        <span class="font-mono text-base font-bold text-indigo-700 bg-indigo-50 px-3 py-1 rounded-lg border border-indigo-200 inline-block mt-0.5">
+          {{ $pengajuan->no_rab }}
         </span>
       </div>
     </div>
 
-    <form action="{{ route('staff.rab.update', $pengajuan->id_pengajuan) }}" method="POST" enctype="multipart/form-data" class="space-y-6">
+    @if ($errors->any())
+      <div class="mb-6 p-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs">
+        <div class="font-bold flex items-center gap-2 mb-1 text-sm">
+          <i class="fa-solid fa-triangle-exclamation"></i> Terdapat beberapa kesalahan input:
+        </div>
+        <ul class="list-disc list-inside space-y-0.5 pl-1">
+          @foreach ($errors->all() as $error)
+            <li>{{ $error }}</li>
+          @endforeach
+        </ul>
+      </div>
+    @endif
+
+    <form action="{{ route('staff.rab.update', $pengajuan->id_pengajuan) }}" method="POST" enctype="multipart/form-data" class="space-y-6" id="formRab">
       @csrf
       @method('PUT')
 
-      <!-- Card 1: Data Pokok Pengajuan -->
-      <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
-        <h2 class="text-sm font-bold text-slate-900 uppercase tracking-wider border-b border-slate-100 pb-3">
-          1. Data Pokok Pengajuan
-        </h2>
+      <!-- CARD 1: INFORMASI KEGIATAN & UNIT KERJA -->
+      <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-5">
+        <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+          <h2 class="text-sm font-bold text-slate-900 uppercase tracking-wider flex items-center gap-2">
+            <span class="w-6 h-6 rounded-full bg-indigo-600 text-white flex items-center justify-center text-xs">1</span>
+            Data Pokok & Unit Kerja Pengaju
+          </h2>
+          <span class="text-[11px] text-slate-400">Tahap Perubahan Pengajuan</span>
+        </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div>
-            <label class="block text-xs font-semibold text-slate-700 mb-1">Judul Pengajuan <span class="text-rose-500">*</span></label>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+          <!-- Judul Pengajuan Kegiatan -->
+          <div class="sm:col-span-2">
+            <label class="block text-xs font-semibold text-slate-700 mb-1.5">
+              Judul Pengajuan Kegiatan <span class="text-rose-500">*</span>
+            </label>
             <input type="text" name="judul_pengajuan" value="{{ old('judul_pengajuan', $pengajuan->judul_pengajuan) }}" required
-                   placeholder="Contoh: Pengadaan Laptop Divisi Operasional"
-                   class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-sm focus:border-indigo-500">
+                   placeholder="Contoh: Pengadaan Modul Literasi ANBK dan Alat Peraga Kelas 5"
+                   class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm text-slate-800 placeholder-slate-400 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
+            <p class="text-[11px] text-slate-400 mt-1">Buat nama kegiatan yang spesifik dan jelas sesuai sasaran kegiatan sekolah.</p>
             @error('judul_pengajuan') <p class="text-xs text-rose-600 mt-1">{{ $message }}</p> @enderror
           </div>
 
+          <!-- Unit Kerja Sekolah (Divisi) -->
           <div>
-            {{-- PRESENTASI: Penyesuaian Label Field Divisi di Edit --}}
-            <label class="block text-xs font-semibold text-slate-700 mb-1">Bidang / Bagian <span class="text-rose-500">*</span></label>
-            <select name="id_divisi" required class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-sm focus:border-indigo-500">
-              <option value="">-- Pilih Bidang / Bagian --</option>
+            <label class="block text-xs font-semibold text-slate-700 mb-1.5">
+              Unit Kerja Sekolah (Bidang) <span class="text-rose-500">*</span>
+            </label>
+            <select name="id_divisi" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:border-indigo-500 text-slate-800 bg-white">
+              <option value="">-- Pilih Unit Kerja Sekolah --</option>
               @foreach($divisiList ?? [] as $d)
                 <option value="{{ $d->id_divisi }}" {{ old('id_divisi', $pengajuan->id_divisi) == $d->id_divisi ? 'selected' : '' }}>
                   {{ $d->nama_divisi }}
                 </option>
               @endforeach
             </select>
+            <p class="text-[11px] text-slate-400 mt-1">Pilih bidang penanggung jawab operasional kegiatan.</p>
             @error('id_divisi') <p class="text-xs text-rose-600 mt-1">{{ $message }}</p> @enderror
           </div>
-        </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <!-- Kategori Pos Anggaran BOS / RKAS -->
           <div>
-            <label class="block text-xs font-semibold text-slate-700 mb-1">Periode Penggunaan <span class="text-rose-500">*</span></label>
-            <input type="text" name="periode_penggunaan" value="{{ old('periode_penggunaan', $pengajuan->periode_penggunaan) }}" required
-                   placeholder="Contoh: Triwulan I 2026"
-                   class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-sm focus:border-indigo-500">
-            @error('periode_penggunaan') <p class="text-xs text-rose-600 mt-1">{{ $message }}</p> @enderror
-          </div>
-
-          <div>
-            {{-- PRESENTASI: Mengganti Input Dropdown Prioritas di Edit --}}
-            <label class="block text-xs font-semibold text-slate-700 mb-1">Kategori Anggaran <span class="text-rose-500">*</span></label>
-            <select name="kategori_anggaran" required class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-sm focus:border-indigo-500">
-              <option value="" disabled>-- Pilih Kategori --</option>
-              <option value="Operasional Rutin" {{ old('kategori_anggaran', $pengajuan->kategori_anggaran) === 'Operasional Rutin' ? 'selected' : '' }}>Operasional Rutin</option>
-              <option value="Pengadaan Barang/Aset" {{ old('kategori_anggaran', $pengajuan->kategori_anggaran) === 'Pengadaan Barang/Aset' ? 'selected' : '' }}>Pengadaan Barang/Aset</option>
-              <option value="Pemeliharaan & Perbaikan" {{ old('kategori_anggaran', $pengajuan->kategori_anggaran) === 'Pemeliharaan & Perbaikan' ? 'selected' : '' }}>Pemeliharaan & Perbaikan</option>
-              <option value="Kegiatan / Acara" {{ old('kategori_anggaran', $pengajuan->kategori_anggaran) === 'Kegiatan / Acara' ? 'selected' : '' }}>Kegiatan / Acara</option>
+            <label class="block text-xs font-semibold text-slate-700 mb-1.5">
+              Kategori Pos Anggaran (Acuan BOS & RKAS) <span class="text-rose-500">*</span>
+            </label>
+            <select name="kategori_anggaran" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:border-indigo-500 text-slate-800 bg-white">
+              <option value="" disabled>-- Pilih Kategori Pos Anggaran --</option>
+              @php
+                $posAnggaran = [
+                  'Belanja Barang Operasional & ATK' => 'Kertas HVS, spidol, tinta printer, map rapor, perlengkapan kelas & kantor',
+                  'Kegiatan Kesiswaan & Lomba' => 'Pramuka, tari, drum band, PHBN/PHBI, lomba O2SN/FLS2N, konsumsi & transport',
+                  'Pemeliharaan Sarana & Prasarana' => 'Perbaikan ruang kelas, sanitasi/toilet, meja-kursi, pengecatan, listrik & air',
+                  'Pengembangan Perpustakaan & Literasi' => 'Pengadaan buku ajar/bacaan, inventarisasi literasi, sarana perpustakaan',
+                  'Peningkatan Kompetensi Guru (SDM)' => 'Pelatihan guru, workshop kurikulum merdeka, KKG, seminar kompetensi',
+                  'Langganan Daya & Jasa' => 'Tagihan listrik PLN, internet/WiFi sekolah, air bersih PDAM, jasa kebersihan',
+                  'Belanja Modal / Alat Elektronik' => 'Proyektor LCD, laptop ANBK, sound system, komputer dan peralatan TIK',
+                ];
+              @endphp
+              @foreach($posAnggaran as $kat => $deskripsi)
+                <option value="{{ $kat }}" {{ old('kategori_anggaran', $pengajuan->kategori_anggaran) === $kat ? 'selected' : '' }}>
+                  {{ $kat }}
+                </option>
+              @endforeach
             </select>
+            <p class="text-[11px] text-slate-400 mt-1">Klasifikasi belanja mengacu pada pos alokasi BOS & RAPBS.</p>
             @error('kategori_anggaran') <p class="text-xs text-rose-600 mt-1">{{ $message }}</p> @enderror
           </div>
         </div>
+      </div>
 
+      <!-- CARD 2: PERIODE PENGGUNAAN & RENTANG WAKTU PELAKSANAAN -->
+      @php
+        $selectedTahunSemester = old('tahun_ajaran_semester', $pengajuan->tahun_ajaran_semester ?? ($pengajuan->tahun_ajaran ? $pengajuan->tahun_ajaran . ' - Semester ' . $pengajuan->semester : '2026/2027 - Semester Ganjil'));
+        $selectedTahapBos = old('tahap_bos', $pengajuan->tahap_bos ?? 'BOS Reguler Tahap 1 (Januari – Juni)');
+        $valTglMulai = old('tanggal_mulai', $pengajuan->tanggal_mulai ? $pengajuan->tanggal_mulai->format('Y-m-d') : date('Y-m-d'));
+        $valTglSelesai = old('tanggal_selesai', $pengajuan->tanggal_selesai ? $pengajuan->tanggal_selesai->format('Y-m-d') : date('Y-m-d', strtotime('+3 days')));
+      @endphp
+
+      <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-5" x-data="{
+        tglMulai: '{{ $valTglMulai }}',
+        tglSelesai: '{{ $valTglSelesai }}',
+        get durasiHari() {
+          if (!this.tglMulai || !this.tglSelesai) return 0;
+          let start = new Date(this.tglMulai);
+          let end = new Date(this.tglSelesai);
+          let diffTime = end - start;
+          let diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+          return diffDays > 0 ? diffDays : 0;
+        },
+        get isInvalidRange() {
+          if (!this.tglMulai || !this.tglSelesai) return false;
+          return new Date(this.tglSelesai) < new Date(this.tglMulai);
+        }
+      }">
+        <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+          <h2 class="text-sm font-bold text-slate-900 uppercase tracking-wider flex items-center gap-2">
+            <span class="w-6 h-6 rounded-full bg-emerald-600 text-white flex items-center justify-center text-xs">2</span>
+            Periode Penggunaan & Rentang Waktu Pelaksanaan
+          </h2>
+          <span class="text-[11px] text-emerald-600 font-semibold bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">
+            Jadwal SPJ & Pencairan
+          </span>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+          <!-- Tahun Ajaran & Semester -->
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1.5">
+              Tahun Ajaran & Semester <span class="text-rose-500">*</span>
+            </label>
+            <select name="tahun_ajaran_semester" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:border-indigo-500 text-slate-800 bg-white">
+              <option value="" disabled>-- Pilih Tahun Ajaran & Semester --</option>
+              <option value="2026/2027 - Semester Ganjil" {{ $selectedTahunSemester === '2026/2027 - Semester Ganjil' ? 'selected' : '' }}>
+                2026/2027 - Semester Ganjil
+              </option>
+              <option value="2026/2027 - Semester Genap" {{ $selectedTahunSemester === '2026/2027 - Semester Genap' ? 'selected' : '' }}>
+                2026/2027 - Semester Genap
+              </option>
+              <option value="2025/2026 - Semester Genap" {{ $selectedTahunSemester === '2025/2026 - Semester Genap' ? 'selected' : '' }}>
+                2025/2026 - Semester Genap
+              </option>
+              <option value="2025/2026 - Semester Ganjil" {{ $selectedTahunSemester === '2025/2026 - Semester Ganjil' ? 'selected' : '' }}>
+                2025/2026 - Semester Ganjil
+              </option>
+            </select>
+            @error('tahun_ajaran_semester') <p class="text-xs text-rose-600 mt-1">{{ $message }}</p> @enderror
+          </div>
+
+          <!-- Tahap Penyaluran BOS -->
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1.5">
+              Tahap Penyaluran Dana BOS <span class="text-rose-500">*</span>
+            </label>
+            <select name="tahap_bos" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:border-indigo-500 text-slate-800 bg-white">
+              <option value="" disabled>-- Pilih Tahap Penyaluran BOS --</option>
+              <option value="BOS Reguler Tahap 1 (Januari – Juni)" {{ $selectedTahapBos === 'BOS Reguler Tahap 1 (Januari – Juni)' ? 'selected' : '' }}>
+                BOS Reguler Tahap 1 (Januari – Juni)
+              </option>
+              <option value="BOS Reguler Tahap 2 (Juli – Desember)" {{ $selectedTahapBos === 'BOS Reguler Tahap 2 (Juli – Desember)' ? 'selected' : '' }}>
+                BOS Reguler Tahap 2 (Juli – Desember)
+              </option>
+            </select>
+            @error('tahap_bos') <p class="text-xs text-rose-600 mt-1">{{ $message }}</p> @enderror
+          </div>
+        </div>
+
+        <!-- RENTANG WAKTU PENGGUNAAN (DATEPICKER) -->
+        <div class="p-4 bg-slate-50/80 rounded-xl border border-slate-200/80 space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+              <i class="fa-regular fa-calendar-days text-indigo-600"></i> Rentang Waktu Pelaksanaan / Penggunaan Anggaran
+            </span>
+            <!-- Live Duration Indicator Badge -->
+            <span x-show="!isInvalidRange && durasiHari > 0" 
+                  class="text-[11px] font-semibold text-indigo-700 bg-indigo-50 px-2.5 py-0.5 rounded-full border border-indigo-200">
+              <i class="fa-solid fa-clock text-[10px] mr-1"></i> <span x-text="durasiHari"></span> Hari Kegiatan
+            </span>
+            <span x-show="isInvalidRange" 
+                  class="text-[11px] font-semibold text-rose-600 bg-rose-50 px-2.5 py-0.5 rounded-full border border-rose-200">
+              <i class="fa-solid fa-circle-exclamation text-[10px] mr-1"></i> Tanggal tidak valid
+            </span>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">
+                Tanggal Mulai Kegiatan <span class="text-rose-500">*</span>
+              </label>
+              <input type="date" 
+                     name="tanggal_mulai" 
+                     x-model="tglMulai"
+                     required
+                     class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm focus:border-indigo-500 bg-white">
+              @error('tanggal_mulai') <p class="text-xs text-rose-600 mt-1">{{ $message }}</p> @enderror
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">
+                Tanggal Selesai Kegiatan <span class="text-rose-500">*</span>
+              </label>
+              <input type="date" 
+                     name="tanggal_selesai" 
+                     x-model="tglSelesai"
+                     :min="tglMulai"
+                     required
+                     class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm focus:border-indigo-500 bg-white">
+              @error('tanggal_selesai') <p class="text-xs text-rose-600 mt-1">{{ $message }}</p> @enderror
+            </div>
+          </div>
+
+          <p class="text-[11px] text-slate-500 italic">
+            * Rentang tanggal digunakan sebagai acuan pencairan dana oleh Bendahara dan batas waktu SPJ pelaksanaan.
+          </p>
+        </div>
+
+        <!-- Latar Belakang & Urgensi -->
         <div>
-          <label class="block text-xs font-semibold text-slate-700 mb-1">Latar Belakang & Urgensi <span class="text-rose-500">*</span></label>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">
+            Latar Belakang & Urgensi Kegiatan <span class="text-rose-500">*</span>
+          </label>
           <textarea name="latar_belakang" rows="3" required
-                    placeholder="Uraikan justifikasi kebutuhan anggaran ini secara ringkas dan jelas..."
+                    placeholder="Uraikan justifikasi kebutuhan kegiatan, target peserta siswa/guru, serta urgensi alokasi anggaran ini..."
                     class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-sm focus:border-indigo-500">{{ old('latar_belakang', $pengajuan->latar_belakang) }}</textarea>
           @error('latar_belakang') <p class="text-xs text-rose-600 mt-1">{{ $message }}</p> @enderror
         </div>
       </div>
 
-      <!-- Card 2: Rincian Item Anggaran -->
+      <!-- CARD 3: RINCIAN ITEM BELANJA ANGGARAN (TABEL DINAMIS) -->
       <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
         <div class="flex items-center justify-between border-b border-slate-100 pb-3">
-          <h2 class="text-sm font-bold text-slate-900 uppercase tracking-wider">2. Rincian Item Belanja</h2>
+          <div>
+            <h2 class="text-sm font-bold text-slate-900 uppercase tracking-wider flex items-center gap-2">
+              <span class="w-6 h-6 rounded-full bg-amber-500 text-white flex items-center justify-center text-xs">3</span>
+              Rincian Item Belanja & Anggaran
+            </h2>
+            <p class="text-xs text-slate-400 mt-0.5">Perbarui rincian belanja komoditas/jasa, volume, dan harga satuan.</p>
+          </div>
           <button type="button" onclick="tambahBarisItem()"
-                  class="text-xs font-semibold text-indigo-600 hover:text-indigo-800 bg-indigo-50 px-3 py-1.5 rounded-lg border border-indigo-200">
-            + Tambah Baris
+                  class="text-xs font-semibold text-indigo-600 hover:text-indigo-800 bg-indigo-50 hover:bg-indigo-100 px-3.5 py-2 rounded-xl border border-indigo-200 transition-colors cursor-pointer flex items-center gap-1.5 shadow-2xs">
+            <i class="fa-solid fa-plus text-[10px]"></i> Tambah Baris Item
           </button>
         </div>
+
+        <!-- Datalist Satuan Standar Sekolah -->
+        <datalist id="satuanList">
+          <option value="Rim"></option>
+          <option value="Pak"></option>
+          <option value="Dus"></option>
+          <option value="Kotak"></option>
+          <option value="Buah"></option>
+          <option value="Unit"></option>
+          <option value="Set"></option>
+          <option value="Lembar"></option>
+          <option value="Meter"></option>
+          <option value="Liter"></option>
+          <option value="Paket"></option>
+          <option value="Kegiatan"></option>
+          <option value="Orang/Hari"></option>
+          <option value="Bulan"></option>
+        </datalist>
 
         <div class="overflow-x-auto">
           <table class="w-full text-left text-xs border-collapse" id="tabelItem">
             <thead class="bg-slate-50 text-slate-600 font-semibold border-b border-slate-200">
               <tr>
-                <th class="px-3 py-2 w-10 text-center">#</th>
-                <th class="px-3 py-2">Uraian Barang / Jasa</th>
-                <th class="px-3 py-2 w-28">Satuan</th>
-                <th class="px-3 py-2 w-24">Volume</th>
-                <th class="px-3 py-2 w-36">Harga Satuan (Rp)</th>
-                <th class="px-3 py-2 w-36 text-right">Subtotal</th>
-                <th class="px-3 py-2 w-12 text-center">Aksi</th>
+                <th class="px-3 py-2.5 w-10 text-center">#</th>
+                <th class="px-3 py-2.5">Nama Barang / Deskripsi Belanja</th>
+                <th class="px-3 py-2.5 w-32">Satuan</th>
+                <th class="px-3 py-2.5 w-24">Volume</th>
+                <th class="px-3 py-2.5 w-40">Harga Satuan (Rp)</th>
+                <th class="px-3 py-2.5 w-44 text-right">Subtotal</th>
+                <th class="px-3 py-2.5 w-12 text-center">Aksi</th>
               </tr>
             </thead>
             <tbody id="bodyItem" class="divide-y divide-slate-100">
@@ -122,26 +307,26 @@
                   <tr class="item-row">
                     <td class="px-3 py-2.5 text-center text-slate-400 font-mono row-index">{{ $index + 1 }}</td>
                     <td class="px-3 py-2.5">
-                      <input type="text" name="items[{{ $index }}][uraian_barang]" value="{{ $item->uraian_barang }}" required placeholder="Nama item / spek"
-                             class="w-full px-2.5 py-1.5 border border-slate-300 rounded-lg text-xs">
+                      <input type="text" name="items[{{ $index }}][uraian_barang]" value="{{ $item->uraian_barang }}" required placeholder="Contoh: Kertas HVS F4 70gr Sinar Dunia"
+                             class="w-full px-2.5 py-1.5 border border-slate-300 rounded-lg text-xs focus:border-indigo-500">
                     </td>
                     <td class="px-3 py-2.5">
-                      <input type="text" name="items[{{ $index }}][satuan]" value="{{ $item->satuan }}" required placeholder="Unit / Pcs / Bulan"
-                             class="w-full px-2.5 py-1.5 border border-slate-300 rounded-lg text-xs">
+                      <input type="text" name="items[{{ $index }}][satuan]" list="satuanList" value="{{ $item->satuan }}" required placeholder="Rim / Unit"
+                             class="w-full px-2.5 py-1.5 border border-slate-300 rounded-lg text-xs focus:border-indigo-500">
                     </td>
                     <td class="px-3 py-2.5">
-                      <input type="number" name="items[{{ $index }}][volume]" step="any" min="1" value="{{ (float)$item->volume }}" required oninput="hitungSubtotal(this)"
-                             class="input-volume w-full px-2.5 py-1.5 border border-slate-300 rounded-lg text-xs font-mono">
+                      <input type="number" name="items[{{ $index }}][volume]" step="any" min="0.01" value="{{ (float)$item->volume }}" required oninput="hitungSubtotal(this)"
+                             class="input-volume w-full px-2.5 py-1.5 border border-slate-300 rounded-lg text-xs font-mono text-center focus:border-indigo-500">
                     </td>
                     <td class="px-3 py-2.5">
                       <input type="number" name="items[{{ $index }}][harga_satuan]" step="any" min="0" value="{{ (float)$item->harga_satuan }}" required oninput="hitungSubtotal(this)"
-                             placeholder="0" class="w-full px-2.5 py-1.5 border border-slate-300 rounded-lg text-xs font-mono">
+                             placeholder="0" class="w-full px-2.5 py-1.5 border border-slate-300 rounded-lg text-xs font-mono text-right focus:border-indigo-500">
                     </td>
                     <td class="px-3 py-2.5 text-right font-mono font-semibold text-slate-800 subtotal-text">
                       Rp {{ number_format((float)($item->volume * $item->harga_satuan), 0, ',', '.') }}
                     </td>
                     <td class="px-3 py-2.5 text-center">
-                      <button type="button" onclick="hapusBaris(this)" class="text-rose-500 hover:text-rose-700 font-bold">&times;</button>
+                      <button type="button" onclick="hapusBaris(this)" class="text-rose-400 hover:text-rose-600 font-bold p-1 transition-colors cursor-pointer" title="Hapus Baris">&times;</button>
                     </td>
                   </tr>
                 @endforeach
@@ -149,34 +334,38 @@
                 <tr class="item-row">
                   <td class="px-3 py-2.5 text-center text-slate-400 font-mono row-index">1</td>
                   <td class="px-3 py-2.5">
-                    <input type="text" name="items[0][uraian_barang]" required placeholder="Nama item / spek"
-                           class="w-full px-2.5 py-1.5 border border-slate-300 rounded-lg text-xs">
+                    <input type="text" name="items[0][uraian_barang]" required placeholder="Contoh: Kertas HVS F4 70gr Sinar Dunia"
+                           class="w-full px-2.5 py-1.5 border border-slate-300 rounded-lg text-xs focus:border-indigo-500">
                   </td>
                   <td class="px-3 py-2.5">
-                    <input type="text" name="items[0][satuan]" required placeholder="Unit / Pcs / Bulan"
-                           class="w-full px-2.5 py-1.5 border border-slate-300 rounded-lg text-xs">
+                    <input type="text" name="items[0][satuan]" list="satuanList" required placeholder="Rim / Unit"
+                           class="w-full px-2.5 py-1.5 border border-slate-300 rounded-lg text-xs focus:border-indigo-500">
                   </td>
                   <td class="px-3 py-2.5">
-                    <input type="number" name="items[0][volume]" step="any" min="1" value="1" required oninput="hitungSubtotal(this)"
-                           class="input-volume w-full px-2.5 py-1.5 border border-slate-300 rounded-lg text-xs font-mono">
+                    <input type="number" name="items[0][volume]" step="any" min="0.01" value="1" required oninput="hitungSubtotal(this)"
+                           class="input-volume w-full px-2.5 py-1.5 border border-slate-300 rounded-lg text-xs font-mono text-center focus:border-indigo-500">
                   </td>
                   <td class="px-3 py-2.5">
                     <input type="number" name="items[0][harga_satuan]" step="any" min="0" required oninput="hitungSubtotal(this)"
-                           placeholder="0" class="w-full px-2.5 py-1.5 border border-slate-300 rounded-lg text-xs font-mono">
+                           placeholder="0" class="w-full px-2.5 py-1.5 border border-slate-300 rounded-lg text-xs font-mono text-right focus:border-indigo-500">
                   </td>
                   <td class="px-3 py-2.5 text-right font-mono font-semibold text-slate-800 subtotal-text">
                     Rp 0
                   </td>
                   <td class="px-3 py-2.5 text-center">
-                    <button type="button" onclick="hapusBaris(this)" class="text-rose-500 hover:text-rose-700 font-bold">&times;</button>
+                    <button type="button" onclick="hapusBaris(this)" class="text-rose-400 hover:text-rose-600 font-bold p-1 transition-colors cursor-pointer" title="Hapus Baris">&times;</button>
                   </td>
                 </tr>
               @endif
             </tbody>
             <tfoot class="bg-slate-50 font-bold border-t border-slate-200">
               <tr>
-                <td colspan="5" class="px-3 py-3 text-right text-slate-700 uppercase tracking-wider text-xs">Total Estimasi Anggaran:</td>
-                <td id="grandTotalText" class="px-3 py-3 text-right font-mono text-sm text-indigo-700">Rp 0</td>
+                <td colspan="5" class="px-4 py-3.5 text-right text-slate-700 uppercase tracking-wider text-xs">
+                  Total Estimasi Anggaran Pengajuan:
+                </td>
+                <td id="grandTotalText" class="px-3 py-3.5 text-right font-mono text-base text-indigo-700">
+                  Rp 0
+                </td>
                 <td></td>
               </tr>
             </tfoot>
@@ -184,47 +373,54 @@
         </div>
       </div>
 
-      <!-- Card 3: Dokumen Pendukung & Submit -->
+      <!-- CARD 4: DOKUMEN PENDUKUNG & FINALISASI -->
       <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
-        <h2 class="text-sm font-bold text-slate-900 uppercase tracking-wider border-b border-slate-100 pb-3">
-          3. Dokumen Pendukung & Finalisasi
-        </h2>
+        <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+          <h2 class="text-sm font-bold text-slate-900 uppercase tracking-wider flex items-center gap-2">
+            <span class="w-6 h-6 rounded-full bg-slate-600 text-white flex items-center justify-center text-xs">4</span>
+            Lampiran Dokumen & Finalisasi
+          </h2>
+          <span class="text-[11px] text-slate-400">Opsional (Maks. 5 MB)</span>
+        </div>
 
         <div>
-          <label class="block text-xs font-semibold text-slate-700 mb-2">Dokumen Pendukung Saat Ini</label>
-          {{-- PRESENTASI: Preview Dokumen Lama pada Form Edit --}}
-          {{-- Menampilkan daftar dokumen yang sudah diunggah sebelumnya. Jika user mengupload dokumen baru, dokumen lama ini akan digantikan di sistem. --}}
+          <label class="block text-xs font-semibold text-slate-700 mb-2">Dokumen Pendukung Terlampir Saat Ini</label>
           @if($pengajuan->dokumenPendukung && $pengajuan->dokumenPendukung->isNotEmpty())
             <ul class="mb-3 space-y-2">
               @foreach($pengajuan->dokumenPendukung as $doc)
-                <li class="flex items-center gap-2 text-xs text-indigo-700 bg-indigo-50 px-3 py-2 rounded border border-indigo-100">
-                  <i class="fa-solid fa-file-lines"></i>
-                  <a href="{{ asset('storage/' . $doc->path_file) }}" target="_blank" class="hover:underline font-medium">{{ $doc->nama_file }}</a>
+                <li class="flex items-center justify-between text-xs text-indigo-700 bg-indigo-50 px-3 py-2 rounded-xl border border-indigo-100">
+                  <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-file-pdf text-rose-500 text-sm"></i>
+                    <a href="{{ asset('storage/' . $doc->path_file) }}" target="_blank" class="hover:underline font-medium">
+                      {{ $doc->nama_file }}
+                    </a>
+                  </div>
+                  <span class="text-[10px] text-slate-400">Tersimpan</span>
                 </li>
               @endforeach
             </ul>
-            <p class="text-[11px] text-amber-600 font-semibold mb-3">
-              <i class="fa-solid fa-circle-info mr-1"></i> Jika Anda mengunggah file baru di bawah ini, file dokumen lama akan terhapus.
+            <p class="text-[11px] text-amber-700 font-semibold mb-3 flex items-center gap-1.5">
+              <i class="fa-solid fa-circle-info"></i> Jika Anda mengunggah file baru di bawah ini, berkas dokumen lama akan diperbarui.
             </p>
           @else
-            <p class="text-xs text-slate-500 mb-3 italic">Belum ada dokumen yang dilampirkan.</p>
+            <p class="text-xs text-slate-400 mb-3 italic">Belum ada dokumen yang dilampirkan.</p>
           @endif
 
-          <label class="block text-xs font-semibold text-slate-700 mb-1 mt-4">Upload Berkas Pengganti (PDF/JPG/PNG max 5MB)</label>
+          <label class="block text-xs font-semibold text-slate-700 mb-1 mt-4">Upload Berkas Pengganti / Tambahan (PDF/JPG/PNG max 5MB)</label>
           <input type="file" name="dokumen_pendukung" accept=".pdf,.jpg,.jpeg,.png"
                  class="block w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 cursor-pointer">
           <p class="text-[11px] text-slate-400 mt-1">Lampirkan proposal kegiatan, perbandingan harga vendor, atau TOR acuan.</p>
         </div>
 
         <div class="pt-4 border-t border-slate-100 flex items-center justify-end gap-3">
-          <a href="{{ route('staff.dashboard') }}" class="px-4 py-2 border border-slate-300 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-50">
+          <a href="{{ route('staff.dashboard') }}" class="px-4 py-2.5 border border-slate-300 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-50 transition-colors">
             Batal
           </a>
-          <button type="submit" name="action" value="draft" class="px-6 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-xl text-xs font-semibold shadow-sm">
-            Simpan Draft
+          <button type="submit" name="action" value="draft" class="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold transition-colors cursor-pointer">
+            <i class="fa-regular fa-bookmark mr-1"></i> Simpan Sebagai Draft
           </button>
-          <button type="submit" name="action" value="send" class="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-semibold shadow-sm">
-            Kirim Pengajuan
+          <button type="submit" name="action" value="send" class="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-semibold transition-colors shadow-sm cursor-pointer">
+            <i class="fa-solid fa-paper-plane mr-1.5"></i> Perbarui & Kirim Pengajuan
           </button>
         </div>
       </div>
@@ -241,26 +437,26 @@
       tr.innerHTML = `
         <td class="px-3 py-2.5 text-center text-slate-400 font-mono row-index">${tbody.children.length + 1}</td>
         <td class="px-3 py-2.5">
-          <input type="text" name="items[${barisIndex}][uraian_barang]" required placeholder="Nama item / spek"
-                 class="w-full px-2.5 py-1.5 border border-slate-300 rounded-lg text-xs">
+          <input type="text" name="items[${barisIndex}][uraian_barang]" required placeholder="Contoh: Kertas HVS F4 70gr Sinar Dunia"
+                 class="w-full px-2.5 py-1.5 border border-slate-300 rounded-lg text-xs focus:border-indigo-500">
         </td>
         <td class="px-3 py-2.5">
-          <input type="text" name="items[${barisIndex}][satuan]" required placeholder="Unit / Pcs"
-                 class="w-full px-2.5 py-1.5 border border-slate-300 rounded-lg text-xs">
+          <input type="text" name="items[${barisIndex}][satuan]" list="satuanList" required placeholder="Rim / Unit"
+                 class="w-full px-2.5 py-1.5 border border-slate-300 rounded-lg text-xs focus:border-indigo-500">
         </td>
         <td class="px-3 py-2.5">
-          <input type="number" name="items[${barisIndex}][volume]" step="any" min="1" value="1" required oninput="hitungSubtotal(this)"
-                 class="input-volume w-full px-2.5 py-1.5 border border-slate-300 rounded-lg text-xs font-mono">
+          <input type="number" name="items[${barisIndex}][volume]" step="any" min="0.01" value="1" required oninput="hitungSubtotal(this)"
+                 class="input-volume w-full px-2.5 py-1.5 border border-slate-300 rounded-lg text-xs font-mono text-center focus:border-indigo-500">
         </td>
         <td class="px-3 py-2.5">
           <input type="number" name="items[${barisIndex}][harga_satuan]" step="any" min="0" required oninput="hitungSubtotal(this)"
-                 placeholder="0" class="w-full px-2.5 py-1.5 border border-slate-300 rounded-lg text-xs font-mono">
+                 placeholder="0" class="w-full px-2.5 py-1.5 border border-slate-300 rounded-lg text-xs font-mono text-right focus:border-indigo-500">
         </td>
         <td class="px-3 py-2.5 text-right font-mono font-semibold text-slate-800 subtotal-text">
           Rp 0
         </td>
         <td class="px-3 py-2.5 text-center">
-          <button type="button" onclick="hapusBaris(this)" class="text-rose-500 hover:text-rose-700 font-bold">&times;</button>
+          <button type="button" onclick="hapusBaris(this)" class="text-rose-400 hover:text-rose-600 font-bold p-1 transition-colors cursor-pointer" title="Hapus Baris">&times;</button>
         </td>
       `;
       tbody.appendChild(tr);

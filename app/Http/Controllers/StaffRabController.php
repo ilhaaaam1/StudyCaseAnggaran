@@ -27,15 +27,32 @@ class StaffRabController extends Controller
     {
         $userId = (int) Auth::id();
 
-        $totalPengajuan = PengajuanRab::where('id_pengguna', $userId)->count();
-        $totalPending = PengajuanRab::where('id_pengguna', $userId)->where('status', StatusPengajuan::MENUNGGU_FINANCE)->count();
-        $totalAccFinance = PengajuanRab::where('id_pengguna', $userId)->where('status', StatusPengajuan::MENUNGGU_PIMPINAN)->count();
-        $totalAccFinal = PengajuanRab::where('id_pengguna', $userId)->whereIn('status', [StatusPengajuan::PROSES_PENCAIRAN, StatusPengajuan::SELESAI])->count();
-        // PRESENTASI: Memisahkan perhitungan untuk Revisi dan Ditolak secara independen
-        $totalDitolak = PengajuanRab::where('id_pengguna', $userId)->where('status', StatusPengajuan::DITOLAK)->count();
-        $totalRevisi = PengajuanRab::where('id_pengguna', $userId)->where('status', StatusPengajuan::REVISI)->count();
-        
-        $totalAnggaranDiajukan = (float) PengajuanRab::where('id_pengguna', $userId)->sum('estimasi_total');
+        $stats = PengajuanRab::where('id_pengguna', $userId)
+            ->selectRaw('
+                COUNT(*) as total_pengajuan,
+                SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) as total_pending,
+                SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) as total_acc_finance,
+                SUM(CASE WHEN status IN (?, ?) THEN 1 ELSE 0 END) as total_acc_final,
+                SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) as total_ditolak,
+                SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) as total_revisi,
+                COALESCE(SUM(estimasi_total), 0) as total_anggaran_diajukan
+            ', [
+                StatusPengajuan::MENUNGGU_FINANCE->value,
+                StatusPengajuan::MENUNGGU_PIMPINAN->value,
+                StatusPengajuan::PROSES_PENCAIRAN->value,
+                StatusPengajuan::SELESAI->value,
+                StatusPengajuan::DITOLAK->value,
+                StatusPengajuan::REVISI->value,
+            ])
+            ->first();
+
+        $totalPengajuan = (int) ($stats->total_pengajuan ?? 0);
+        $totalPending = (int) ($stats->total_pending ?? 0);
+        $totalAccFinance = (int) ($stats->total_acc_finance ?? 0);
+        $totalAccFinal = (int) ($stats->total_acc_final ?? 0);
+        $totalDitolak = (int) ($stats->total_ditolak ?? 0);
+        $totalRevisi = (int) ($stats->total_revisi ?? 0);
+        $totalAnggaranDiajukan = (float) ($stats->total_anggaran_diajukan ?? 0);
 
         // PRESENTASI: Query GroupBy dan Aggregate (SUM/COUNT) untuk mendapatkan data statistik nominal per kategori
         $alokasiKategori = PengajuanRab::where('id_pengguna', $userId)
@@ -68,13 +85,23 @@ class StaffRabController extends Controller
     public function create(): View
     {
         $user = Auth::user();
-        $divisiList = Divisi::orderBy('nama_divisi')->get();
+        $divisiList = Divisi::orderBy('id_divisi')->get();
 
         $year = date('Y');
         $countThisYear = PengajuanRab::whereYear('tanggal_pengajuan', $year)->count() + 1;
         $autoNoRab = sprintf('RAB-%s-%03d', $year, $countThisYear);
 
-        return view('staff.create', compact('divisiList', 'user', 'autoNoRab'));
+        $kategoriList = [
+            'Belanja Barang Operasional & ATK' => 'Kertas HVS, spidol, tinta printer, map rapor, perlengkapan administrasi & kelas',
+            'Kegiatan Kesiswaan & Lomba' => 'Pramuka, tari, drum band, PHBN/PHBI, transport kontingen, pendaftaran lomba O2SN/FLS2N',
+            'Pemeliharaan Sarana & Prasarana' => 'Perbaikan ruang kelas, sanitasi/toilet, meja-kursi, cat, lampu, pompa air, kebersihan',
+            'Pengembangan Perpustakaan & Literasi' => 'Pengadaan buku ajar/literasi, inventarisasi buku, pojok baca, sarana perpustakaan',
+            'Peningkatan Kompetensi Guru (SDM)' => 'Pelatihan guru, workshop kurikulum, KKG, seminar pengembangan kompetensi pendidik',
+            'Langganan Daya & Jasa' => 'Tagihan listrik PLN, internet sekolah, langganan air bersih, dan jasa operasional',
+            'Belanja Modal / Alat Elektronik' => 'Proyektor LCD, laptop ANBK, sound system, peralatan elektronik & laboratorium sekolah',
+        ];
+
+        return view('staff.create', compact('divisiList', 'user', 'autoNoRab', 'kategoriList'));
     }
 
     /**
@@ -96,13 +123,39 @@ class StaffRabController extends Controller
 
             $status = ($request->input('action') === 'draft') ? StatusPengajuan::DRAFT : StatusPengajuan::MENUNGGU_FINANCE;
 
+            $tahunAjaranSemester = $request->input('tahun_ajaran_semester');
+            $tahunAjaran = null;
+            $semester = null;
+            if ($tahunAjaranSemester) {
+                $parts = explode('-', $tahunAjaranSemester);
+                $tahunAjaran = trim($parts[0] ?? '');
+                $semPart = trim($parts[1] ?? '');
+                $semester = str_contains(strtolower($semPart), 'genap') ? 'Genap' : 'Ganjil';
+            }
+
+            $tahapBos = $request->input('tahap_bos');
+            $tanggalMulai = $request->input('tanggal_mulai');
+            $tanggalSelesai = $request->input('tanggal_selesai');
+
+            $periodeOtomatis = mb_substr(
+                (string) ($request->input('periode_penggunaan') ?: trim("{$tahapBos} ({$tahunAjaranSemester})")),
+                0,
+                255
+            );
+
             // 1. Simpan data header pengajuan RAB dengan status awal
             $pengajuanRab = PengajuanRab::create([
                 'id_pengguna' => $user->id_pengguna,
                 'id_divisi' => (int) $request->input('id_divisi'),
                 'no_rab' => $noRab,
                 'judul_pengajuan' => $request->input('judul_pengajuan'),
-                'periode_penggunaan' => $request->input('periode_penggunaan'),
+                'tahun_ajaran' => $tahunAjaran,
+                'semester' => $semester,
+                'tahun_ajaran_semester' => $tahunAjaranSemester,
+                'tahap_bos' => $tahapBos,
+                'tanggal_mulai' => $tanggalMulai,
+                'tanggal_selesai' => $tanggalSelesai,
+                'periode_penggunaan' => $periodeOtomatis,
                 'kategori_anggaran' => $request->input('kategori_anggaran'),
                 'latar_belakang' => $request->input('latar_belakang'),
                 'estimasi_total' => 0,
@@ -184,22 +237,55 @@ class StaffRabController extends Controller
     }
 
     /**
-     * Tampilkan riwayat seluruh pengajuan RAB milik staf login.
+     * Tampilkan riwayat seluruh pengajuan RAB milik staf login dengan metrik dan filter kontekstual sekolah.
      */
     public function riwayat(Request $request): View
     {
         $userId = (int) Auth::id();
+
+        // 1. Single-trip aggregate query untuk 4 kartu ringkasan metrik
+        $stats = PengajuanRab::where('id_pengguna', $userId)
+            ->selectRaw('
+                COUNT(*) as total_pengajuan,
+                SUM(CASE WHEN status IN (?, ?) THEN 1 ELSE 0 END) as total_diproses,
+                SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) as total_revisi,
+                COALESCE(SUM(CASE WHEN status IN (?, ?) THEN estimasi_total ELSE 0 END), 0) as total_disetujui
+            ', [
+                StatusPengajuan::MENUNGGU_FINANCE->value,
+                StatusPengajuan::MENUNGGU_PIMPINAN->value,
+                StatusPengajuan::REVISI->value,
+                StatusPengajuan::PROSES_PENCAIRAN->value,
+                StatusPengajuan::SELESAI->value,
+            ])
+            ->first();
+
+        $metrics = [
+            'total_pengajuan' => (int) ($stats->total_pengajuan ?? 0),
+            'total_diproses' => (int) ($stats->total_diproses ?? 0),
+            'total_revisi' => (int) ($stats->total_revisi ?? 0),
+            'total_disetujui' => (float) ($stats->total_disetujui ?? 0),
+        ];
+
+        // 2. Filter parameter
         $statusFilter = $request->input('status');
         $search = $request->input('q');
+        $tahunAjaranSemester = $request->input('tahun_ajaran_semester');
+        $tahapBos = $request->input('tahap_bos');
+        $kategoriAnggaran = $request->input('kategori_anggaran');
 
-        $query = PengajuanRab::with(['divisi', 'alurPersetujuan.reviewer'])
+        $query = PengajuanRab::with(['divisi', 'alurPersetujuan.reviewer', 'rincianItem'])
             ->where('id_pengguna', $userId);
 
-        // PRESENTASI: Memastikan filter status ditangkap dengan benar, mengabaikan filter jika user memilih 'semua'
+        // Filter tab status
         if ($statusFilter && $statusFilter !== 'semua') {
-            $query->where('status', $statusFilter);
+            if ($statusFilter === 'pencairan_selesai' || $statusFilter === 'cair') {
+                $query->whereIn('status', [StatusPengajuan::PROSES_PENCAIRAN, StatusPengajuan::SELESAI]);
+            } else {
+                $query->where('status', $statusFilter);
+            }
         }
 
+        // Filter pencarian teks
         if ($search) {
             $query->where(function ($q) use ($search): void {
                 $q->where('no_rab', 'like', "%{$search}%")
@@ -207,9 +293,30 @@ class StaffRabController extends Controller
             });
         }
 
+        // Filter kontekstual sekolah
+        if ($tahunAjaranSemester) {
+            $query->where('tahun_ajaran_semester', $tahunAjaranSemester);
+        }
+
+        if ($tahapBos) {
+            $query->where('tahap_bos', $tahapBos);
+        }
+
+        if ($kategoriAnggaran) {
+            $query->where('kategori_anggaran', $kategoriAnggaran);
+        }
+
         $pengajuanList = $query->latest('tanggal_pengajuan')->paginate(10)->withQueryString();
 
-        return view('staff.riwayat', compact('pengajuanList', 'statusFilter', 'search'));
+        return view('staff.riwayat', compact(
+            'pengajuanList',
+            'metrics',
+            'statusFilter',
+            'search',
+            'tahunAjaranSemester',
+            'tahapBos',
+            'kategoriAnggaran'
+        ));
     }
 
     /**
@@ -244,13 +351,23 @@ class StaffRabController extends Controller
         // PRESENTASI: Proteksi Akses Edit (Validasi Status)
         // Mengecek logika bahwa Staff HANYA bisa mengedit jika statusnya 'Menunggu Verifikasi Finance'
         // (serta Draft/Revisi). Jika statusnya sudah diproses, akses langsung diblokir.
-        if (!in_array($pengajuan->status, [StatusPengajuan::MENUNGGU_FINANCE, StatusPengajuan::DRAFT, StatusPengajuan::REVISI])) {
+        if (! in_array($pengajuan->status, [StatusPengajuan::MENUNGGU_FINANCE, StatusPengajuan::DRAFT, StatusPengajuan::REVISI])) {
             abort(403, 'Pengajuan sudah diproses dan tidak dapat diedit');
         }
 
-        $divisiList = Divisi::orderBy('nama_divisi')->get();
+        $divisiList = Divisi::orderBy('id_divisi')->get();
 
-        return view('staff.edit', compact('pengajuan', 'divisiList'));
+        $kategoriList = [
+            'Belanja Barang Operasional & ATK' => 'Kertas HVS, spidol, tinta printer, map rapor, perlengkapan administrasi & kelas',
+            'Kegiatan Kesiswaan & Lomba' => 'Pramuka, tari, drum band, PHBN/PHBI, transport kontingen, pendaftaran lomba O2SN/FLS2N',
+            'Pemeliharaan Sarana & Prasarana' => 'Perbaikan ruang kelas, sanitasi/toilet, meja-kursi, cat, lampu, pompa air, kebersihan',
+            'Pengembangan Perpustakaan & Literasi' => 'Pengadaan buku ajar/literasi, inventarisasi buku, pojok baca, sarana perpustakaan',
+            'Peningkatan Kompetensi Guru (SDM)' => 'Pelatihan guru, workshop kurikulum, KKG, seminar pengembangan kompetensi pendidik',
+            'Langganan Daya & Jasa' => 'Tagihan listrik PLN, internet sekolah, langganan air bersih, dan jasa operasional',
+            'Belanja Modal / Alat Elektronik' => 'Proyektor LCD, laptop ANBK, sound system, peralatan elektronik & laboratorium sekolah',
+        ];
+
+        return view('staff.edit', compact('pengajuan', 'divisiList', 'kategoriList'));
     }
 
     /**
@@ -266,18 +383,44 @@ class StaffRabController extends Controller
 
         // PRESENTASI: Validasi Status di proses Update (Backend Security)
         // Mencegah eksploitasi jika user memanipulasi request form secara paksa
-        if (!in_array($pengajuan->status, [StatusPengajuan::MENUNGGU_FINANCE, StatusPengajuan::DRAFT, StatusPengajuan::REVISI])) {
+        if (! in_array($pengajuan->status, [StatusPengajuan::MENUNGGU_FINANCE, StatusPengajuan::DRAFT, StatusPengajuan::REVISI])) {
             abort(403, 'Pengajuan sudah diproses dan tidak dapat diedit');
         }
 
         DB::transaction(function () use ($request, $pengajuan) {
             $status = ($request->input('action') === 'draft') ? StatusPengajuan::DRAFT : StatusPengajuan::MENUNGGU_FINANCE;
 
+            $tahunAjaranSemester = $request->input('tahun_ajaran_semester');
+            $tahunAjaran = null;
+            $semester = null;
+            if ($tahunAjaranSemester) {
+                $parts = explode('-', $tahunAjaranSemester);
+                $tahunAjaran = trim($parts[0] ?? '');
+                $semPart = trim($parts[1] ?? '');
+                $semester = str_contains(strtolower($semPart), 'genap') ? 'Genap' : 'Ganjil';
+            }
+
+            $tahapBos = $request->input('tahap_bos');
+            $tanggalMulai = $request->input('tanggal_mulai');
+            $tanggalSelesai = $request->input('tanggal_selesai');
+
+            $periodeOtomatis = mb_substr(
+                (string) ($request->input('periode_penggunaan') ?: trim("{$tahapBos} ({$tahunAjaranSemester})")),
+                0,
+                255
+            );
+
             // 1. Update data header pengajuan RAB
             $pengajuan->update([
                 'id_divisi' => (int) $request->input('id_divisi'),
                 'judul_pengajuan' => $request->input('judul_pengajuan'),
-                'periode_penggunaan' => $request->input('periode_penggunaan'),
+                'tahun_ajaran' => $tahunAjaran,
+                'semester' => $semester,
+                'tahun_ajaran_semester' => $tahunAjaranSemester,
+                'tahap_bos' => $tahapBos,
+                'tanggal_mulai' => $tanggalMulai,
+                'tanggal_selesai' => $tanggalSelesai,
+                'periode_penggunaan' => $periodeOtomatis,
                 'kategori_anggaran' => $request->input('kategori_anggaran'),
                 'latar_belakang' => $request->input('latar_belakang'),
                 'status' => $status,

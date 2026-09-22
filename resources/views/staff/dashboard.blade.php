@@ -26,7 +26,7 @@
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
         </svg>
-        + Buat Pengajuan RAB
+        Buat Pengajuan RAB
     </a>
 </div>
 
@@ -152,7 +152,7 @@
                 @empty
                 <tr>
                     <td colspan="6" class="px-5 py-8 text-center text-slate-400">
-                        Belum ada pengajuan RAB. Klik tombol "+ Buat Pengajuan RAB" di atas untuk memulai.
+                        Belum ada pengajuan RAB. Klik tombol "Buat Pengajuan RAB" di atas untuk memulai.
                     </td>
                 </tr>
                 @endforelse

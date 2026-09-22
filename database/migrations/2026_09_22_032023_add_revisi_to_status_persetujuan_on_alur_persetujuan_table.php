@@ -13,7 +13,9 @@ return new class extends Migration
     public function up(): void
     {
         // PRESENTASI: Memodifikasi tipe data ENUM pada tabel alur_persetujuan untuk menambahkan opsi 'Revisi'
-        DB::statement("ALTER TABLE alur_persetujuan MODIFY COLUMN status_persetujuan ENUM('ACC', 'Ditolak', 'Revisi') NOT NULL");
+        if (DB::getDriverName() === 'mysql') {
+            DB::statement("ALTER TABLE alur_persetujuan MODIFY COLUMN status_persetujuan ENUM('ACC', 'Ditolak', 'Revisi') NOT NULL");
+        }
     }
 
     /**
@@ -21,6 +23,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        DB::statement("ALTER TABLE alur_persetujuan MODIFY COLUMN status_persetujuan ENUM('ACC', 'Ditolak') NOT NULL");
+        if (DB::getDriverName() === 'mysql') {
+            DB::statement("ALTER TABLE alur_persetujuan MODIFY COLUMN status_persetujuan ENUM('ACC', 'Ditolak') NOT NULL");
+        }
     }
 };

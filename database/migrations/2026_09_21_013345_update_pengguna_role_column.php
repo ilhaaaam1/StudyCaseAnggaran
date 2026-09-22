@@ -15,7 +15,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        DB::statement("ALTER TABLE `pengguna` MODIFY COLUMN `role` ENUM('admin','user','staff','finance','pimpinan','admin_it') NOT NULL DEFAULT 'user'");
+        if (DB::getDriverName() === 'mysql') {
+            DB::statement("ALTER TABLE `pengguna` MODIFY COLUMN `role` ENUM('admin','user','staff','finance','pimpinan','admin_it') NOT NULL DEFAULT 'user'");
+        }
     }
 
     /**
@@ -23,6 +25,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        DB::statement("ALTER TABLE `pengguna` MODIFY COLUMN `role` ENUM('admin','user') NOT NULL DEFAULT 'user'");
+        if (DB::getDriverName() === 'mysql') {
+            DB::statement("ALTER TABLE `pengguna` MODIFY COLUMN `role` ENUM('admin','user') NOT NULL DEFAULT 'user'");
+        }
     }
 };

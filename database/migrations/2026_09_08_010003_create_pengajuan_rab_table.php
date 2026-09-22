@@ -19,7 +19,7 @@ return new class extends Migration
             $table->unsignedInteger('id_divisi');
             $table->string('no_rab', 50)->unique();
             $table->string('judul_pengajuan', 255);
-            $table->string('periode_penggunaan', 50);
+            $table->string('periode_penggunaan', 255)->nullable();
             $table->enum('prioritas', ['Rendah', 'Sedang', 'Tinggi'])->default('Sedang');
             $table->text('latar_belakang');
             $table->decimal('estimasi_total', 15, 2)->default(0);

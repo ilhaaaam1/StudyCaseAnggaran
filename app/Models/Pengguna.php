@@ -151,12 +151,12 @@ class Pengguna extends Authenticatable
     }
 
     // PRESENTASI: Logika Pengecekan Delegasi (Metode Pengecekan Aktif)
-    // Fungsi ini mengecek apakah user yang sedang login memiliki record delegasi 
+    // Fungsi ini mengecek apakah user yang sedang login memiliki record delegasi
     // di tabel delegation_authorities dengan status 'Aktif' dan memvalidasi
     // tanggal hari ini berada di antara start_date dan end_date.
     public function hasActiveDelegation(): bool
     {
-        return \App\Models\DelegationAuthority::where('delegate_to_user_id', $this->id_pengguna)
+        return DelegationAuthority::where('delegate_to_user_id', $this->id_pengguna)
             ->where('status', 'Aktif')
             ->whereDate('start_date', '<=', now())
             ->whereDate('end_date', '>=', now())

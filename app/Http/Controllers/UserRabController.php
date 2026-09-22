@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Enums\StatusPengajuan;
 use App\Http\Requests\StoreRabRequest;
 use App\Models\Divisi;
 use App\Models\DokumenPendukung;
@@ -24,12 +25,26 @@ class UserRabController extends Controller
     {
         $userId = Auth::id();
 
-        // Hitung ringkasan status pengajuan hanya dari pengguna yang login
-        $totalPengajuan = PengajuanRab::where('id_pengguna', $userId)->count();
-        $totalPending = PengajuanRab::where('id_pengguna', $userId)->where('status', 'Pending')->count();
-        $totalAcc = PengajuanRab::where('id_pengguna', $userId)->where('status', 'ACC')->count();
-        $totalDitolak = PengajuanRab::where('id_pengguna', $userId)->where('status', 'Ditolak')->count();
-        $totalAnggaran = (float) PengajuanRab::where('id_pengguna', $userId)->sum('estimasi_total');
+        $stats = PengajuanRab::where('id_pengguna', $userId)
+            ->selectRaw('
+                COUNT(*) as total_pengajuan,
+                SUM(CASE WHEN status = "Pending" OR status = ? THEN 1 ELSE 0 END) as total_pending,
+                SUM(CASE WHEN status = "ACC" OR status IN (?, ?) THEN 1 ELSE 0 END) as total_acc,
+                SUM(CASE WHEN status = "Ditolak" OR status = ? THEN 1 ELSE 0 END) as total_ditolak,
+                COALESCE(SUM(estimasi_total), 0) as total_anggaran
+            ', [
+                StatusPengajuan::MENUNGGU_FINANCE->value,
+                StatusPengajuan::PROSES_PENCAIRAN->value,
+                StatusPengajuan::SELESAI->value,
+                StatusPengajuan::DITOLAK->value,
+            ])
+            ->first();
+
+        $totalPengajuan = (int) ($stats->total_pengajuan ?? 0);
+        $totalPending = (int) ($stats->total_pending ?? 0);
+        $totalAcc = (int) ($stats->total_acc ?? 0);
+        $totalDitolak = (int) ($stats->total_ditolak ?? 0);
+        $totalAnggaran = (float) ($stats->total_anggaran ?? 0);
 
         // Daftar pengajuan milik user yang login
         $pengajuanList = PengajuanRab::with(['divisi', 'alurPersetujuan.reviewer'])

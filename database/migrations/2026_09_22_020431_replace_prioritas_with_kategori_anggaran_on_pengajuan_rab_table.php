@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::table('pengajuan_rab', function (Blueprint $table) {
             // PRESENTASI: Mengganti kolom prioritas menjadi kategori_anggaran
-            // Kolom prioritas dihapus karena dianggap subjektif, dan diganti 
+            // Kolom prioritas dihapus karena dianggap subjektif, dan diganti
             // dengan kategori_anggaran yang lebih objektif untuk analisis Finance.
             $table->dropColumn('prioritas');
             $table->string('kategori_anggaran')->after('periode_penggunaan')->nullable();

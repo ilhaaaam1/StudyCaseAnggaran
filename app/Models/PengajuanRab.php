@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Str;
 
 class PengajuanRab extends Model
 {
@@ -59,6 +60,12 @@ class PengajuanRab extends Model
         'id_divisi',
         'no_rab',
         'judul_pengajuan',
+        'tahun_ajaran',
+        'semester',
+        'tahun_ajaran_semester',
+        'tahap_bos',
+        'tanggal_mulai',
+        'tanggal_selesai',
         'periode_penggunaan',
         'kategori_anggaran',
         'latar_belakang',
@@ -77,9 +84,79 @@ class PengajuanRab extends Model
     {
         return [
             'tanggal_pengajuan' => 'datetime',
+            'tanggal_mulai' => 'date',
+            'tanggal_selesai' => 'date',
             'estimasi_total' => 'decimal:2',
             'status' => StatusPengajuan::class,
         ];
+    }
+
+    /**
+     * Format rentang waktu kegiatan dalam Bahasa Indonesia (contoh: 15 Okt 2026 s/d 18 Okt 2026).
+     */
+    public function getRentangTanggalFormattedAttribute(): string
+    {
+        if ($this->tanggal_mulai && $this->tanggal_selesai) {
+            return $this->tanggal_mulai->translatedFormat('d M Y').' s/d '.$this->tanggal_selesai->translatedFormat('d M Y');
+        }
+
+        return $this->periode_penggunaan ?? '-';
+    }
+
+    /**
+     * Format rentang waktu kegiatan ringkas (contoh: 12–15 Okt 2026).
+     */
+    public function getRentangTanggalRingkasAttribute(): string
+    {
+        if ($this->tanggal_mulai && $this->tanggal_selesai) {
+            if ($this->tanggal_mulai->equalTo($this->tanggal_selesai)) {
+                return $this->tanggal_mulai->translatedFormat('d M Y');
+            }
+
+            if ($this->tanggal_mulai->format('m Y') === $this->tanggal_selesai->format('m Y')) {
+                return $this->tanggal_mulai->format('d').'–'.$this->tanggal_selesai->translatedFormat('d M Y');
+            }
+
+            if ($this->tanggal_mulai->format('Y') === $this->tanggal_selesai->format('Y')) {
+                return $this->tanggal_mulai->translatedFormat('d M').' – '.$this->tanggal_selesai->translatedFormat('d M Y');
+            }
+
+            return $this->tanggal_mulai->translatedFormat('d M Y').' – '.$this->tanggal_selesai->translatedFormat('d M Y');
+        }
+
+        return $this->periode_penggunaan ?? '-';
+    }
+
+    /**
+     * Format tahap penyaluran BOS ringkas (contoh: Tahap 1 atau Tahap 2).
+     */
+    public function getTahapBosRingkasAttribute(): string
+    {
+        if (! $this->tahap_bos) {
+            return 'BOS Reguler';
+        }
+
+        if (str_contains($this->tahap_bos, 'Tahap 1')) {
+            return 'Tahap 1';
+        }
+
+        if (str_contains($this->tahap_bos, 'Tahap 2')) {
+            return 'Tahap 2';
+        }
+
+        return Str::limit($this->tahap_bos, 14);
+    }
+
+    /**
+     * Hitung durasi hari pelaksanaan kegiatan.
+     */
+    public function getDurasiHariAttribute(): ?int
+    {
+        if ($this->tanggal_mulai && $this->tanggal_selesai) {
+            return (int) $this->tanggal_mulai->diffInDays($this->tanggal_selesai) + 1;
+        }
+
+        return null;
     }
 
     /**

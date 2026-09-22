@@ -52,7 +52,7 @@
         <a href="{{ route('admin-it.divisi.index') }}" class="flex items-center justify-between px-3 py-2.5 rounded-lg mb-1 text-[13px] font-medium transition-all {{ request()->routeIs('admin-it.divisi.*') ? 'bg-[#2b337c] text-white' : 'text-slate-300 hover:bg-white/5 hover:text-white' }}">
           <div class="flex items-center gap-3">
             <i class="fa-solid fa-sitemap w-[18px] text-center text-[15px]"></i>
-            <span>Master Bidang/Bagian</span>
+            <span>Master Unit Kerja</span>
           </div>
         </a>
         <a href="{{ route('admin-it.log.index') }}" class="flex items-center justify-between px-3 py-2.5 rounded-lg mb-1 text-[13px] font-medium transition-all {{ request()->routeIs('admin-it.log.*') ? 'bg-[#2b337c] text-white' : 'text-slate-300 hover:bg-white/5 hover:text-white' }}">

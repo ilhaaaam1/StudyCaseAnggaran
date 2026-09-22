@@ -21,10 +21,23 @@ class FinanceController extends Controller
      */
     public function index(Request $request): View
     {
-        $totalAntreanPending = PengajuanRab::where('status', StatusPengajuan::MENUNGGU_FINANCE)->count();
-        $totalAccFinance = PengajuanRab::where('status', StatusPengajuan::MENUNGGU_PIMPINAN)->count();
-        $totalDitolakFinance = PengajuanRab::where('status', StatusPengajuan::REVISI)->count();
-        $totalNominalPending = (float) PengajuanRab::where('status', StatusPengajuan::MENUNGGU_FINANCE)->sum('estimasi_total');
+        $stats = PengajuanRab::selectRaw('
+                SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) as total_antrean_pending,
+                SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) as total_acc_finance,
+                SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) as total_ditolak_finance,
+                COALESCE(SUM(CASE WHEN status = ? THEN estimasi_total ELSE 0 END), 0) as total_nominal_pending
+            ', [
+            StatusPengajuan::MENUNGGU_FINANCE->value,
+            StatusPengajuan::MENUNGGU_PIMPINAN->value,
+            StatusPengajuan::REVISI->value,
+            StatusPengajuan::MENUNGGU_FINANCE->value,
+        ])
+            ->first();
+
+        $totalAntreanPending = (int) ($stats->total_antrean_pending ?? 0);
+        $totalAccFinance = (int) ($stats->total_acc_finance ?? 0);
+        $totalDitolakFinance = (int) ($stats->total_ditolak_finance ?? 0);
+        $totalNominalPending = (float) ($stats->total_nominal_pending ?? 0);
 
         $antreanTerbaru = PengajuanRab::with(['pengguna', 'divisi'])
             ->where('status', StatusPengajuan::MENUNGGU_FINANCE)
@@ -153,7 +166,7 @@ class FinanceController extends Controller
     {
         // PRESENTASI: Memisahkan Logika Revisi dan Ditolak Permanen di level Finance
         $rawStatus = (string) ($request->input('action') ?? $request->input('status') ?? '');
-        
+
         $statusDecision = 'ACC'; // Default
         if (strcasecmp($rawStatus, 'revisi') === 0) {
             $statusDecision = 'Revisi';
@@ -167,9 +180,9 @@ class FinanceController extends Controller
         $validated = $request->validate([
             'status_decision' => ['required', 'in:ACC,Revisi,Ditolak'],
             'catatan' => [
-                $statusDecision === 'ACC' ? 'nullable' : 'required', 
-                'string', 
-                'max:2000'
+                $statusDecision === 'ACC' ? 'nullable' : 'required',
+                'string',
+                'max:2000',
             ],
         ], [
             'status_decision.required' => 'Keputusan persetujuan Finance wajib ditentukan.',

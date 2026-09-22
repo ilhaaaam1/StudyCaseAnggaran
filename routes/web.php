@@ -46,6 +46,9 @@ Route::middleware('guest')->group(function (): void {
 // Logout (Pengguna Terautentikasi)
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout')->middleware('auth');
 
+// Switch Role & Model (Pengguna Terautentikasi)
+Route::post('/switch-role', [AuthController::class, 'switchRole'])->name('role.switch')->middleware('auth');
+
 // -------------------------------------------------------------------------
 // 1. RUTE STAFF / PEMOHON RAB (Role: staff)
 // -------------------------------------------------------------------------

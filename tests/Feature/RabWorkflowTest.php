@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Enums\StatusPengajuan;
 use App\Models\Divisi;
 use App\Models\PengajuanRab;
 use App\Models\Pengguna;
@@ -68,21 +69,24 @@ class RabWorkflowTest extends TestCase
         // ==========================================
         $response = $this->actingAs($this->staff)->post('/staff/rab', [
             'judul_pengajuan' => 'Pengadaan Laptop Baru',
-            'prioritas' => 'Sedang',
             'id_divisi' => $this->staff->id_divisi,
-            'periode_penggunaan' => 'Q1 2027',
+            'kategori_anggaran' => 'Belanja Modal / Alat Elektronik',
+            'tahun_ajaran_semester' => '2026/2027 - Semester Ganjil',
+            'tahap_bos' => 'BOS Reguler Tahap 1 (Januari – Juni)',
+            'tanggal_mulai' => '2026-08-01',
+            'tanggal_selesai' => '2026-08-05',
+            'periode_penggunaan' => 'BOS Reguler Tahap 1',
             'latar_belakang' => 'Laptop rusak',
             'items' => [
                 ['uraian_barang' => 'Laptop Dell', 'satuan' => 'Unit', 'volume' => 2, 'harga_satuan' => 15000000],
             ],
-            // Asumsi dokumen opsional atau menggunakan faker file
         ]);
 
         $response->assertRedirect(route('staff.riwayat'));
 
         $pengajuan = PengajuanRab::first();
         $this->assertNotNull($pengajuan);
-        $this->assertEquals(PengajuanRab::STATUS_MENUNGGU_FINANCE, $pengajuan->status);
+        $this->assertEquals(StatusPengajuan::MENUNGGU_FINANCE, $pengajuan->status);
 
         // ==========================================
         // 2. Finance Menyetujui Pengajuan (ACC Tahap 1)
@@ -94,7 +98,7 @@ class RabWorkflowTest extends TestCase
 
         $response->assertRedirect(route('finance.antrean'));
         $pengajuan->refresh();
-        $this->assertEquals(PengajuanRab::STATUS_MENUNGGU_PIMPINAN, $pengajuan->status);
+        $this->assertEquals(StatusPengajuan::MENUNGGU_PIMPINAN, $pengajuan->status);
 
         // ==========================================
         // 3. Pimpinan Menyetujui Pengajuan (ACC Final)
@@ -106,7 +110,7 @@ class RabWorkflowTest extends TestCase
 
         $response->assertRedirect(route('pimpinan.antrean'));
         $pengajuan->refresh();
-        $this->assertEquals(PengajuanRab::STATUS_PROSES_PENCAIRAN, $pengajuan->status);
+        $this->assertEquals(StatusPengajuan::PROSES_PENCAIRAN, $pengajuan->status);
 
         // ==========================================
         // 4. Finance Upload Bukti Pencairan
@@ -119,7 +123,7 @@ class RabWorkflowTest extends TestCase
 
         $response->assertRedirect(route('finance.pencairan'));
         $pengajuan->refresh();
-        $this->assertEquals(PengajuanRab::STATUS_SELESAI, $pengajuan->status);
+        $this->assertEquals(StatusPengajuan::SELESAI, $pengajuan->status);
         $this->assertNotNull($pengajuan->bukti_pencairan);
         Storage::disk('public')->assertExists($pengajuan->bukti_pencairan);
     }

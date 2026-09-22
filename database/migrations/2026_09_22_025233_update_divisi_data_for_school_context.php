@@ -1,8 +1,6 @@
 <?php
 
 use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
@@ -12,7 +10,7 @@ return new class extends Migration
     public function up(): void
     {
         // PRESENTASI: Update Data Master Divisi ke Konteks Sekolah
-        // Data divisi korporat diubah menjadi bidang/bagian sekolah 
+        // Data divisi korporat diubah menjadi bidang/bagian sekolah
         // untuk menyesuaikan dengan domain aplikasi.
         $schoolDivisions = [
             1 => 'Kurikulum & Pembelajaran',

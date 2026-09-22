@@ -23,10 +23,25 @@ class PimpinanController extends Controller
      */
     public function index(Request $request): View
     {
-        $totalAntreanAccFinance = PengajuanRab::where('status', StatusPengajuan::MENUNGGU_PIMPINAN)->count();
-        $totalAccFinal = PengajuanRab::whereIn('status', [StatusPengajuan::PROSES_PENCAIRAN, StatusPengajuan::SELESAI])->count();
-        $totalDitolakPimpinan = PengajuanRab::where('status', StatusPengajuan::DITOLAK)->count();
-        $totalAnggaranDisetujui = (float) PengajuanRab::whereIn('status', [StatusPengajuan::PROSES_PENCAIRAN, StatusPengajuan::SELESAI])->sum('estimasi_total');
+        $stats = PengajuanRab::selectRaw('
+                SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) as total_antrean_acc_finance,
+                SUM(CASE WHEN status IN (?, ?) THEN 1 ELSE 0 END) as total_acc_final,
+                SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) as total_ditolak_pimpinan,
+                COALESCE(SUM(CASE WHEN status IN (?, ?) THEN estimasi_total ELSE 0 END), 0) as total_anggaran_disetujui
+            ', [
+            StatusPengajuan::MENUNGGU_PIMPINAN->value,
+            StatusPengajuan::PROSES_PENCAIRAN->value,
+            StatusPengajuan::SELESAI->value,
+            StatusPengajuan::DITOLAK->value,
+            StatusPengajuan::PROSES_PENCAIRAN->value,
+            StatusPengajuan::SELESAI->value,
+        ])
+            ->first();
+
+        $totalAntreanAccFinance = (int) ($stats->total_antrean_acc_finance ?? 0);
+        $totalAccFinal = (int) ($stats->total_acc_final ?? 0);
+        $totalDitolakPimpinan = (int) ($stats->total_ditolak_pimpinan ?? 0);
+        $totalAnggaranDisetujui = (float) ($stats->total_anggaran_disetujui ?? 0);
 
         $antreanTerbaru = PengajuanRab::with(['pengguna', 'divisi', 'alurPersetujuan.reviewer'])
             ->where('status', StatusPengajuan::MENUNGGU_PIMPINAN)
@@ -91,7 +106,7 @@ class PimpinanController extends Controller
     {
         // PRESENTASI: Memisahkan Logika Revisi dan Ditolak Permanen di level Pimpinan
         $rawStatus = (string) ($request->input('action') ?? $request->input('status') ?? '');
-        
+
         $statusDecision = 'ACC'; // Default
         if (strcasecmp($rawStatus, 'revisi') === 0) {
             $statusDecision = 'Revisi';
@@ -105,9 +120,9 @@ class PimpinanController extends Controller
         $validated = $request->validate([
             'status_decision' => ['required', 'in:ACC,Revisi,Ditolak'],
             'catatan' => [
-                $statusDecision === 'ACC' ? 'nullable' : 'required', 
-                'string', 
-                'max:2000'
+                $statusDecision === 'ACC' ? 'nullable' : 'required',
+                'string',
+                'max:2000',
             ],
         ], [
             'status_decision.required' => 'Keputusan persetujuan final Pimpinan wajib ditentukan.',

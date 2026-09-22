@@ -18,7 +18,7 @@ return new class extends Migration
             $table->unsignedInteger('id_pengajuan');
             $table->unsignedInteger('id_reviewer');
             $table->integer('level_persetujuan')->default(1);
-            $table->enum('status_persetujuan', ['ACC', 'Ditolak']);
+            $table->enum('status_persetujuan', ['ACC', 'Ditolak', 'Revisi']);
             $table->text('catatan')->nullable();
             $table->dateTime('tanggal_proses');
             $table->timestamps();

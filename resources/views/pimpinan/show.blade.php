@@ -51,6 +51,72 @@
       @endif
     </div>
 
+    <!-- Informasi Pokok Operasional Sekolah & Rentang Waktu Pelaksanaan -->
+    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <h2 class="text-sm font-bold text-slate-900 uppercase tracking-wider flex items-center gap-2">
+          <i class="fa-solid fa-school text-indigo-600"></i>
+          Informasi Operasional Sekolah &amp; Jadwal Pelaksanaan
+        </h2>
+        @if($pengajuan->durasi_hari)
+          <span class="text-xs font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200">
+            <i class="fa-solid fa-calendar-day mr-1"></i> {{ $pengajuan->durasi_hari }} Hari Pelaksanaan
+          </span>
+        @endif
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+        <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-100">
+          <span class="text-slate-400 font-semibold block text-[10px] uppercase">Unit Kerja / Penanggung Jawab</span>
+          <span class="font-bold text-slate-800 text-sm mt-0.5 block">
+            {{ $pengajuan->divisi->nama_divisi ?? '-' }}
+          </span>
+        </div>
+
+        <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-100">
+          <span class="text-slate-400 font-semibold block text-[10px] uppercase">Tahun Ajaran &amp; Semester</span>
+          <span class="font-bold text-slate-800 text-sm mt-0.5 block">
+            {{ $pengajuan->tahun_ajaran_semester ?? ($pengajuan->tahun_ajaran ? $pengajuan->tahun_ajaran . ' - ' . $pengajuan->semester : '-') }}
+          </span>
+        </div>
+
+        <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-100">
+          <span class="text-slate-400 font-semibold block text-[10px] uppercase">Tahap Penyaluran BOS</span>
+          <span class="font-bold text-indigo-700 text-sm mt-0.5 block">
+            {{ $pengajuan->tahap_bos ?? '-' }}
+          </span>
+        </div>
+      </div>
+
+      <!-- Rentang Waktu Penggunaan / Jadwal Kegiatan -->
+      <div class="bg-indigo-50/50 p-4 rounded-xl border border-indigo-100/80 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-xl bg-indigo-600 text-white flex items-center justify-center text-sm shadow-xs shrink-0">
+            <i class="fa-regular fa-calendar-check"></i>
+          </div>
+          <div>
+            <span class="text-indigo-900 font-bold block">Rentang Waktu Penggunaan / Kegiatan:</span>
+            <span class="text-slate-700 font-medium font-mono text-xs">
+              {{ $pengajuan->rentang_tanggal_formatted }}
+            </span>
+          </div>
+        </div>
+        <div class="text-[11px] text-slate-500 bg-white px-3 py-1.5 rounded-lg border border-slate-200">
+          Batas Acuan SPJ: <strong class="text-slate-700">{{ $pengajuan->tanggal_selesai ? $pengajuan->tanggal_selesai->format('d/m/Y') : '-' }}</strong>
+        </div>
+      </div>
+
+      <!-- Latar Belakang & Urgensi -->
+      @if($pengajuan->latar_belakang)
+        <div class="pt-2">
+          <span class="text-slate-400 font-semibold block text-[10px] uppercase mb-1">Latar Belakang &amp; Urgensi Kegiatan:</span>
+          <p class="text-xs text-slate-700 bg-slate-50 p-3 rounded-xl border border-slate-100 leading-relaxed">
+            {{ $pengajuan->latar_belakang }}
+          </p>
+        </div>
+      @endif
+    </div>
+
     <!-- Rincian Item Belanja -->
     <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
       <h2 class="text-sm font-bold text-slate-900 uppercase tracking-wider border-b border-slate-100 pb-3 mb-4">

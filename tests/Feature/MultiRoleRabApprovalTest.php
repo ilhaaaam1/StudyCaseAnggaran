@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
+use App\Enums\StatusPengajuan;
 use App\Models\AlurPersetujuan;
 use App\Models\Divisi;
 use App\Models\PengajuanRab;
@@ -81,8 +82,12 @@ class MultiRoleRabApprovalTest extends TestCase
         $payload = [
             'id_divisi' => $this->divisi->id_divisi,
             'judul_pengajuan' => 'Pengadaan Lisensi Software 2026',
+            'kategori_anggaran' => 'Belanja Modal / Alat Elektronik',
+            'tahun_ajaran_semester' => '2026/2027 - Semester Ganjil',
+            'tahap_bos' => 'BOS Reguler Tahap 1 (Januari – Juni)',
+            'tanggal_mulai' => '2026-08-01',
+            'tanggal_selesai' => '2026-08-05',
             'periode_penggunaan' => 'Semester I 2026',
-            'prioritas' => 'Tinggi',
             'latar_belakang' => 'Kebutuhan lisensi software untuk operasional tim IT.',
             'items' => [
                 [
@@ -100,13 +105,13 @@ class MultiRoleRabApprovalTest extends TestCase
 
         $rab = PengajuanRab::where('judul_pengajuan', 'Pengadaan Lisensi Software 2026')->first();
         $this->assertNotNull($rab);
-        $this->assertSame('Pending', $rab->status);
+        $this->assertSame(StatusPengajuan::MENUNGGU_FINANCE, $rab->status);
         $this->assertSame(12000000.0, (float) $rab->estimasi_total);
         $this->assertSame($this->staff->id_pengguna, $rab->id_pengguna);
     }
 
     /**
-     * 2. Finance meninjau pengajuan 'Pending' dan memberikan status 'ACC Finance' (Tahap 1).
+     * 2. Finance meninjau pengajuan 'Menunggu Verifikasi Finance' dan memberikan status 'ACC' (Tahap 1).
      */
     public function test_finance_can_review_and_acc_pending_rab(): void
     {
@@ -115,11 +120,15 @@ class MultiRoleRabApprovalTest extends TestCase
             'judul_pengajuan' => 'Beli Komputer Kantor',
             'id_pengguna' => $this->staff->id_pengguna,
             'id_divisi' => $this->divisi->id_divisi,
+            'kategori_anggaran' => 'Belanja Modal / Alat Elektronik',
+            'tahun_ajaran_semester' => '2026/2027 - Semester Ganjil',
+            'tahap_bos' => 'BOS Reguler Tahap 1 (Januari – Juni)',
+            'tanggal_mulai' => '2026-08-01',
+            'tanggal_selesai' => '2026-08-05',
             'periode_penggunaan' => 'Januari 2026',
-            'prioritas' => 'Sedang',
             'latar_belakang' => 'Penggantian PC lama.',
             'estimasi_total' => 8000000,
-            'status' => 'Pending',
+            'status' => StatusPengajuan::MENUNGGU_FINANCE,
             'tanggal_pengajuan' => now(),
         ]);
 
@@ -140,7 +149,7 @@ class MultiRoleRabApprovalTest extends TestCase
         $responseApprove->assertSessionHas('success');
 
         $rab->refresh();
-        $this->assertSame('ACC Finance', $rab->status);
+        $this->assertSame(StatusPengajuan::MENUNGGU_PIMPINAN, $rab->status);
 
         // Verifikasi alur_persetujuan tercatat level 1
         $log = AlurPersetujuan::where('id_pengajuan', $rab->id_pengajuan)->first();
@@ -151,7 +160,7 @@ class MultiRoleRabApprovalTest extends TestCase
     }
 
     /**
-     * 3. Finance dapat menolak pengajuan 'Pending' -> status menjadi 'Ditolak Finance'.
+     * 3. Finance dapat menolak pengajuan 'Menunggu Verifikasi Finance' -> status menjadi 'Ditolak'.
      */
     public function test_finance_can_reject_pending_rab(): void
     {
@@ -160,11 +169,15 @@ class MultiRoleRabApprovalTest extends TestCase
             'judul_pengajuan' => 'Renovasi Ruangan',
             'id_pengguna' => $this->staff->id_pengguna,
             'id_divisi' => $this->divisi->id_divisi,
+            'kategori_anggaran' => 'Pemeliharaan Sarana & Prasarana',
+            'tahun_ajaran_semester' => '2026/2027 - Semester Ganjil',
+            'tahap_bos' => 'BOS Reguler Tahap 1 (Januari – Juni)',
+            'tanggal_mulai' => '2026-08-01',
+            'tanggal_selesai' => '2026-08-05',
             'periode_penggunaan' => 'Februari 2026',
-            'prioritas' => 'Rendah',
             'latar_belakang' => 'Renovasi berkala.',
             'estimasi_total' => 50000000,
-            'status' => 'Pending',
+            'status' => StatusPengajuan::MENUNGGU_FINANCE,
             'tanggal_pengajuan' => now(),
         ]);
 
@@ -178,7 +191,7 @@ class MultiRoleRabApprovalTest extends TestCase
         $responseReject->assertRedirect(route('finance.antrean'));
 
         $rab->refresh();
-        $this->assertSame('Ditolak Finance', $rab->status);
+        $this->assertSame(StatusPengajuan::DITOLAK, $rab->status);
 
         $log = AlurPersetujuan::where('id_pengajuan', $rab->id_pengajuan)->first();
         $this->assertNotNull($log);
@@ -187,7 +200,7 @@ class MultiRoleRabApprovalTest extends TestCase
     }
 
     /**
-     * 4. Pimpinan meninjau pengajuan 'ACC Finance' dan memberikan persetujuan akhir ('ACC Final').
+     * 4. Pimpinan meninjau pengajuan 'Menunggu Persetujuan Pimpinan' dan memberikan persetujuan akhir ('Proses Pencairan').
      */
     public function test_pimpinan_can_review_and_acc_final_rab(): void
     {
@@ -196,11 +209,15 @@ class MultiRoleRabApprovalTest extends TestCase
             'judul_pengajuan' => 'Pengadaan Server Backup',
             'id_pengguna' => $this->staff->id_pengguna,
             'id_divisi' => $this->divisi->id_divisi,
+            'kategori_anggaran' => 'Belanja Modal / Alat Elektronik',
+            'tahun_ajaran_semester' => '2026/2027 - Semester Ganjil',
+            'tahap_bos' => 'BOS Reguler Tahap 1 (Januari – Juni)',
+            'tanggal_mulai' => '2026-08-01',
+            'tanggal_selesai' => '2026-08-05',
             'periode_penggunaan' => 'Maret 2026',
-            'prioritas' => 'Tinggi',
             'latar_belakang' => 'Disaster recovery server.',
             'estimasi_total' => 25000000,
-            'status' => 'ACC Finance',
+            'status' => StatusPengajuan::MENUNGGU_PIMPINAN,
             'tanggal_pengajuan' => now(),
         ]);
 
@@ -230,7 +247,7 @@ class MultiRoleRabApprovalTest extends TestCase
         $responseFinal->assertRedirect(route('pimpinan.antrean'));
 
         $rab->refresh();
-        $this->assertSame('ACC Final', $rab->status);
+        $this->assertSame(StatusPengajuan::PROSES_PENCAIRAN, $rab->status);
 
         // Verifikasi log persetujuan level 2
         $finalLog = AlurPersetujuan::where('id_pengajuan', $rab->id_pengajuan)
@@ -243,7 +260,7 @@ class MultiRoleRabApprovalTest extends TestCase
     }
 
     /**
-     * 5. Pimpinan TIDAK BISA memproses pengajuan yang masih 'Pending' (belum di-ACC Finance).
+     * 5. Pimpinan TIDAK BISA memproses pengajuan yang masih 'Menunggu Verifikasi Finance'.
      */
     public function test_pimpinan_cannot_process_pending_rab_before_finance_review(): void
     {
@@ -252,11 +269,15 @@ class MultiRoleRabApprovalTest extends TestCase
             'judul_pengajuan' => 'Pengajuan Tanpa Review Finance',
             'id_pengguna' => $this->staff->id_pengguna,
             'id_divisi' => $this->divisi->id_divisi,
+            'kategori_anggaran' => 'Belanja Modal / Alat Elektronik',
+            'tahun_ajaran_semester' => '2026/2027 - Semester Ganjil',
+            'tahap_bos' => 'BOS Reguler Tahap 1 (Januari – Juni)',
+            'tanggal_mulai' => '2026-08-01',
+            'tanggal_selesai' => '2026-08-05',
             'periode_penggunaan' => 'April 2026',
-            'prioritas' => 'Sedang',
             'latar_belakang' => 'Uji bypass flow.',
             'estimasi_total' => 10000000,
-            'status' => 'Pending',
+            'status' => StatusPengajuan::MENUNGGU_FINANCE,
             'tanggal_pengajuan' => now(),
         ]);
 
@@ -269,7 +290,7 @@ class MultiRoleRabApprovalTest extends TestCase
         $response->assertStatus(422);
 
         $rab->refresh();
-        $this->assertSame('Pending', $rab->status);
+        $this->assertSame(StatusPengajuan::MENUNGGU_FINANCE, $rab->status);
     }
 
     /**

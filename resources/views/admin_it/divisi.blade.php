@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Master Data Bidang / Bagian - Administrator IT')
+@section('title', 'Master Data Unit Kerja Sekolah - Administrator IT')
 
 @section('content')
   <div class="text-xs text-slate-500 mb-6 flex items-center gap-1.5">
@@ -8,32 +8,30 @@
     <span>/</span>
     <a href="{{ route('admin-it.dashboard') }}" class="hover:text-slate-800">Administrator IT</a>
     <span>/</span>
-    {{-- PRESENTASI: Mengubah Penamaan Menu Master Data --}}
-    {{-- Label 'Master Divisi' diubah menjadi 'Master Bidang / Bagian' menyesuaikan dengan konteks pendidikan / sekolah --}}
-    <span class="text-slate-800 font-medium">Master Bidang / Bagian</span>
+    <span class="text-slate-800 font-medium">Master Unit Kerja Sekolah</span>
   </div>
 
   <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
     <div>
-      <h1 class="text-2xl font-bold text-slate-900">Master Data Bidang / Bagian</h1>
-      <p class="text-xs text-slate-500 mt-1">Kelola data bidang/bagian pengaju anggaran dalam lingkungan sekolah.</p>
+      <h1 class="text-2xl font-bold text-slate-900">Master Data Unit Kerja Sekolah</h1>
+      <p class="text-xs text-slate-500 mt-1">Kelola data unit kerja/bidang pengaju anggaran dalam lingkungan sekolah.</p>
     </div>
   </div>
 
   <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-    <!-- Form Tambah Divisi -->
+    <!-- Form Tambah Unit Kerja -->
     <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm h-fit">
-      <h2 class="text-sm font-bold text-slate-900 uppercase tracking-wider mb-3">Tambah Bidang Baru</h2>
+      <h2 class="text-sm font-bold text-slate-900 uppercase tracking-wider mb-3">Tambah Unit Kerja Baru</h2>
       <form action="{{ route('admin-it.divisi.store') }}" method="POST" class="space-y-4">
         @csrf
         <div>
-          <label class="block text-xs font-semibold text-slate-700 mb-1">Nama Bidang / Bagian <span class="text-rose-500">*</span></label>
-          <input type="text" name="nama_divisi" required placeholder="Contoh: Divisi Logistik"
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Nama Unit Kerja Sekolah <span class="text-rose-500">*</span></label>
+          <input type="text" name="nama_divisi" required placeholder="Contoh: Kurikulum & Pembelajaran"
                  class="w-full px-3.5 py-2 border border-slate-300 rounded-xl text-sm focus:border-indigo-500">
           @error('nama_divisi') <p class="text-xs text-rose-600 mt-1">{{ $message }}</p> @enderror
         </div>
         <button type="submit" class="w-full py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-semibold">
-          Simpan Divisi
+          Simpan Unit Kerja
         </button>
       </form>
     </div>
@@ -41,13 +39,13 @@
     <!-- Tabel Daftar Divisi -->
     <div class="lg:col-span-2 bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
       <div class="p-4 border-b border-slate-100">
-        <h2 class="text-sm font-bold text-slate-900 uppercase tracking-wider">Daftar Bidang / Bagian Terdaftar</h2>
+        <h2 class="text-sm font-bold text-slate-900 uppercase tracking-wider">Daftar Unit Kerja Sekolah Terdaftar</h2>
       </div>
       <table class="w-full text-left text-xs border-collapse">
         <thead class="bg-slate-50 text-slate-600 uppercase font-semibold border-b border-slate-200">
           <tr>
             <th class="px-5 py-3 w-12 text-center">ID</th>
-            <th class="px-5 py-3">Nama Bidang / Bagian</th>
+            <th class="px-5 py-3">Nama Unit Kerja Sekolah</th>
             <th class="px-5 py-3 text-center">Jumlah Anggota</th>
             <th class="px-5 py-3 text-center w-28">Aksi</th>
           </tr>

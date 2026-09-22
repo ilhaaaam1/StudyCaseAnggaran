@@ -1,58 +1,106 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# SIRAB &bull; Sistem Informasi Rencana Anggaran Biaya Sekolah
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+**Aplikasi Manajemen Anggaran Operasional Sekolah Dasar / Menengah (Studi Kasus: SDN Sidokare 3)**
 
-## About Laravel
+Sistem informasi berbasis web menggunakan framework **Laravel 11 & Tailwind CSS** yang dirancang untuk mengelola siklus perencanaan, pengajuan, verifikasi bertingkat (Bendahara BOS &amp; Kepala Sekolah), serta pencairan dana anggaran operasional sekolah (BOS &amp; RKAS).
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+---
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## ⚡ Panduan Cepat untuk Tim Pengembang
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+> [!IMPORTANT]
+> **PANDUAN LENGKAP SETELAH `git pull`:**
+> Untuk memahami apa yang terjadi secara otomatis saat `git pull` dan panduan troubleshooting tim, baca:
+> 📖 **[PANDUAN_GIT_PULL.md](file:///c:/laragon/www/StudyCaseAnggaran/PANDUAN_GIT_PULL.md)**
 
-## Learning Laravel
+---
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+### 1. Onboarding Anggota Baru (Pertama Kali Clone)
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
-
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
-
-## Agentic Development
-
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+Jika Anda anggota tim baru yang baru saja meng-clone repositori ini:
 
 ```bash
-composer require laravel/boost --dev
+# 1. Clone repositori
+git clone <repository_url>
+cd StudyCaseAnggaran
 
-php artisan boost:install
+# 2. Jalankan instalasi dependensi (otomatis memasang Git Hooks)
+composer install
+
+# 3. Jalankan setup lingkungan otomatis
+# (Akan membuat .env, generate key, setup git hooks, migrasi, dan seed master data)
+php artisan dev:setup
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+*(Opsional: Jika ingin menambahkan data pengajuan dummy untuk uji coba, pilih opsi `yes` saat ditanya oleh command `dev:setup`, atau jalankan `php artisan db:seed --class=DummyDataSeeder`).*
 
-## Contributing
+Terakhir, kompilasi aset frontend dan jalankan server pengembangan:
+```bash
+npm install
+npm run build
+php artisan serve
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+---
 
-## Code of Conduct
+### 2. Rutinitas Kerja Harian Tim (Automasi Penuh)
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Anda **TIDAK PERLU LAGI** mengimpor file `.sql` secara manual atau menjalankan migrasi manual setiap kali rekan kerja Anda memperbarui skema database.
 
-## Security Vulnerabilities
+Cukup jalankan:
+```bash
+git pull origin main
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+**Git Hook (`post-merge`) akan bekerja secara otomatis di latar belakang:**
+- ⚡ Menjalankan `php artisan migrate --force` jika ada migrasi baru (tanpa menghapus data lokal Anda).
+- ⚡ Memutakhirkan master data sekolah via `php artisan db:seed --force` (idempoten).
+- ⚡ Menjalankan `composer install` jika `composer.lock` diperbarui.
+- ⚡ Menjalankan `npm run build` jika ada perubahan template / aset frontend.
 
-## License
+---
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+### 3. Reset Database Lokal ke Kondisi Bersih (Fresh Start)
+
+Jika sewaktu-waktu database lokal Anda berantakan dan ingin mulai dari kondisi bersih awal:
+
+```bash
+# Reset semua tabel dan isi master data esensial
+php artisan migrate:fresh --seed
+
+# (Opsional) Tambahkan berkas RAB dummy untuk pengujian
+php artisan db:seed --class=DummyDataSeeder
+```
+
+---
+
+### 4. Aturan Pembuatan Migration Tim (Mencegah Bentrok Skema)
+
+1. **Dilarang Mengedit Migration Lama**: Jangan pernah mengubah file migrasi yang sudah masuk ke branch `main`.
+2. **Wajib Buat Migration Baru**: Gunakan `php artisan make:migration [nama_perubahan]`.
+3. **Defensive Check**: Gunakan `Schema::hasColumn(...)` atau `Schema::hasTable(...)` pada migrasi alter.
+
+---
+
+## 👥 Akun Login Pengujian Default
+
+Password untuk seluruh akun default: **`password`**
+
+| Role | Nama | Email | Divisi / Unit Kerja |
+| :--- | :--- | :--- | :--- |
+| **Admin IT / Ka. TU** | Drs. Arif Rachman | `arif@sirab.local` | Tata Usaha & Operasional (TU) |
+| **Bendahara BOS (Finance)** | Akun Finance | `finance@sirab.local` | Tata Usaha & Operasional (TU) |
+| **Kepala Sekolah (Pimpinan)** | Akun Pimpinan | `pimpinan@sirab.local` | Tata Usaha & Operasional (TU) |
+| **Staf Kurikulum** | Sari Dewi | `sari@sirab.local` | Kurikulum & Pembelajaran |
+| **Staf Sarpras** | Budi Santoso | `budi@sirab.local` | Sarana & Prasarana (Sarpras) |
+| **Staf Kesiswaan** | Dina Marlina | `dina@sirab.local` | Kesiswaan & Ekstrakurikuler |
+
+---
+
+## 🛠 Tech Stack
+
+- **Backend**: Laravel 11 / PHP 8.3
+- **Database**: MySQL / MariaDB (Didukung SQLite untuk automated test)
+- **Frontend**: Blade Templating, Tailwind CSS, FontAwesome 6, Alpine.js
+- **Build Tool**: Vite
+- **Testing**: PHPUnit / Feature Tests

@@ -37,7 +37,9 @@
             "composer install",
             "@php -r \"file_exists('.env') || copy('.env.example', '.env');\"",
             "@php artisan key:generate",
+            "@php artisan dev:setup-hooks",
             "@php artisan migrate --force",
+            "@php artisan db:seed --force",
             "npm install --ignore-scripts",
             "npm run build"
         ],
@@ -51,7 +53,8 @@
         ],
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
-            "@php artisan package:discover --ansi"
+            "@php artisan package:discover --ansi",
+            "@php artisan dev:setup-hooks --ansi"
         ],
         "post-update-cmd": [
             "@php artisan vendor:publish --tag=laravel-assets --ansi --force"
