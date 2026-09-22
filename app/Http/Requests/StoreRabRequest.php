@@ -28,14 +28,17 @@ class StoreRabRequest extends FormRequest
             'id_divisi' => ['required', 'integer', 'exists:divisi,id_divisi'],
             'judul_pengajuan' => ['required', 'string', 'max:255'],
             'periode_penggunaan' => ['required', 'string', 'max:50'],
-            'prioritas' => ['required', 'in:Rendah,Sedang,Tinggi'],
+            // PRESENTASI: Update Validasi Controller/Request
+            // Menghapus aturan validasi untuk prioritas dan menambahkan
+            // validasi kategori_anggaran dengan daftar kategori yang sah.
+            'kategori_anggaran' => ['required', 'in:Operasional Rutin,Pengadaan Barang/Aset,Pemeliharaan & Perbaikan,Kegiatan / Acara'],
             'latar_belakang' => ['required', 'string'],
 
             // Validasi Rincian Item (Array)
             'items' => ['required', 'array', 'min:1'],
             'items.*.uraian_barang' => ['required', 'string', 'max:255'],
             'items.*.satuan' => ['required', 'string', 'max:50'],
-            'items.*.volume' => ['required', 'integer', 'min:1'],
+            'items.*.volume' => ['required', 'numeric', 'min:1'], // updated to numeric for decimal volumes
             'items.*.harga_satuan' => ['required', 'numeric', 'min:0'],
 
             // Validasi Dokumen Pendukung (Upload File, max 5MB = 5120 KB)
@@ -54,7 +57,7 @@ class StoreRabRequest extends FormRequest
             'id_divisi' => 'Divisi Pemohon',
             'judul_pengajuan' => 'Judul Pengajuan',
             'periode_penggunaan' => 'Periode Penggunaan',
-            'prioritas' => 'Prioritas',
+            'kategori_anggaran' => 'Kategori Anggaran',
             'latar_belakang' => 'Latar Belakang',
             'items' => 'Rincian Item',
             'items.*.uraian_barang' => 'Uraian Barang',

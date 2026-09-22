@@ -47,9 +47,10 @@
           </div>
 
           <div>
-            <label class="block text-xs font-semibold text-slate-700 mb-1">Unit Kerja / Divisi <span class="text-rose-500">*</span></label>
+            {{-- PRESENTASI: Penyesuaian Label Field Divisi di Edit --}}
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Bidang / Bagian <span class="text-rose-500">*</span></label>
             <select name="id_divisi" required class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-sm focus:border-indigo-500">
-              <option value="">-- Pilih Unit Kerja --</option>
+              <option value="">-- Pilih Bidang / Bagian --</option>
               @foreach($divisiList ?? [] as $d)
                 <option value="{{ $d->id_divisi }}" {{ old('id_divisi', $pengajuan->id_divisi) == $d->id_divisi ? 'selected' : '' }}>
                   {{ $d->nama_divisi }}
@@ -70,13 +71,16 @@
           </div>
 
           <div>
-            <label class="block text-xs font-semibold text-slate-700 mb-1">Tingkat Prioritas <span class="text-rose-500">*</span></label>
-            <select name="prioritas" required class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-sm focus:border-indigo-500">
-              <option value="Rendah" {{ old('prioritas', $pengajuan->prioritas) === 'Rendah' ? 'selected' : '' }}>Rendah</option>
-              <option value="Sedang" {{ old('prioritas', $pengajuan->prioritas) === 'Sedang' ? 'selected' : '' }}>Sedang</option>
-              <option value="Tinggi" {{ old('prioritas', $pengajuan->prioritas) === 'Tinggi' ? 'selected' : '' }}>Tinggi</option>
+            {{-- PRESENTASI: Mengganti Input Dropdown Prioritas di Edit --}}
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Kategori Anggaran <span class="text-rose-500">*</span></label>
+            <select name="kategori_anggaran" required class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-sm focus:border-indigo-500">
+              <option value="" disabled>-- Pilih Kategori --</option>
+              <option value="Operasional Rutin" {{ old('kategori_anggaran', $pengajuan->kategori_anggaran) === 'Operasional Rutin' ? 'selected' : '' }}>Operasional Rutin</option>
+              <option value="Pengadaan Barang/Aset" {{ old('kategori_anggaran', $pengajuan->kategori_anggaran) === 'Pengadaan Barang/Aset' ? 'selected' : '' }}>Pengadaan Barang/Aset</option>
+              <option value="Pemeliharaan & Perbaikan" {{ old('kategori_anggaran', $pengajuan->kategori_anggaran) === 'Pemeliharaan & Perbaikan' ? 'selected' : '' }}>Pemeliharaan & Perbaikan</option>
+              <option value="Kegiatan / Acara" {{ old('kategori_anggaran', $pengajuan->kategori_anggaran) === 'Kegiatan / Acara' ? 'selected' : '' }}>Kegiatan / Acara</option>
             </select>
-            @error('prioritas') <p class="text-xs text-rose-600 mt-1">{{ $message }}</p> @enderror
+            @error('kategori_anggaran') <p class="text-xs text-rose-600 mt-1">{{ $message }}</p> @enderror
           </div>
         </div>
 
@@ -187,7 +191,26 @@
         </h2>
 
         <div>
-          <label class="block text-xs font-semibold text-slate-700 mb-1">Upload Berkas Pendukung (PDF/JPG/PNG max 5MB)</label>
+          <label class="block text-xs font-semibold text-slate-700 mb-2">Dokumen Pendukung Saat Ini</label>
+          {{-- PRESENTASI: Preview Dokumen Lama pada Form Edit --}}
+          {{-- Menampilkan daftar dokumen yang sudah diunggah sebelumnya. Jika user mengupload dokumen baru, dokumen lama ini akan digantikan di sistem. --}}
+          @if($pengajuan->dokumenPendukung && $pengajuan->dokumenPendukung->isNotEmpty())
+            <ul class="mb-3 space-y-2">
+              @foreach($pengajuan->dokumenPendukung as $doc)
+                <li class="flex items-center gap-2 text-xs text-indigo-700 bg-indigo-50 px-3 py-2 rounded border border-indigo-100">
+                  <i class="fa-solid fa-file-lines"></i>
+                  <a href="{{ asset('storage/' . $doc->path_file) }}" target="_blank" class="hover:underline font-medium">{{ $doc->nama_file }}</a>
+                </li>
+              @endforeach
+            </ul>
+            <p class="text-[11px] text-amber-600 font-semibold mb-3">
+              <i class="fa-solid fa-circle-info mr-1"></i> Jika Anda mengunggah file baru di bawah ini, file dokumen lama akan terhapus.
+            </p>
+          @else
+            <p class="text-xs text-slate-500 mb-3 italic">Belum ada dokumen yang dilampirkan.</p>
+          @endif
+
+          <label class="block text-xs font-semibold text-slate-700 mb-1 mt-4">Upload Berkas Pengganti (PDF/JPG/PNG max 5MB)</label>
           <input type="file" name="dokumen_pendukung" accept=".pdf,.jpg,.jpeg,.png"
                  class="block w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 cursor-pointer">
           <p class="text-[11px] text-slate-400 mt-1">Lampirkan proposal kegiatan, perbandingan harga vendor, atau TOR acuan.</p>
@@ -292,5 +315,10 @@
       });
       document.getElementById('grandTotalText').innerText = 'Rp ' + total.toLocaleString('id-ID');
     }
+    
+    // Inisialisasi total saat halaman pertama dimuat
+    document.addEventListener('DOMContentLoaded', function() {
+        hitungTotalKeseluruhan();
+    });
   </script>
 @endsection

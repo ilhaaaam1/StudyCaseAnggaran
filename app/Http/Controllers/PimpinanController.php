@@ -89,27 +89,37 @@ class PimpinanController extends Controller
      */
     public function processApproval(Request $request, int $id): RedirectResponse
     {
-        // Normalisasi input status
-        $rawStatus = (string) ($request->input('status') ?? $request->input('status_persetujuan') ?? '');
-        $statusDecision = 'ACC';
-        if (strcasecmp($rawStatus, 'ditolak') === 0 || str_contains(strtolower($rawStatus), 'tolak')) {
+        // PRESENTASI: Memisahkan Logika Revisi dan Ditolak Permanen di level Pimpinan
+        $rawStatus = (string) ($request->input('action') ?? $request->input('status') ?? '');
+        
+        $statusDecision = 'ACC'; // Default
+        if (strcasecmp($rawStatus, 'revisi') === 0) {
+            $statusDecision = 'Revisi';
+        } elseif (strcasecmp($rawStatus, 'ditolak') === 0 || str_contains(strtolower($rawStatus), 'tolak')) {
             $statusDecision = 'Ditolak';
         }
 
         $request->merge(['status_decision' => $statusDecision]);
 
+        // PRESENTASI: Catatan diwajibkan jika keputusan adalah Revisi atau Ditolak
         $validated = $request->validate([
-            'status_decision' => ['required', 'in:ACC,Ditolak'],
-            'catatan' => ['nullable', 'string', 'max:2000'],
+            'status_decision' => ['required', 'in:ACC,Revisi,Ditolak'],
+            'catatan' => [
+                $statusDecision === 'ACC' ? 'nullable' : 'required', 
+                'string', 
+                'max:2000'
+            ],
         ], [
             'status_decision.required' => 'Keputusan persetujuan final Pimpinan wajib ditentukan.',
+            'catatan.required' => 'Catatan/Evaluasi wajib diisi untuk penolakan atau revisi.',
         ]);
 
         $user = Auth::user();
         $pimpinanId = (int) $user->id_pengguna;
 
-        // PRESENTASI: Pengecekan otorisasi delegasi dalam Controller Pimpinan
-        // Jika user yang mengeksekusi bukan ber-role pimpinan, kita anggap ia adalah penerima delegasi.
+        // PRESENTASI: Pengecekan Otorisasi Delegasi
+        // Jika user yang mengeksekusi aksi ini bukan Pimpinan (melainkan Finance),
+        // kita verifikasi apakah dia memiliki delegasi aktif untuk menyetujui atas nama Pimpinan.
         $isDelegated = $user->role !== 'pimpinan' && $user->hasActiveDelegation();
 
         DB::transaction(function () use ($id, $pimpinanId, $validated, $isDelegated, $user): void {
@@ -120,25 +130,41 @@ class PimpinanController extends Controller
                 abort(422, 'Pengajuan ini belum diverifikasi Finance atau sudah memiliki keputusan final.');
             }
 
-            $targetStatus = $validated['status_decision'] === 'ACC'
-                ? StatusPengajuan::PROSES_PENCAIRAN
-                : StatusPengajuan::DITOLAK;
+            // PRESENTASI: Menentukan target status berdasarkan aksi yang dipilih
+            if ($validated['status_decision'] === 'ACC') {
+                $targetStatus = StatusPengajuan::PROSES_PENCAIRAN;
+            } elseif ($validated['status_decision'] === 'Revisi') {
+                $targetStatus = StatusPengajuan::REVISI;
+            } else {
+                $targetStatus = StatusPengajuan::DITOLAK;
+            }
 
             // 1. Update status akhir di pengajuan_rab
             $pengajuan->update([
                 'status' => $targetStatus,
             ]);
 
-            // PRESENTASI: Modifikasi pencatatan log approval agar mencerminkan tindakan delegasi
-            // Jika didelegasikan, kita menambahkan teks "(Atas nama Pimpinan)" ke dalam catatan sistem.
-            $defaultCatatan = $validated['status_decision'] === 'ACC'
-                ? 'Persetujuan Final oleh Pimpinan'
-                : 'Ditolak oleh Pimpinan pada tahap final';
+            // PRESENTASI: Pencatatan Log Persetujuan
+            // Jika persetujuan dilakukan oleh penerima delegasi, kita tambahkan
+            // informasi "(Atas nama Pimpinan)" ke dalam catatan database
+            // sebagai bentuk rekam jejak (audit trail) yang transparan.
+            $defaultCatatan = 'Diproses oleh Pimpinan';
+            if ($validated['status_decision'] === 'ACC') {
+                $defaultCatatan = 'Persetujuan Final oleh Pimpinan';
+            } elseif ($validated['status_decision'] === 'Revisi') {
+                $defaultCatatan = 'Dikembalikan untuk Revisi oleh Pimpinan';
+            } else {
+                $defaultCatatan = 'Ditolak oleh Pimpinan pada tahap final';
+            }
 
             if ($isDelegated) {
-                $defaultCatatan = $validated['status_decision'] === 'ACC'
-                    ? 'Disetujui oleh '.$user->nama_lengkap.' (Atas nama Pimpinan)'
-                    : 'Ditolak oleh '.$user->nama_lengkap.' (Atas nama Pimpinan)';
+                if ($validated['status_decision'] === 'ACC') {
+                    $defaultCatatan = 'Disetujui oleh '.$user->nama_lengkap.' (Atas nama Pimpinan)';
+                } elseif ($validated['status_decision'] === 'Revisi') {
+                    $defaultCatatan = 'Dikembalikan untuk Revisi oleh '.$user->nama_lengkap.' (Atas nama Pimpinan)';
+                } else {
+                    $defaultCatatan = 'Ditolak oleh '.$user->nama_lengkap.' (Atas nama Pimpinan)';
+                }
             }
 
             $catatanText = ! empty($validated['catatan'])
@@ -156,9 +182,15 @@ class PimpinanController extends Controller
             ]);
         });
 
-        $message = $validated['status_decision'] === 'ACC'
-            ? 'Pengajuan RAB berhasil disetujui dan diteruskan ke Finance untuk Proses Pencairan.'
-            : 'Pengajuan RAB telah ditolak oleh Pimpinan.';
+        // PRESENTASI: Pesan sukses yang disesuaikan berdasarkan aksi
+        $message = 'Pengajuan RAB berhasil diproses.';
+        if ($validated['status_decision'] === 'ACC') {
+            $message = 'Pengajuan RAB berhasil disetujui dan diteruskan ke Finance untuk Proses Pencairan.';
+        } elseif ($validated['status_decision'] === 'Revisi') {
+            $message = 'Pengajuan RAB dikembalikan ke Staff untuk direvisi.';
+        } else {
+            $message = 'Pengajuan RAB telah ditolak permanen oleh Pimpinan.';
+        }
 
         $logMsg = $isDelegated
             ? "Melakukan verifikasi Final (Atas nama Pimpinan) pada Pengajuan RAB #{$id} dengan keputusan {$validated['status_decision']}."
@@ -166,8 +198,7 @@ class PimpinanController extends Controller
 
         ActivityLog::log($logMsg);
 
-        return redirect()->route('pimpinan.antrean')
-            ->with('success', $message);
+        return redirect()->route('pimpinan.antrean')->with('success', $message);
     }
 
     /**
