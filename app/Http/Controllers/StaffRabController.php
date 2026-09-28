@@ -82,8 +82,15 @@ class StaffRabController extends Controller
     /**
      * Tampilkan form pembuatan pengajuan RAB baru.
      */
-    public function create(): View
+    public function create(): View|\Illuminate\Http\RedirectResponse
     {
+        // PRESENTASI: Proteksi Akses URL (Backend)
+        // Mengecek status maintenance dari tabel settings. Jika bernilai 1 (aktif), 
+        // pengguna yang memaksa masuk ke URL ini akan langsung dilempar kembali (redirect)
+        if (\App\Models\Setting::getSetting('maintenance_mode', '0') == '1') {
+            return redirect()->route('staff.dashboard')->with('error', 'Maaf, pembuatan pengajuan RAB sedang dinonaktifkan sementara untuk pemeliharaan sistem.');
+        }
+
         $user = Auth::user();
         $divisiList = Divisi::orderBy('id_divisi')->get();
 
@@ -109,6 +116,13 @@ class StaffRabController extends Controller
      */
     public function store(StoreRabRequest $request): RedirectResponse
     {
+        // PRESENTASI: Proteksi Akses Form Submit (Backend)
+        // Lapis keamanan kedua: Mencegah user yang mungkin mencoba mengirim form (POST request) via tools seperti Postman 
+        // ketika sistem sedang dalam mode pemeliharaan.
+        if (\App\Models\Setting::getSetting('maintenance_mode', '0') == '1') {
+            return redirect()->route('staff.dashboard')->with('error', 'Maaf, pembuatan pengajuan RAB sedang dinonaktifkan sementara untuk pemeliharaan sistem.');
+        }
+
         $user = Auth::user();
 
         $pengajuan = DB::transaction(function () use ($request, $user) {
@@ -203,6 +217,13 @@ class StaffRabController extends Controller
 
             return $pengajuanRab;
         });
+
+        // PRESENTASI: Logika Trigger Pengiriman Notifikasi (Staff -> Finance)
+        // Jika pengajuan di-submit (bukan draft), kirim notifikasi ke semua user Finance
+        if ($pengajuan->status === StatusPengajuan::MENUNGGU_FINANCE) {
+            $financeUsers = \App\Models\Pengguna::where('role', 'finance')->get();
+            \Illuminate\Support\Facades\Notification::send($financeUsers, new \App\Notifications\NewRabSubmitted($pengajuan));
+        }
 
         $msg = ($request->input('action') === 'draft')
             ? "Draft RAB {$pengajuan->no_rab} berhasil disimpan."
@@ -473,6 +494,12 @@ class StaffRabController extends Controller
                 ]);
             }
         });
+
+        // PRESENTASI: Logika Trigger Pengiriman Notifikasi (Staff -> Finance) via Update
+        if ($pengajuan->status === StatusPengajuan::MENUNGGU_FINANCE) {
+            $financeUsers = \App\Models\Pengguna::where('role', 'finance')->get();
+            \Illuminate\Support\Facades\Notification::send($financeUsers, new \App\Notifications\NewRabSubmitted($pengajuan));
+        }
 
         $msg = ($request->input('action') === 'draft')
             ? "Draft RAB {$pengajuan->no_rab} berhasil diperbarui."

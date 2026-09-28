@@ -294,16 +294,20 @@ class AdminItController extends Controller
         Setting::setSetting('admin_email', $validated['admin_email']);
         Setting::setSetting('maintenance_mode', $request->has('maintenance_mode') ? '1' : '0');
 
+        // PRESENTASI: Logika Upload File Logo
+        // Memeriksa apakah ada file logo yang diunggah, jika ada simpan ke public storage
         if ($request->hasFile('app_logo')) {
             $file = $request->file('app_logo');
-            $path = $file->store('settings', 'public');
+            // Menyimpan file ke direktori 'logo' di dalam disk public
+            $path = $file->store('logo', 'public');
 
-            // Delete old logo if exists
+            // Menghapus logo lama jika ada untuk menghemat ruang penyimpanan
             $oldLogo = Setting::getSetting('app_logo');
             if ($oldLogo && Storage::disk('public')->exists($oldLogo)) {
                 Storage::disk('public')->delete($oldLogo);
             }
 
+            // Menyimpan path file logo terbaru ke database settings
             Setting::setSetting('app_logo', $path);
         }
 

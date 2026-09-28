@@ -10,7 +10,13 @@
     <!-- Sidebar Header / Brand -->
     <div class="flex items-center gap-3 px-3 py-4 mx-4 mt-2 border-b border-white/10 mb-5">
       <div class="w-10 h-10 flex items-center justify-center shrink-0">
-        <img src="{{ asset('images/logo-sdn3.png') }}" alt="Logo SDN Sidokare 3" class="w-full h-full object-contain drop-shadow-sm">
+        {{-- PRESENTASI: Pemanggilan Logo Instansi Dinamis (White-labeling) --}}
+        {{-- Jika setting app_logo memiliki value, render logo dari storage. Jika kosong, fallback ke logo statis bawaan. --}}
+        @if(\App\Models\Setting::getSetting('app_logo'))
+          <img src="{{ asset('storage/' . \App\Models\Setting::getSetting('app_logo')) }}" alt="Logo Instansi" class="w-full h-full object-contain drop-shadow-sm">
+        @else
+          <img src="{{ asset('images/logo-sdn3.png') }}" alt="Logo Bawaan" class="w-full h-full object-contain drop-shadow-sm">
+        @endif
       </div>
       <div>
         <h1 class="text-base font-bold tracking-wide leading-tight">SIRAB</h1>
@@ -65,6 +71,18 @@
           <div class="flex items-center gap-3">
             <i class="fa-solid fa-gear w-[18px] text-center text-[15px]"></i>
             <span>Pengaturan Sistem</span>
+          </div>
+        </a>
+
+        {{-- PRESENTASI: Penambahan Kategori dan Menu Pengaturan Akun untuk Admin IT --}}
+        {{-- Agar fitur pengaturan profil bersifat universal dan Admin IT bisa mengelola akunnya sendiri --}}
+        <div class="text-[10px] uppercase text-slate-400 px-2.5 pb-2 tracking-wide font-semibold mt-4 mb-1">
+          Pengaturan Personal
+        </div>
+        <a href="{{ route('profile.edit') }}" class="flex items-center justify-between px-3 py-2.5 rounded-lg mb-1 text-[13px] font-medium transition-all {{ request()->routeIs('profile.edit') ? 'bg-[#2b337c] text-white' : 'text-slate-300 hover:bg-white/5 hover:text-white' }}">
+          <div class="flex items-center gap-3">
+            <i class="fa-solid fa-user-gear w-[18px] text-center text-[15px]"></i>
+            <span>Pengaturan Akun</span>
           </div>
         </a>
       @endif
@@ -185,12 +203,18 @@
             <span>Dashboard Staf</span>
           </div>
         </a>
-        <a href="{{ route('staff.rab.create') }}" class="flex items-center justify-between px-3 py-2.5 rounded-lg mb-1 text-[13px] font-medium transition-all {{ request()->routeIs('staff.rab.create') || request()->routeIs('user.rab.create') ? 'bg-[#2b337c] text-white' : 'text-slate-300 hover:bg-white/5 hover:text-white' }}">
-          <div class="flex items-center gap-3">
-            <i class="fa-solid fa-file-circle-plus w-[18px] text-center text-[15px]"></i>
-            <span>Buat Pengajuan RAB</span>
-          </div>
-        </a>
+        
+        {{-- PRESENTASI: Penyembunyian Menu Navigasi (Frontend) --}}
+        {{-- Tombol 'Buat Pengajuan RAB' hanya dirender jika sistem tidak dalam mode pemeliharaan --}}
+        @if(\App\Models\Setting::getSetting('maintenance_mode', '0') != '1')
+          <a href="{{ route('staff.rab.create') }}" class="flex items-center justify-between px-3 py-2.5 rounded-lg mb-1 text-[13px] font-medium transition-all {{ request()->routeIs('staff.rab.create') || request()->routeIs('user.rab.create') ? 'bg-[#2b337c] text-white' : 'text-slate-300 hover:bg-white/5 hover:text-white' }}">
+            <div class="flex items-center gap-3">
+              <i class="fa-solid fa-file-circle-plus w-[18px] text-center text-[15px]"></i>
+              <span>Buat Pengajuan RAB</span>
+            </div>
+          </a>
+        @endif
+
         <a href="{{ route('staff.riwayat') }}" class="flex items-center justify-between px-3 py-2.5 rounded-lg mb-1 text-[13px] font-medium transition-all {{ request()->routeIs('staff.riwayat') || request()->routeIs('user.laporan') ? 'bg-[#2b337c] text-white' : 'text-slate-300 hover:bg-white/5 hover:text-white' }}">
           <div class="flex items-center gap-3">
             <i class="fa-solid fa-folder-open w-[18px] text-center text-[15px]"></i>
@@ -211,14 +235,31 @@
         </a>
       @endif
 
+      @if(in_array($userRole, ['staff', 'finance', 'pimpinan', 'user']))
+        {{-- PRESENTASI: Penambahan menu 'Pengaturan Akun' untuk pengguna non-admin --}}
+        {{-- Menu ini ditambahkan di bagian bawah list menu (sebelum card profil) untuk memberikan akses ke profil personal --}}
+        <div class="text-[10px] uppercase text-slate-400 px-2.5 pb-2 tracking-wide font-semibold mt-4 mb-1">
+          Pengaturan
+        </div>
+        <a href="{{ route('profile.edit') }}" class="flex items-center justify-between px-3 py-2.5 rounded-lg mb-1 text-[13px] font-medium transition-all {{ request()->routeIs('profile.edit') ? 'bg-[#2b337c] text-white' : 'text-slate-300 hover:bg-white/5 hover:text-white' }}">
+          <div class="flex items-center gap-3">
+            <i class="fa-solid fa-user-gear w-[18px] text-center text-[15px]"></i>
+            <span>Pengaturan Akun</span>
+          </div>
+        </a>
+      @endif
+
     </div>
   </div>
-
   <!-- Sidebar Footer: Profile Info & Logout -->
   <div class="p-4 m-3 bg-black/20 rounded-xl flex items-center justify-between">
     <div class="flex items-center gap-3 min-w-0">
-      <div class="w-9 h-9 rounded-full bg-blue-500 text-white font-semibold text-[13px] flex items-center justify-center shrink-0">
-        {{ strtoupper(substr(Auth::user()->nama_lengkap ?? 'US', 0, 2)) }}
+      <div class="w-9 h-9 rounded-full bg-blue-500 text-white font-semibold text-[13px] flex items-center justify-center shrink-0 overflow-hidden">
+        @if(Auth::user()->foto_profil)
+          <img src="{{ asset('storage/' . Auth::user()->foto_profil) }}" alt="Foto Profil" class="w-full h-full object-cover">
+        @else
+          {{ strtoupper(substr(Auth::user()->nama_lengkap ?? 'US', 0, 2)) }}
+        @endif
       </div>
       <div class="min-w-0">
         <h4 class="text-[13px] font-semibold text-white truncate">

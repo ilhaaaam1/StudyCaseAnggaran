@@ -80,12 +80,12 @@ Route::middleware(['auth', 'role:finance'])->prefix('finance')->name('finance.')
     Route::get('/riwayat', [FinanceController::class, 'riwayat'])->name('riwayat');
 
     // New placeholder routes
-    Route::get('/kategori-pagu', function () {
-        return 'Master Kategori & Pagu';
-    })->name('kategori.index');
-    Route::get('/rekapitulasi', function () {
-        return 'Rekapitulasi Laporan';
-    })->name('rekapitulasi.index');
+    Route::get('/kategori-pagu', [App\Http\Controllers\KategoriAnggaranController::class, 'index'])->name('kategori.index');
+    Route::post('/kategori-pagu', [App\Http\Controllers\KategoriAnggaranController::class, 'store'])->name('kategori.store');
+    Route::put('/kategori-pagu/{id}', [App\Http\Controllers\KategoriAnggaranController::class, 'update'])->name('kategori.update');
+    Route::delete('/kategori-pagu/{id}', [App\Http\Controllers\KategoriAnggaranController::class, 'destroy'])->name('kategori.destroy');
+    Route::get('/rekapitulasi', [App\Http\Controllers\RekapitulasiController::class, 'index'])->name('rekapitulasi.index');
+    Route::get('/rekapitulasi/pdf', [App\Http\Controllers\RekapitulasiController::class, 'exportPdf'])->name('rekapitulasi.pdf');
 });
 
 // -------------------------------------------------------------------------
@@ -137,6 +137,16 @@ Route::middleware(['auth', 'role:admin_it,admin'])->prefix('admin-it')->name('ad
 Route::middleware('auth')->group(function (): void {
     Route::get('/dokumen/{id}/preview', [AdminRabController::class, 'previewDokumen'])->name('dokumen.preview');
     Route::get('/dokumen/{id}/download', [AdminRabController::class, 'downloadDokumen'])->name('dokumen.download');
+    
+    // PRESENTASI: Route Pengaturan Akun
+    // Menambahkan route profile yang diakses oleh semua role dengan middleware auth
+    Route::get('/profile', [App\Http\Controllers\ProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('/profile', [App\Http\Controllers\ProfileController::class, 'updateProfile'])->name('profile.update');
+    Route::delete('/profile/photo', [App\Http\Controllers\ProfileController::class, 'deletePhoto'])->name('profile.photo.destroy');
+    Route::put('/profile/password', [App\Http\Controllers\ProfileController::class, 'updatePassword'])->name('profile.password.update');
+
+    // Route Notifikasi
+    Route::get('/notifications/{id}/read', [App\Http\Controllers\NotificationController::class, 'read'])->name('notifications.read');
 });
 
 // -------------------------------------------------------------------------

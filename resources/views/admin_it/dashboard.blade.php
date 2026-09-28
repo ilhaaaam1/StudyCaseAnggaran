@@ -31,31 +31,36 @@
 
   <!-- Stats Grid -->
   <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-    <div class="bg-white border border-slate-200 rounded-xl p-4.5 flex flex-col justify-between relative shadow-sm hover:shadow-md transition-shadow">
+    {{-- PRESENTASI: Penyesuaian Ruang Kosong (Padding) dan Hierarki Teks --}}
+    {{-- Mengubah p-4.5 yang invalid menjadi p-5 agar memiliki ruang bernafas (whitespace) yang lega, serta memperbesar angka statistik ke text-3xl --}}
+    <div class="bg-white border border-slate-200 rounded-xl p-5 flex flex-col justify-between relative shadow-sm hover:shadow-md transition-shadow">
       <div>
-        <div class="text-[11px] font-bold uppercase text-slate-500 tracking-wide mb-2">Total Pengguna</div>
-        <div class="text-2xl font-bold text-slate-800 mb-1.5 font-mono">{{ $totalUsers ?? 0 }}</div>
+        <div class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Total Pengguna</div>
+        <div class="text-3xl font-bold text-slate-800 mt-2 mb-1.5 font-mono">{{ $totalUsers ?? 0 }}</div>
       </div>
       <div class="text-xs text-slate-500">Seluruh akun terdaftar</div>
     </div>
-    <div class="bg-white border border-slate-200 rounded-xl p-4.5 flex flex-col justify-between relative shadow-sm hover:shadow-md transition-shadow">
+
+    <div class="bg-white border border-slate-200 rounded-xl p-5 flex flex-col justify-between relative shadow-sm hover:shadow-md transition-shadow">
       <div>
-        <div class="text-[11px] font-bold uppercase text-slate-500 tracking-wide mb-2">Role Pimpinan</div>
-        <div class="text-2xl font-bold text-blue-600 mb-1.5 font-mono">{{ $countPimpinan ?? 0 }}</div>
+        <div class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Role Pimpinan</div>
+        <div class="text-3xl font-bold text-blue-600 mt-2 mb-1.5 font-mono">{{ $countPimpinan ?? 0 }}</div>
       </div>
       <div class="text-xs text-slate-500">Akun reviewer final</div>
     </div>
-    <div class="bg-white border border-slate-200 rounded-xl p-4.5 flex flex-col justify-between relative shadow-sm hover:shadow-md transition-shadow">
+
+    <div class="bg-white border border-slate-200 rounded-xl p-5 flex flex-col justify-between relative shadow-sm hover:shadow-md transition-shadow">
       <div>
-        <div class="text-[11px] font-bold uppercase text-slate-500 tracking-wide mb-2">Role Finance</div>
-        <div class="text-2xl font-bold text-amber-600 mb-1.5 font-mono">{{ $countFinance ?? 0 }}</div>
+        <div class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Role Finance</div>
+        <div class="text-3xl font-bold text-amber-600 mt-2 mb-1.5 font-mono">{{ $countFinance ?? 0 }}</div>
       </div>
       <div class="text-xs text-slate-500">Akun reviewer tahap 1</div>
     </div>
-    <div class="bg-white border border-slate-200 rounded-xl p-4.5 flex flex-col justify-between relative shadow-sm hover:shadow-md transition-shadow">
+
+    <div class="bg-white border border-slate-200 rounded-xl p-5 flex flex-col justify-between relative shadow-sm hover:shadow-md transition-shadow">
       <div>
-        <div class="text-[11px] font-bold uppercase text-slate-500 tracking-wide mb-2">Role Staff</div>
-        <div class="text-2xl font-bold text-rose-600 mb-1.5 font-mono">{{ $countStaff ?? 0 }}</div>
+        <div class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Role Staff</div>
+        <div class="text-3xl font-bold text-rose-600 mt-2 mb-1.5 font-mono">{{ $countStaff ?? 0 }}</div>
       </div>
       <div class="text-xs text-slate-500">Akun pemohon RAB</div>
     </div>
