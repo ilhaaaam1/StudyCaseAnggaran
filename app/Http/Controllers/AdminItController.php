@@ -70,7 +70,7 @@ class AdminItController extends Controller
             });
         }
 
-        $users = $query->latest('id_pengguna')->paginate(10)->withQueryString();
+        $users = $query->latest('id_pengguna')->paginate(5)->withQueryString();
         $divisiList = Divisi::orderBy('nama_divisi')->get();
 
         return view('admin_it.manajemen_user', compact('users', 'divisiList', 'roleFilter', 'divisiFilter', 'search'));

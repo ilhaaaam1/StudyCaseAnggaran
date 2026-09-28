@@ -170,51 +170,62 @@ Route::middleware(['auth', 'role:staff,user'])->prefix('user')->name('user.')->g
 // CONTOH TUGAS: Eloquent ORM & Query Builder
 // -------------------------------------------------------------------------
 use App\Models\Pengguna;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 // 2. Contoh Penerapan Eloquent ORM
 Route::get('/tugas/eloquent', function () {
-    // Menggunakan Eloquent Model Pengguna untuk mencari data dengan jabatan tertentu
-    $data = Pengguna::where('role', 'user')->take(5)->get();
+    // Menggunakan Eloquent Model Pengguna beserta relasinya (Eager Loading), Filtering, dan Sorting
+    $data = Pengguna::with('divisi')
+        ->where('role', 'user')
+        ->orderBy('nama_lengkap', 'asc')
+        ->take(5)
+        ->get();
+
     return response()->json([
-        'pesan' => 'Berhasil menggunakan Eloquent ORM',
-        'data' => $data
+        'pesan' => 'Berhasil menggunakan Eloquent ORM (dengan Relasi, Filter, dan Sort)',
+        'data' => $data,
     ]);
 });
 
 // 3. Contoh Penerapan SQL Query Builder
 Route::get('/tugas/query-builder', function () {
-    // Menggunakan DB facade (SQL Builder) untuk mengambil data dari tabel divisi
-    $data = DB::table('divisi')->get();
+    // Menggunakan Query Builder (DB facade) untuk JOIN tabel, SELECT spesifik, dan WHERE
+    $data = DB::table('rincian_item')
+        ->join('pengajuan_rab', 'rincian_item.id_pengajuan', '=', 'pengajuan_rab.id_pengajuan')
+        ->select('rincian_item.uraian_barang', 'rincian_item.total_harga', 'pengajuan_rab.no_rab')
+        ->where('rincian_item.harga_satuan', '>', 50000)
+        ->orderBy('rincian_item.total_harga', 'desc')
+        ->limit(5)
+        ->get();
+
     return response()->json([
-        'pesan' => 'Berhasil menggunakan SQL Query Builder',
-        'data' => $data
+        'pesan' => 'Berhasil menggunakan SQL Query Builder (dengan JOIN, Select, Where, Order, Limit)',
+        'data' => $data,
     ]);
 });
 
+// 1. Rute untuk MENAMPILKAN form tambah divisi
+Route::get('/tugas/tambah-divisi', function () {
+    return view('uji_tambah_divisi');
+})->name('uji.divisi.create');
 
+// 2. Rute untuk MEMPROSES data (Fungsi 'store' disederhanakan dalam rute)
+Route::post('/tugas/tambah-divisi', function (Request $request) {
+    // Validasi
+    $validated = $request->validate([
+        'nama_divisi' => 'required|string|max:50', // Wajib, teks, maks 50 huruf
+    ], [
+        'nama_divisi.required' => 'Nama divisi wajib diisi, tidak boleh kosong!',
+        'nama_divisi.max' => 'Nama divisi terlalu panjang, maksimal 50 huruf.',
+    ]);
 
-    // 1. Rute untuk MENAMPILKAN form tambah divisi
-    Route::get('/tugas/tambah-divisi', function () {
-        return view('uji_tambah_divisi'); 
-    })->name('uji.divisi.create');
+    // Simpan ke database (menggunakan Query Builder)
+    DB::table('divisi')->insert([ // Pastikan nama tabel benar
+        'nama_divisi' => $validated['nama_divisi'],
+        'created_at' => now(),
+        'updated_at' => now(),
+    ]);
 
-    // 2. Rute untuk MEMPROSES data (Fungsi 'store' disederhanakan dalam rute)
-    Route::post('/tugas/tambah-divisi', function (\Illuminate\Http\Request $request) {
-        // Validasi
-        $validated = $request->validate([
-            'nama_divisi' => 'required|string|max:50', // Wajib, teks, maks 50 huruf
-        ], [
-            'nama_divisi.required' => 'Nama divisi wajib diisi, tidak boleh kosong!',
-            'nama_divisi.max' => 'Nama divisi terlalu panjang, maksimal 50 huruf.'
-        ]);
-
-        // Simpan ke database (menggunakan Query Builder)
-        DB::table('divisi')->insert([ // Pastikan nama tabel benar
-            'nama_divisi' => $validated['nama_divisi'],
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-
-        return back()->with('sukses', 'Divisi baru berhasil ditambahkan ke database!');
-    })->name('uji.divisi.store');
+    return back()->with('sukses', 'Divisi baru berhasil ditambahkan ke database!');
+})->name('uji.divisi.store');
