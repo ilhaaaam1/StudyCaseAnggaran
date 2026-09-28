@@ -21,6 +21,9 @@
             Selamat datang, <span class="font-semibold text-slate-700">{{ Auth::user()->nama_lengkap }}</span> ({{ Auth::user()->jabatan ?? 'Staf' }} &bull; {{ Auth::user()->divisi->nama_divisi ?? 'Unit Kerja' }}).
         </p>
     </div>
+    {{-- PRESENTASI: Penyembunyian Tombol dan Banner Peringatan (Frontend) --}}
+    {{-- Mengecek jika mode pemeliharaan tidak aktif, tampilkan tombol. Jika aktif, tampilkan banner peringatan kuning. --}}
+    @if(\App\Models\Setting::getSetting('maintenance_mode', '0') != '1')
     <a href="{{ route('staff.rab.create') }}"
         class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold flex items-center gap-2 shadow-sm transition-all shrink-0">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -28,6 +31,12 @@
         </svg>
         Buat Pengajuan RAB
     </a>
+    @else
+    <div class="bg-amber-100 text-amber-800 border border-amber-300 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold flex items-center gap-2 shadow-sm shrink-0" title="Sistem sedang dalam masa pemeliharaan, pembuatan RAB baru ditutup sementara.">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+        Pembuatan RAB ditutup (Maintenance)
+    </div>
+    @endif
 </div>
 
 <!-- Metric Cards Grid -->

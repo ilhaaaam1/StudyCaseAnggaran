@@ -3,8 +3,9 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@\
-        ('title', 'SIRAB Kelompok-3 - Sistem Pengajuan & Persetujuan RAB')</title>
+    {{-- PRESENTASI: Perbaikan Syntax Leak pada Title --}}
+    {{-- Memperbaiki typo direktif Blade (@\) menjadi @yield agar tag title ter-render dengan benar, sekaligus mengubah default branding menjadi StudyCaseKelompok3 --}}
+    <title>@yield('title', 'StudyCaseKelompok3')</title>
 
     <!-- Performance: DNS Prefetch & Preconnect for external assets -->
     <link rel="dns-prefetch" href="https://fonts.googleapis.com">

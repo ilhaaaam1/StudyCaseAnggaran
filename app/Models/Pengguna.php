@@ -50,8 +50,11 @@ class Pengguna extends Authenticatable
     protected $fillable = [
         'id_divisi',
         'nama_lengkap',
+        'nip', // Menambahkan nip
         'jabatan',
         'email',
+        'no_hp',
+        'foto_profil',
         'password',
         'role',
     ];

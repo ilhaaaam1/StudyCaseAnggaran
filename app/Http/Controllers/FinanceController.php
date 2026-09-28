@@ -234,6 +234,26 @@ class FinanceController extends Controller
             $message = 'Pengajuan RAB telah ditolak permanen oleh Finance.';
         }
 
+        // PRESENTASI: Logika Trigger Pengiriman Notifikasi (Finance -> Staff/Pimpinan)
+        $pengajuanRef = PengajuanRab::with('pengguna')->find($id);
+        
+        // Notify Staff
+        $pengajuanRef->pengguna->notify(new \App\Notifications\RabStatusUpdated(
+            $pengajuanRef,
+            "RAB {$pengajuanRef->no_rab} telah diproses oleh Finance dengan status: {$validated['status_decision']}.",
+            route('staff.rab.show', $pengajuanRef->id_pengajuan)
+        ));
+
+        // Notify Pimpinan if ACC
+        if ($validated['status_decision'] === 'ACC') {
+            $pimpinanUsers = \App\Models\Pengguna::where('role', 'pimpinan')->get();
+            \Illuminate\Support\Facades\Notification::send($pimpinanUsers, new \App\Notifications\RabStatusUpdated(
+                $pengajuanRef,
+                "RAB {$pengajuanRef->no_rab} menunggu persetujuan Final Anda.",
+                route('pimpinan.show', $pengajuanRef->id_pengajuan)
+            ));
+        }
+
         ActivityLog::log("Melakukan verifikasi Tahap 1 (Finance) pada Pengajuan RAB #{$id} dengan keputusan {$validated['status_decision']}.");
 
         return redirect()->route('finance.antrean')->with('success', $message);
