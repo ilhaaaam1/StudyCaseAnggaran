@@ -21,6 +21,9 @@ class FinanceController extends Controller
      */
     public function index(Request $request): View
     {
+        // PRESENTASI: Contoh penerapan SQL Builder / Agregat
+        // Menggunakan SQL Agregat (SUM, CASE, COALESCE) untuk kalkulasi 
+        // statistik dashboard yang cepat dan efisien langsung di level database.
         $stats = PengajuanRab::selectRaw('
                 SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) as total_antrean_pending,
                 SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) as total_acc_finance,

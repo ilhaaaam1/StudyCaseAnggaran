@@ -32,16 +32,8 @@ class DummyDataSeeder extends Seeder
         $dina = Pengguna::where('email', 'dina@sirab.local')->first();
 
         if (! $sari || ! $unitKurikulum) {
-            $this->command->warn('Master data pengguna/divisi belum siap. Menjalankan DatabaseSeeder terlebih dahulu...');
-            $this->call(DatabaseSeeder::class);
-
-            $unitKurikulum = Divisi::where('nama_divisi', 'Kurikulum & Pembelajaran')->first();
-            $unitSarpras = Divisi::where('nama_divisi', 'Sarana & Prasarana (Sarpras)')->first();
-            $unitKesiswaan = Divisi::where('nama_divisi', 'Kesiswaan & Ekstrakurikuler')->first();
-            $admin = Pengguna::where('email', 'arif@sirab.local')->first();
-            $sari = Pengguna::where('email', 'sari@sirab.local')->first();
-            $budi = Pengguna::where('email', 'budi@sirab.local')->first();
-            $dina = Pengguna::where('email', 'dina@sirab.local')->first();
+            $this->command->warn('Master data pengguna/divisi belum siap. Pastikan Anda menjalankan db:seed dari DatabaseSeeder utama.');
+            return;
         }
 
         // 1. RAB 1: Selesai / Disetujui (Kurikulum)
