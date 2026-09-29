@@ -59,40 +59,90 @@ class AuthController extends Controller
     {
         $validated = $request->validate([
             'role' => ['nullable', 'string'],
-            'email' => ['nullable', 'string', 'email'],
-            'id' => ['nullable', 'integer'],
+            'email' => ['nullable', 'string'],
+            'id' => ['nullable'],
         ]);
 
         /** @var class-string<Pengguna|User> $modelClass */
         $modelClass = config('auth.providers.users.model', Pengguna::class);
+        $primaryKey = (new $modelClass)->getKeyName();
         $user = null;
 
+        // 1. Cari berdasarkan ID pada model aktif yang dikonfigurasi
         if (! empty($validated['id'])) {
-            $user = $modelClass::find($validated['id']);
-        } elseif (! empty($validated['email'])) {
-            $user = $modelClass::where('email', $validated['email'])->first();
-        } elseif (! empty($validated['role'])) {
-            $role = $validated['role'];
-            $defaultEmail = match ($role) {
-                'admin', 'admin_it' => 'arif@sirab.local',
-                'finance' => 'finance@sirab.local',
-                'pimpinan' => 'pimpinan@sirab.local',
-                'user', 'staff' => 'sari@sirab.local',
-                default => 'sari@sirab.local',
+            $user = $modelClass::where($primaryKey, $validated['id'])->first();
+        }
+
+        // 2. Fallback pencarian berdasarkan Email jika lewat ID tidak ditemukan
+        if (! $user && ! empty($validated['email'])) {
+            $user = $modelClass::where('email', trim((string) $validated['email']))->first();
+        }
+
+        // 3. Fallback pencarian berdasarkan Role jika ID dan Email belum berhasil
+        if (! $user && ! empty($validated['role'])) {
+            $roleInput = strtolower(trim((string) $validated['role']));
+            $targetRoles = match ($roleInput) {
+                'admin', 'admin_it' => ['admin_it', 'admin'],
+                'staff', 'user' => ['staff', 'user'],
+                'finance' => ['finance'],
+                'pimpinan' => ['pimpinan'],
+                default => [$roleInput],
             };
-            $user = $modelClass::where('email', $defaultEmail)->first()
-                ?? $modelClass::where('role', $role)->first();
+
+            $user = $modelClass::whereIn('role', $targetRoles)->first();
+        }
+
+        // 4. Fallback ke model alternatif jika model utama tidak menemukan data (dukungan interoperabilitas User vs Pengguna)
+        if (! $user) {
+            $altModelClass = ($modelClass === Pengguna::class) ? User::class : Pengguna::class;
+            if (class_exists($altModelClass)) {
+                $altPrimaryKey = (new $altModelClass)->getKeyName();
+                if (! empty($validated['id'])) {
+                    $user = $altModelClass::where($altPrimaryKey, $validated['id'])->first();
+                }
+                if (! $user && ! empty($validated['email'])) {
+                    $user = $altModelClass::where('email', trim((string) $validated['email']))->first();
+                }
+                if (! $user && ! empty($validated['role'])) {
+                    $roleInput = strtolower(trim((string) $validated['role']));
+                    $targetRoles = match ($roleInput) {
+                        'admin', 'admin_it' => ['admin_it', 'admin'],
+                        'staff', 'user' => ['staff', 'user'],
+                        'finance' => ['finance'],
+                        'pimpinan' => ['pimpinan'],
+                        default => [$roleInput],
+                    };
+                    $user = $altModelClass::whereIn('role', $targetRoles)->first();
+                }
+
+                // Jika user ditemukan di model alternatif, sinkronkan ke instans modelClass bila record tersedia
+                if ($user && get_class($user) !== $modelClass && ! empty($user->email)) {
+                    $synced = $modelClass::where('email', $user->email)->first();
+                    if ($synced) {
+                        $user = $synced;
+                    }
+                }
+            }
         }
 
         if (! $user) {
-            return back()->with('error', 'Akun pengguna untuk peran tersebut tidak ditemukan.');
+            return back()->with('error', 'Akun pengguna untuk berpindah peran tidak ditemukan di database.');
         }
 
+        // Hindari kegagalan Auth::loginUsingId() jika model menggunakan custom primary key (id_pengguna).
+        // Gunakan Auth::login($user) secara langsung setelah instans model ditemukan.
         Auth::login($user);
+
+        // Pastikan session diperbarui dan di-regenerate dengan aman
         $request->session()->regenerate();
 
         $roleVal = $user->role instanceof \BackedEnum ? $user->role->value : (string) $user->role;
-        ActivityLog::log('Beralih peran ke: '.$roleVal);
+
+        try {
+            ActivityLog::log('Beralih peran ke: '.$roleVal);
+        } catch (\Throwable) {
+            // Diamkan error pencatatan log agar switch akun tidak gagal
+        }
 
         $roleName = match ($roleVal) {
             'admin', 'admin_it' => 'Administrator IT',

@@ -143,19 +143,27 @@
   </div>
 
   <!-- Modal Bukti Pencairan -->
-  <div id="buktiModal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300">
-    <div class="bg-white rounded-2xl shadow-xl w-full max-w-3xl mx-4 overflow-hidden transform scale-95 transition-transform duration-300" id="buktiModalContent">
-      <div class="px-6 py-4 border-b border-slate-100 flex justify-between items-center">
-        <h3 class="text-lg font-bold text-slate-900">Bukti Pencairan Dana</h3>
-        <button type="button" onclick="closeBuktiModal()" class="text-slate-400 hover:text-slate-700 p-1">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+  <div id="buktiModal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-xs hidden opacity-0 transition-opacity duration-300 p-4">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-3xl overflow-hidden transform scale-95 transition-transform duration-300 border border-slate-200 text-left" id="buktiModalContent">
+      <div class="px-6 py-4 border-b border-slate-200 flex justify-between items-center bg-slate-50">
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-xl bg-indigo-600 text-white flex items-center justify-center shadow-xs">
+            <i class="fa-solid fa-file-invoice-dollar text-sm"></i>
+          </div>
+          <div>
+            <h3 class="text-base font-bold text-slate-800">Bukti Pencairan Dana</h3>
+            <p class="text-xs text-slate-500">Dokumen transfer &amp; verifikasi SPJ</p>
+          </div>
+        </div>
+        <button type="button" onclick="closeBuktiModal()" class="text-slate-400 hover:text-slate-600 p-1 cursor-pointer">
+          <i class="fa-solid fa-xmark text-lg"></i>
         </button>
       </div>
       <div class="p-6 bg-slate-50 min-h-[300px] flex items-center justify-center" id="buktiModalBody">
         <!-- Konten Bukti akan dimuat dengan JS -->
       </div>
-      <div class="px-6 py-4 border-t border-slate-100 bg-white flex justify-end">
-        <button type="button" onclick="closeBuktiModal()" class="px-5 py-2 bg-slate-800 hover:bg-slate-900 text-white rounded-xl text-sm font-semibold transition-colors">
+      <div class="px-6 py-3.5 border-t border-slate-200 bg-slate-50 flex justify-end gap-2 text-xs">
+        <button type="button" onclick="closeBuktiModal()" class="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-semibold shadow-xs transition-colors cursor-pointer">
           Tutup
         </button>
       </div>

@@ -32,8 +32,10 @@ class CheckRoleMiddleware
             return $next($request);
         }
 
+        $userRole = $user->role instanceof \BackedEnum ? $user->role->value : (string) $user->role;
+
         // Cek apakah role pengguna saat ini terdaftar di parameter roles
-        if (! in_array($user->role, $roles, true)) {
+        if (! in_array($userRole, $roles, true)) {
             abort(403, 'Akses ditolak. Anda tidak memiliki izin untuk mengakses halaman ini.');
         }
 

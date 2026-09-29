@@ -7,6 +7,7 @@ use App\Http\Controllers\AdminRabController;
 use App\Http\Controllers\AdminUserController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\FinanceController;
+use App\Http\Controllers\KategoriAnggaranController;
 use App\Http\Controllers\PimpinanController;
 use App\Http\Controllers\StaffRabController;
 use App\Http\Controllers\UserRabController;
@@ -26,8 +27,9 @@ Route::get('/', function () {
     }
 
     $role = Auth::user()->role;
+    $roleVal = $role instanceof BackedEnum ? $role->value : (string) $role;
 
-    return match ($role) {
+    return match ($roleVal) {
         'admin_it', 'admin' => redirect()->route('admin-it.dashboard'),
         'finance' => redirect()->route('finance.dashboard'),
         'pimpinan' => redirect()->route('pimpinan.dashboard'),
@@ -79,10 +81,11 @@ Route::middleware(['auth', 'role:finance'])->prefix('finance')->name('finance.')
     Route::post('/pengajuan/{id}/pencairan', [FinanceController::class, 'uploadBuktiPencairan'])->name('upload_bukti');
     Route::get('/riwayat', [FinanceController::class, 'riwayat'])->name('riwayat');
 
-    // New placeholder routes
-    Route::get('/kategori-pagu', function () {
-        return 'Master Kategori & Pagu';
-    })->name('kategori.index');
+    // Master Kategori & Pagu Anggaran
+    Route::get('/kategori-pagu', [KategoriAnggaranController::class, 'index'])->name('kategori.index');
+    Route::post('/kategori-pagu', [KategoriAnggaranController::class, 'store'])->name('kategori.store');
+    Route::put('/kategori-pagu/{id}', [KategoriAnggaranController::class, 'update'])->name('kategori.update');
+    Route::delete('/kategori-pagu/{id}', [KategoriAnggaranController::class, 'destroy'])->name('kategori.destroy');
     Route::get('/rekapitulasi', function () {
         return 'Rekapitulasi Laporan';
     })->name('rekapitulasi.index');

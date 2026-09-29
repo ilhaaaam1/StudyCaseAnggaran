@@ -22,7 +22,7 @@ class AdminUserController extends Controller
         $search = $request->input('q');
         $divisiFilter = $request->input('id_divisi');
 
-        $query = Pengguna::with('divisi')->where('role', 'user');
+        $query = Pengguna::with('divisi')->whereIn('role', ['user', 'staff']);
 
         if ($search) {
             $query->where(function ($q) use ($search): void {
@@ -38,7 +38,7 @@ class AdminUserController extends Controller
 
         $staffList = $query->latest('id_pengguna')->paginate(10)->withQueryString();
         $divisiList = Divisi::orderBy('nama_divisi')->get();
-        $totalStaff = Pengguna::where('role', 'user')->count();
+        $totalStaff = Pengguna::whereIn('role', ['user', 'staff'])->count();
 
         return view('admin.users.index', compact(
             'staffList',
@@ -107,7 +107,7 @@ class AdminUserController extends Controller
      */
     public function edit(int $id): View
     {
-        $user = Pengguna::where('role', 'user')->findOrFail($id);
+        $user = Pengguna::whereIn('role', ['user', 'staff'])->findOrFail($id);
         $divisi = Divisi::orderBy('nama_divisi')->get();
 
         return view('admin.users.edit', compact('user', 'divisi'));
@@ -118,7 +118,7 @@ class AdminUserController extends Controller
      */
     public function update(Request $request, int $id): RedirectResponse
     {
-        $user = Pengguna::where('role', 'user')->findOrFail($id);
+        $user = Pengguna::whereIn('role', ['user', 'staff'])->findOrFail($id);
 
         $validated = $request->validate([
             'nama_lengkap' => ['required', 'string', 'max:150'],
@@ -166,7 +166,7 @@ class AdminUserController extends Controller
      */
     public function destroy(int $id): RedirectResponse
     {
-        $user = Pengguna::where('role', 'user')->findOrFail($id);
+        $user = Pengguna::whereIn('role', ['user', 'staff'])->findOrFail($id);
 
         // PENTING: Proteksi Relasi Database terhadap Foreign Key
         $hasSubmissions = PengajuanRab::where('id_pengguna', $id)->exists();

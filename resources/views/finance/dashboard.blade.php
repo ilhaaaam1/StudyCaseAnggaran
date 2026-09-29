@@ -151,31 +151,47 @@
               <td class="text-[13px] text-slate-800 px-3 py-3.5 border-b border-slate-200">{{ $item->judul_pengajuan }}</td>
               <td class="text-[13px] text-slate-800 px-3 py-3.5 border-b border-slate-200 text-right font-semibold font-mono">Rp {{ number_format((float) $item->estimasi_total, 0, ',', '.') }}</td>
               <td class="text-[13px] px-3 py-3.5 border-b border-slate-200 text-center">
-                <button onclick="document.getElementById('modal-pencairan-{{ $item->id_pengajuan }}').classList.remove('hidden')" class="px-3 py-1.5 bg-[#2b337c] hover:bg-[#1e255e] text-white rounded-md text-xs font-semibold shadow-sm transition-colors">
+                <button onclick="document.getElementById('modal-pencairan-{{ $item->id_pengajuan }}').classList.remove('hidden')" class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-semibold shadow-sm transition-colors cursor-pointer">
                   Upload Bukti
                 </button>
               </td>
             </tr>
 
             <!-- Modal Upload Bukti -->
-            <div id="modal-pencairan-{{ $item->id_pengajuan }}" class="fixed inset-0 z-50 hidden bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-4">
-              <div class="bg-white rounded-2xl w-full max-w-md overflow-hidden shadow-xl">
-                <div class="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
-                  <h3 class="font-bold text-slate-800 text-base">Upload Bukti Pencairan</h3>
-                  <button onclick="document.getElementById('modal-pencairan-{{ $item->id_pengajuan }}').classList.add('hidden')" class="text-slate-400 hover:text-slate-600 cursor-pointer">&times;</button>
+            <div id="modal-pencairan-{{ $item->id_pengajuan }}" class="fixed inset-0 z-50 hidden bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4">
+              <div class="bg-white rounded-2xl w-full max-w-md overflow-hidden shadow-2xl border border-slate-200 text-left">
+                <div class="px-6 py-4 border-b border-slate-200 flex justify-between items-center bg-slate-50">
+                  <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-xl bg-indigo-600 text-white flex items-center justify-center shadow-xs">
+                      <i class="fa-solid fa-cloud-arrow-up text-sm"></i>
+                    </div>
+                    <div>
+                      <h3 class="font-bold text-slate-800 text-base">Upload Bukti Pencairan</h3>
+                      <p class="text-xs text-slate-500">Pencairan Dana BOS Sekolah</p>
+                    </div>
+                  </div>
+                  <button type="button" onclick="document.getElementById('modal-pencairan-{{ $item->id_pengajuan }}').classList.add('hidden')" class="text-slate-400 hover:text-slate-600 p-1 cursor-pointer">
+                    <i class="fa-solid fa-xmark"></i>
+                  </button>
                 </div>
                 <form action="{{ route('finance.upload_bukti', $item->id_pengajuan) }}" method="POST" enctype="multipart/form-data">
                   @csrf
                   <div class="p-6">
-                    <p class="text-[13px] text-slate-600 mb-4">No RAB: <span class="font-bold text-slate-800">{{ $item->no_rab }}</span></p>
-                    <label class="block text-[13px] font-medium text-slate-700 mb-2">Pilih File Bukti Transfer</label>
+                    <div class="mb-4 flex items-center justify-between bg-indigo-50/70 border border-indigo-100 rounded-xl p-3 text-xs text-indigo-900">
+                      <span>No. RAB: <strong class="font-mono">{{ $item->no_rab }}</strong></span>
+                      <span class="font-mono font-bold">Rp {{ number_format((float) $item->estimasi_total, 0, ',', '.') }}</span>
+                    </div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1.5">Pilih File Bukti Transfer / Kwitansi <span class="text-rose-500">*</span></label>
                     <input type="file" name="bukti_pencairan" accept=".pdf,.jpg,.jpeg,.png" required
-                      class="block w-full text-[13px] text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 cursor-pointer">
-                    <p class="mt-2 text-xs text-slate-500">Maksimal 5MB. Format: PDF, JPG, PNG.</p>
+                      class="block w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 cursor-pointer">
+                    <p class="mt-2 text-[11px] text-slate-400">Format: PDF, JPG, JPEG, PNG (Maksimal 5MB).</p>
                   </div>
-                  <div class="px-6 py-4 border-t border-slate-100 bg-slate-50 flex justify-end gap-3">
-                    <button type="button" onclick="document.getElementById('modal-pencairan-{{ $item->id_pengajuan }}').classList.add('hidden')" class="px-4 py-2 text-[13px] font-semibold text-slate-600 hover:text-slate-800 cursor-pointer">Batal</button>
-                    <button type="submit" class="px-4 py-2 text-[13px] font-semibold bg-[#2b337c] text-white rounded-lg hover:bg-[#1e255e] shadow-sm cursor-pointer">Simpan Bukti</button>
+                  <div class="px-6 py-3.5 border-t border-slate-200 bg-slate-50 flex justify-end gap-2 text-xs">
+                    <button type="button" onclick="document.getElementById('modal-pencairan-{{ $item->id_pengajuan }}').classList.add('hidden')" class="px-4 py-2 bg-white hover:bg-slate-100 text-slate-700 font-semibold rounded-xl border border-slate-300 transition-colors cursor-pointer">Batal</button>
+                    <button type="submit" class="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl shadow-xs transition-colors cursor-pointer flex items-center gap-1.5">
+                      <i class="fa-solid fa-check text-xs"></i>
+                      <span>Simpan Bukti</span>
+                    </button>
                   </div>
                 </form>
               </div>

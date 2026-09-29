@@ -24,7 +24,9 @@ class EnsureRole
 
         $user = Auth::user();
 
-        if (! in_array($user->role, $roles, true)) {
+        $userRole = $user->role instanceof \BackedEnum ? $user->role->value : (string) $user->role;
+
+        if (! in_array($userRole, $roles, true)) {
             abort(403, 'Akses ditolak. Anda tidak memiliki izin untuk mengakses halaman ini.');
         }
 

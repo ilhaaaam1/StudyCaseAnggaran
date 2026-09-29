@@ -1,11 +1,26 @@
 @php
-  $currentRole = Auth::user()->role instanceof \BackedEnum ? Auth::user()->role->value : (string) (Auth::user()->role ?? 'user');
-  $currentModel = class_basename(get_class(Auth::user()));
+  $userAuth = Auth::user();
+  $currentRole = $userAuth?->role instanceof \BackedEnum ? $userAuth->role->value : (string) ($userAuth?->role ?? 'user');
+  $currentModel = $userAuth ? class_basename(get_class($userAuth)) : 'Pengguna';
+  
+  $authModelClass = config('auth.providers.users.model', \App\Models\Pengguna::class);
   try {
-    $allPengguna = \App\Models\Pengguna::with('divisi')->get();
+    $allPengguna = method_exists($authModelClass, 'divisi')
+      ? $authModelClass::with('divisi')->get()
+      : $authModelClass::all();
   } catch (\Throwable $e) {
-    $allPengguna = collect();
+    try {
+      $allPengguna = \App\Models\Pengguna::with('divisi')->get();
+    } catch (\Throwable $e2) {
+      $allPengguna = collect();
+    }
   }
+
+  // Akun representatif untuk quick switcher di dropdown secara dinamis dari database
+  $quickAdmin = $allPengguna->first(fn($u) => in_array($u->role instanceof \BackedEnum ? $u->role->value : (string)$u->role, ['admin', 'admin_it']));
+  $quickStaff = $allPengguna->first(fn($u) => in_array($u->role instanceof \BackedEnum ? $u->role->value : (string)$u->role, ['staff', 'user']));
+  $quickFinance = $allPengguna->first(fn($u) => ($u->role instanceof \BackedEnum ? $u->role->value : (string)$u->role) === 'finance');
+  $quickPimpinan = $allPengguna->first(fn($u) => ($u->role instanceof \BackedEnum ? $u->role->value : (string)$u->role) === 'pimpinan');
 @endphp
 
 <!-- Topbar Component with Role & Model Switcher -->
@@ -103,10 +118,17 @@
 
         <div class="p-1.5 space-y-1">
           <!-- Administrator IT -->
+          @php
+            $adminId = $quickAdmin ? ($quickAdmin->id_pengguna ?? $quickAdmin->id ?? $quickAdmin->getKey()) : '';
+            $adminEmail = $quickAdmin?->email ?? 'arif@sirab.local';
+            $adminName = $quickAdmin?->nama_lengkap ?? $quickAdmin?->name ?? 'Drs. Arif Rachman';
+            $adminJabatan = $quickAdmin?->jabatan ?? $quickAdmin?->position ?? 'Administrator IT';
+          @endphp
           <form action="{{ route('role.switch') }}" method="POST">
             @csrf
-            <input type="hidden" name="role" value="admin">
-            <input type="hidden" name="email" value="arif@sirab.local">
+            <input type="hidden" name="id" value="{{ $adminId }}">
+            <input type="hidden" name="email" value="{{ $adminEmail }}">
+            <input type="hidden" name="role" value="admin_it">
             <button type="submit" class="w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs transition-colors cursor-pointer text-left
               {{ ($currentRole === 'admin' || $currentRole === 'admin_it') ? 'bg-indigo-50 text-indigo-900 font-semibold ring-1 ring-indigo-200' : 'text-slate-700 hover:bg-slate-50' }}">
               <div class="flex items-center gap-2.5">
@@ -115,7 +137,7 @@
                 </div>
                 <div>
                   <div class="font-medium text-slate-800">Administrator IT</div>
-                  <div class="text-[10px] text-slate-400">arif@sirab.local &bull; Direktur Keuangan</div>
+                  <div class="text-[10px] text-slate-400">{{ $adminEmail }} &bull; {{ $adminJabatan }}</div>
                 </div>
               </div>
               @if($currentRole === 'admin' || $currentRole === 'admin_it')
@@ -125,10 +147,17 @@
           </form>
 
           <!-- Staff Pemohon -->
+          @php
+            $staffId = $quickStaff ? ($quickStaff->id_pengguna ?? $quickStaff->id ?? $quickStaff->getKey()) : '';
+            $staffEmail = $quickStaff?->email ?? 'sari@sirab.local';
+            $staffName = $quickStaff?->nama_lengkap ?? $quickStaff?->name ?? 'Staff Pemohon';
+            $staffJabatan = $quickStaff?->jabatan ?? $quickStaff?->position ?? 'Staf';
+          @endphp
           <form action="{{ route('role.switch') }}" method="POST">
             @csrf
+            <input type="hidden" name="id" value="{{ $staffId }}">
+            <input type="hidden" name="email" value="{{ $staffEmail }}">
             <input type="hidden" name="role" value="staff">
-            <input type="hidden" name="email" value="sari@sirab.local">
             <button type="submit" class="w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs transition-colors cursor-pointer text-left
               {{ ($currentRole === 'staff' || $currentRole === 'user') ? 'bg-blue-50 text-blue-900 font-semibold ring-1 ring-blue-200' : 'text-slate-700 hover:bg-slate-50' }}">
               <div class="flex items-center gap-2.5">
@@ -137,7 +166,7 @@
                 </div>
                 <div>
                   <div class="font-medium text-slate-800">Staff Pemohon RAB</div>
-                  <div class="text-[10px] text-slate-400">sari@sirab.local &bull; Staf IT</div>
+                  <div class="text-[10px] text-slate-400">{{ $staffEmail }} &bull; {{ $staffJabatan }}</div>
                 </div>
               </div>
               @if($currentRole === 'staff' || $currentRole === 'user')
@@ -147,10 +176,17 @@
           </form>
 
           <!-- Finance Reviewer -->
+          @php
+            $finId = $quickFinance ? ($quickFinance->id_pengguna ?? $quickFinance->id ?? $quickFinance->getKey()) : '';
+            $finEmail = $quickFinance?->email ?? 'finance@sirab.local';
+            $finName = $quickFinance?->nama_lengkap ?? $quickFinance?->name ?? 'Finance Reviewer';
+            $finJabatan = $quickFinance?->jabatan ?? $quickFinance?->position ?? 'Bendahara';
+          @endphp
           <form action="{{ route('role.switch') }}" method="POST">
             @csrf
+            <input type="hidden" name="id" value="{{ $finId }}">
+            <input type="hidden" name="email" value="{{ $finEmail }}">
             <input type="hidden" name="role" value="finance">
-            <input type="hidden" name="email" value="finance@sirab.local">
             <button type="submit" class="w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs transition-colors cursor-pointer text-left
               {{ $currentRole === 'finance' ? 'bg-emerald-50 text-emerald-900 font-semibold ring-1 ring-emerald-200' : 'text-slate-700 hover:bg-slate-50' }}">
               <div class="flex items-center gap-2.5">
@@ -159,7 +195,7 @@
                 </div>
                 <div>
                   <div class="font-medium text-slate-800">Finance (Reviewer 1)</div>
-                  <div class="text-[10px] text-slate-400">finance@sirab.local &bull; Bendahara</div>
+                  <div class="text-[10px] text-slate-400">{{ $finEmail }} &bull; {{ $finJabatan }}</div>
                 </div>
               </div>
               @if($currentRole === 'finance')
@@ -169,10 +205,17 @@
           </form>
 
           <!-- Pimpinan Reviewer -->
+          @php
+            $pimId = $quickPimpinan ? ($quickPimpinan->id_pengguna ?? $quickPimpinan->id ?? $quickPimpinan->getKey()) : '';
+            $pimEmail = $quickPimpinan?->email ?? 'pimpinan@sirab.local';
+            $pimName = $quickPimpinan?->nama_lengkap ?? $quickPimpinan?->name ?? 'Kepala Sekolah';
+            $pimJabatan = $quickPimpinan?->jabatan ?? $quickPimpinan?->position ?? 'Kepala Sekolah';
+          @endphp
           <form action="{{ route('role.switch') }}" method="POST">
             @csrf
+            <input type="hidden" name="id" value="{{ $pimId }}">
+            <input type="hidden" name="email" value="{{ $pimEmail }}">
             <input type="hidden" name="role" value="pimpinan">
-            <input type="hidden" name="email" value="pimpinan@sirab.local">
             <button type="submit" class="w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs transition-colors cursor-pointer text-left
               {{ $currentRole === 'pimpinan' ? 'bg-purple-50 text-purple-900 font-semibold ring-1 ring-purple-200' : 'text-slate-700 hover:bg-slate-50' }}">
               <div class="flex items-center gap-2.5">
@@ -181,7 +224,7 @@
                 </div>
                 <div>
                   <div class="font-medium text-slate-800">Pimpinan (Approval Final)</div>
-                  <div class="text-[10px] text-slate-400">pimpinan@sirab.local &bull; Kepala Sekolah</div>
+                  <div class="text-[10px] text-slate-400">{{ $pimEmail }} &bull; {{ $pimJabatan }}</div>
                 </div>
               </div>
               @if($currentRole === 'pimpinan')
@@ -210,15 +253,19 @@
 
     <!-- User Profile & Info -->
     <div class="flex items-center gap-2 sm:gap-2.5 cursor-pointer group">
-      <div class="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-semibold shrink-0
+      <div class="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-semibold shrink-0 overflow-hidden
         @if($currentRole === 'admin' || $currentRole === 'admin_it') bg-indigo-600
         @elseif($currentRole === 'finance') bg-emerald-600
         @elseif($currentRole === 'pimpinan') bg-purple-600
         @else bg-blue-600 @endif">
-        {{ strtoupper(substr(Auth::user()->nama_lengkap ?? Auth::user()->name ?? 'US', 0, 2)) }}
+        @if(!empty(Auth::user()->foto_profil))
+          <img src="{{ asset('storage/' . Auth::user()->foto_profil) }}" alt="Foto Profil" class="w-full h-full object-cover">
+        @else
+          {{ strtoupper(substr(Auth::user()->nama_lengkap ?? Auth::user()->name ?? 'US', 0, 2)) }}
+        @endif
       </div>
       <div class="hidden sm:block text-left leading-tight">
-        <h5 class="text-[13px] font-semibold text-slate-800 truncate max-w-[120px]">
+        <h5 class="text-[13px] font-semibold text-slate-800 truncate max-w-[120px] group-hover:text-indigo-600 transition-colors">
           {{ Auth::user()->nama_lengkap ?? Auth::user()->name ?? 'Pengguna' }}
         </h5>
         <p class="text-[11px] text-slate-500 truncate max-w-[120px]">
@@ -287,18 +334,20 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-[380px] overflow-y-auto pr-1">
           @forelse($allPengguna as $p)
             @php
-              $isCurrent = (Auth::id() == $p->id_pengguna || Auth::user()->email === $p->email);
+              $pId = $p->id_pengguna ?? $p->id ?? $p->getKey();
+              $pRole = $p->role instanceof \BackedEnum ? $p->role->value : (string) $p->role;
+              $isCurrent = (Auth::id() == $pId || Auth::user()?->email === $p->email);
             @endphp
             <div class="border rounded-xl p-3.5 flex flex-col justify-between transition-all
               {{ $isCurrent ? 'border-indigo-500 bg-indigo-50/40 shadow-xs ring-1 ring-indigo-500' : 'border-slate-200 hover:border-slate-300 hover:bg-slate-50/50' }}">
               <div>
                 <div class="flex items-center justify-between mb-1.5">
                   <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full
-                    @if($p->role === 'admin' || $p->role === 'admin_it') bg-indigo-100 text-indigo-700
-                    @elseif($p->role === 'finance') bg-emerald-100 text-emerald-700
-                    @elseif($p->role === 'pimpinan') bg-purple-100 text-purple-700
+                    @if($pRole === 'admin' || $pRole === 'admin_it') bg-indigo-100 text-indigo-700
+                    @elseif($pRole === 'finance') bg-emerald-100 text-emerald-700
+                    @elseif($pRole === 'pimpinan') bg-purple-100 text-purple-700
                     @else bg-blue-100 text-blue-700 @endif">
-                    {{ $p->role === 'user' ? 'Staff' : ($p->role === 'admin' ? 'Admin IT' : $p->role) }}
+                    {{ ($pRole === 'user' || $pRole === 'staff') ? 'Staff' : (($pRole === 'admin' || $pRole === 'admin_it') ? 'Admin IT' : ucfirst($pRole)) }}
                   </span>
                   @if($isCurrent)
                     <span class="text-[10px] font-semibold text-emerald-600 flex items-center gap-1">
@@ -307,8 +356,8 @@
                   @endif
                 </div>
 
-                <h4 class="text-[13px] font-bold text-slate-800 leading-snug">{{ $p->nama_lengkap }}</h4>
-                <div class="text-[11px] text-slate-500 mt-0.5">{{ $p->jabatan }} &bull; {{ $p->divisi->nama_divisi ?? '-' }}</div>
+                <h4 class="text-[13px] font-bold text-slate-800 leading-snug">{{ $p->nama_lengkap ?? $p->name }}</h4>
+                <div class="text-[11px] text-slate-500 mt-0.5">{{ $p->jabatan ?? $p->position ?? 'Staf' }} &bull; {{ $p->divisi->nama_divisi ?? ($p->division ?? '-') }}</div>
                 <div class="text-[11px] text-slate-400 font-mono mt-1">{{ $p->email }}</div>
               </div>
 
@@ -320,8 +369,9 @@
                 @else
                   <form action="{{ route('role.switch') }}" method="POST">
                     @csrf
-                    <input type="hidden" name="id" value="{{ $p->id_pengguna }}">
+                    <input type="hidden" name="id" value="{{ $pId }}">
                     <input type="hidden" name="email" value="{{ $p->email }}">
+                    <input type="hidden" name="role" value="{{ $pRole }}">
                     <button type="submit" class="w-full py-1.5 px-3 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-lg transition-colors cursor-pointer shadow-xs flex items-center justify-center gap-1.5">
                       <i class="fa-solid fa-arrow-right-to-bracket text-[10px]"></i> Beralih ke Akun Ini
                     </button>

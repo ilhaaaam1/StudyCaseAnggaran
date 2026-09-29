@@ -152,4 +152,52 @@ class AuthenticationTest extends TestCase
         $response->assertRedirect(route('login'));
         $this->assertGuest();
     }
+
+    public function test_switch_role_using_id_and_after_user_update(): void
+    {
+        $this->actingAs($this->staff);
+
+        // Switch menggunakan ID
+        $response = $this->post(route('role.switch'), [
+            'id' => $this->finance->id_pengguna,
+            'email' => $this->finance->email,
+        ]);
+
+        $response->assertRedirect(route('finance.dashboard'));
+        $response->assertSessionHas('success');
+        $this->assertAuthenticatedAs($this->finance);
+
+        // Simulasi update data akun oleh Admin IT (ubah email & nama)
+        $this->finance->update([
+            'email' => 'bendahara.baru@sirab.sch.id',
+            'nama_lengkap' => 'Bendahara Sekolah Terupdate',
+        ]);
+
+        // Switch kembali dari staff ke akun finance yang telah diupdate
+        $this->actingAs($this->staff);
+
+        $responseAfterUpdate = $this->post(route('role.switch'), [
+            'id' => $this->finance->id_pengguna,
+            'email' => 'bendahara.baru@sirab.sch.id',
+            'role' => 'finance',
+        ]);
+
+        $responseAfterUpdate->assertRedirect(route('finance.dashboard'));
+        $responseAfterUpdate->assertSessionHas('success');
+        $this->assertAuthenticatedAs($this->finance->fresh());
+    }
+
+    public function test_switch_role_fails_with_invalid_account_and_shows_error_flash(): void
+    {
+        $this->actingAs($this->staff);
+
+        $response = $this->from(route('staff.dashboard'))->post(route('role.switch'), [
+            'id' => 99999,
+            'email' => 'tidakada@sirab.local',
+        ]);
+
+        $response->assertRedirect(route('staff.dashboard'));
+        $response->assertSessionHas('error');
+        $this->assertAuthenticatedAs($this->staff);
+    }
 }

@@ -24,7 +24,7 @@
     </div>
   @endif
 
-  @if($errors->any())
+  @if(isset($errors) && $errors->any())
     <div class="mb-4 bg-rose-50 border border-rose-200 text-rose-800 p-4 rounded-xl shadow-sm">
       <div class="font-semibold text-xs sm:text-sm mb-1 flex items-center gap-2">
         <svg class="w-4 h-4 text-rose-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">

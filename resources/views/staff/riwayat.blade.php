@@ -88,7 +88,7 @@
   </div>
 
   <!-- 2. CONTAINER UTAMA: TABS, FILTER, DAN TABEL -->
-  <div class="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden mb-8">
+  <div x-data="{ deleteModalOpen: false, deleteAction: '', deleteRabTitle: '' }" class="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden mb-8">
     
     <!-- TAB FILTER STATUS (Ringkas & Bersih) -->
     <div class="px-4 py-3 border-b border-slate-100 bg-slate-50/50">
@@ -415,18 +415,12 @@
 
                     <!-- Tombol Hapus (Delete) - Khusus status Draft -->
                     @if($rab->status === \App\Enums\StatusPengajuan::DRAFT)
-                      <form action="{{ route('staff.rab.destroy', $rab->id_pengajuan) }}"
-                            method="POST"
-                            class="inline"
-                            onsubmit="return confirm('Apakah Anda yakin ingin menghapus draft pengajuan ini?')">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit"
-                                class="w-7 h-7 rounded-lg inline-flex items-center justify-center text-rose-600 hover:text-rose-700 hover:bg-rose-50 border border-rose-200 transition-colors"
-                                title="Hapus Draft Pengajuan">
-                          <i class="fa-regular fa-trash-can text-[11px]"></i>
-                        </button>
-                      </form>
+                      <button type="button"
+                              @click="deleteModalOpen = true; deleteAction = '{{ route('staff.rab.destroy', $rab->id_pengajuan) }}'; deleteRabTitle = '{{ addslashes($rab->judul_pengajuan ?: ($rab->no_rab ?: 'Draft Pengajuan')) }}'"
+                              class="w-7 h-7 rounded-lg inline-flex items-center justify-center text-rose-600 hover:text-rose-700 hover:bg-rose-50 border border-rose-200 transition-colors cursor-pointer"
+                              title="Hapus Draft Pengajuan">
+                        <i class="fa-regular fa-trash-can text-[11px]"></i>
+                      </button>
                     @endif
                   </div>
                 @else
@@ -470,5 +464,64 @@
       </div>
     @endif
 
+    <!-- Modal Konfirmasi Hapus Draft (Tema Staff & Topbar SIRAB) -->
+    <div x-show="deleteModalOpen" 
+         class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-xs p-4"
+         x-transition:enter="transition ease-out duration-200"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         x-transition:leave="transition ease-in duration-150"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0"
+         style="display: none;">
+      
+      <div class="bg-white rounded-2xl w-full max-w-md overflow-hidden shadow-2xl border border-slate-200 text-left"
+           @click.outside="deleteModalOpen = false"
+           x-transition:enter="transition ease-out duration-200"
+           x-transition:enter-start="opacity-0 scale-95"
+           x-transition:enter-end="opacity-100 scale-100"
+           x-transition:leave="transition ease-in duration-150"
+           x-transition:leave-start="opacity-100 scale-100"
+           x-transition:leave-end="opacity-0 scale-95">
+        
+        <!-- Modal Header -->
+        <div class="px-6 py-4 border-b border-slate-200 flex justify-between items-center bg-slate-50">
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl bg-rose-50 border border-rose-100 text-rose-600 flex items-center justify-center shadow-xs">
+              <i class="fa-solid fa-trash-can text-sm"></i>
+            </div>
+            <div>
+              <h3 class="font-bold text-slate-800 text-base">Hapus Draft Pengajuan</h3>
+              <p class="text-xs text-slate-500">Konfirmasi Penghapusan Berkas</p>
+            </div>
+          </div>
+          <button type="button" @click="deleteModalOpen = false" class="text-slate-400 hover:text-slate-600 p-1 cursor-pointer">
+            <i class="fa-solid fa-xmark text-lg"></i>
+          </button>
+        </div>
+
+        <!-- Modal Body -->
+        <div class="p-6">
+          <p class="text-sm text-slate-600 leading-relaxed">
+            Apakah Anda yakin ingin menghapus draft pengajuan <strong class="text-slate-900" x-text="deleteRabTitle"></strong>? Tindakan ini tidak dapat dibatalkan.
+          </p>
+        </div>
+
+        <!-- Modal Footer -->
+        <div class="px-6 py-3.5 border-t border-slate-200 bg-slate-50 flex justify-end gap-2 text-xs">
+          <button type="button" @click="deleteModalOpen = false" class="px-4 py-2 bg-white hover:bg-slate-100 text-slate-700 font-semibold rounded-xl border border-slate-300 transition-colors cursor-pointer">
+            Batal
+          </button>
+          <form :action="deleteAction" method="POST" class="inline">
+            @csrf
+            @method('DELETE')
+            <button type="submit" class="px-5 py-2 bg-rose-600 hover:bg-rose-700 text-white font-semibold rounded-xl shadow-xs transition-colors cursor-pointer flex items-center gap-1.5">
+              <i class="fa-regular fa-trash-can text-xs"></i>
+              <span>Ya, Hapus Draft</span>
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
   </div>
 @endsection
