@@ -24,12 +24,14 @@
 
   <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
     <div class="overflow-x-auto">
-      <table class="w-full text-left text-xs border-collapse">
+      <table class="w-full min-w-max text-left text-xs border-collapse">
         <thead class="bg-slate-50 text-slate-600 uppercase font-semibold border-b border-slate-200">
           <tr>
             <th class="px-5 py-3.5 w-10 text-center">#</th>
             <th class="px-5 py-3.5">No. RAB</th>
-            <th class="px-5 py-3.5">Pemohon &amp; Unit Kerja</th>
+            {{-- PRESENTASI: Penyesuaian Label Kolom (Copywriting) --}}
+            {{-- Mengubah istilah 'Unit Kerja' menjadi 'Bidang / Bagian' agar lebih sesuai dengan struktur instansi sekolah --}}
+            <th class="px-5 py-3.5">Pemohon &amp; Bidang / Bagian</th>
             <th class="px-5 py-3.5">Kegiatan &amp; Rentang Waktu</th>
             <th class="px-5 py-3.5">Pos Anggaran</th>
             <th class="px-5 py-3.5 text-right">Estimasi Total</th>
@@ -48,7 +50,9 @@
               </td>
               <td class="px-5 py-3.5 text-slate-800">
                 <div class="font-medium text-slate-900">{{ $item->judul_pengajuan }}</div>
-                <div class="text-[10px] text-indigo-600 mt-0.5 flex items-center gap-1">
+                {{-- PRESENTASI: Perbaikan Layout Teks --}}
+                {{-- Menambahkan class whitespace-nowrap agar rentang tanggal tidak melipat ke bawah secara berantakan saat layar menyempit --}}
+                <div class="text-[10px] text-indigo-600 mt-0.5 flex items-center gap-1 whitespace-nowrap">
                   <i class="fa-regular fa-calendar-days text-[10px]"></i>
                   <span>{{ $item->rentang_tanggal_formatted }}</span>
                   @if($item->durasi_hari)

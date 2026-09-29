@@ -7,6 +7,10 @@ use Illuminate\Database\Seeder;
 
 class KategoriAnggaranSeeder extends Seeder
 {
+    /**
+     * Run the database seeds.
+     * PRESENTASI: Seeder mandiri untuk Master Kategori & Pagu Anggaran
+     */
     public function run(): void
     {
         $categories = [

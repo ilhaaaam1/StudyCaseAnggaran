@@ -14,6 +14,9 @@ class KategoriAnggaran extends Model
         'pagu_anggaran',
     ];
 
+    /**
+     * @var array<string, string>
+     */
     protected $casts = [
         'pagu_anggaran' => 'decimal:2',
     ];

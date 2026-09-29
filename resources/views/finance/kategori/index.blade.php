@@ -3,6 +3,8 @@
   $hasErrors = isset($errors) && $errors->any();
 @endphp
 
+{{-- PRESENTASI: Extend Layout Utama --}}
+{{-- Perbaikan bug blank page dengan memanggil layout utama (app.blade.php) --}}
 @extends('layouts.app')
 
 @section('title', 'Master Kategori & Pagu Anggaran - SIRAB')
@@ -18,7 +20,8 @@
     <span class="text-slate-800 font-medium">Master Kategori & Pagu</span>
   </div>
 
-  {{-- Container Alpine.js untuk State Modal Tambah/Edit --}}
+  {{-- PRESENTASI: Implementasi Alpine.js untuk Modal --}}
+  {{-- Membungkus section ini dengan x-data agar state modal tambah/edit dikendalikan di satu tempat --}}
   <div x-data="{
     openModal: {{ $hasErrors ? 'true' : 'false' }},
     editMode: {{ old('_method') === 'PUT' ? 'true' : 'false' }},
@@ -79,7 +82,7 @@
       </div>
       <button type="button" 
               @click="openAddModal()" 
-              class="bg-[#2b337c] hover:bg-[#1e255e] text-white px-5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold flex items-center gap-2 shadow-sm shrink-0 transition-colors cursor-pointer">
+              class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold flex items-center gap-2 shadow-sm shrink-0 transition-colors cursor-pointer">
         <i class="fa-solid fa-plus text-xs"></i> Tambah Kategori
       </button>
     </div>
@@ -199,12 +202,8 @@
       </div>
     </div>
 
-    <!-- Modal Form Tambah / Edit Kategori -->
+    <!-- Modal Form Tambah / Edit Kategori (Tema Seragam SIRAB) -->
     <div x-show="openModal" 
-<<<<<<< Updated upstream
-         x-cloak
-=======
->>>>>>> Stashed changes
          class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-xs p-4"
          x-transition:enter="transition ease-out duration-200"
          x-transition:enter-start="opacity-0"
@@ -215,11 +214,7 @@
          style="display: none;">
       
       <div class="bg-white rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl border border-slate-200 text-left"
-<<<<<<< Updated upstream
            @click.outside="closeModal()"
-=======
-           @click.outside="openModal = false"
->>>>>>> Stashed changes
            x-transition:enter="transition ease-out duration-200"
            x-transition:enter-start="opacity-0 scale-95"
            x-transition:enter-end="opacity-100 scale-100"
@@ -227,31 +222,18 @@
            x-transition:leave-start="opacity-100 scale-100"
            x-transition:leave-end="opacity-0 scale-95">
         
-<<<<<<< Updated upstream
         <!-- Modal Header -->
         <div class="px-6 py-4 border-b border-slate-200 flex justify-between items-center bg-slate-50">
           <div class="flex items-center gap-3">
-            <div class="w-9 h-9 rounded-xl bg-[#2b337c] text-white flex items-center justify-center shadow-xs">
-=======
-        <div class="px-6 py-4 border-b border-slate-200 flex justify-between items-center bg-slate-50">
-          <div class="flex items-center gap-3">
             <div class="w-9 h-9 rounded-xl bg-indigo-600 text-white flex items-center justify-center shadow-xs">
->>>>>>> Stashed changes
               <i class="fa-solid fa-layer-group text-sm"></i>
             </div>
             <div>
               <h3 class="font-bold text-slate-800 text-base" x-text="editMode ? 'Edit Kategori & Pagu' : 'Tambah Kategori & Pagu Baru'"></h3>
-<<<<<<< Updated upstream
               <p class="text-xs text-slate-500">Master Pos Anggaran Dana BOS / RKAS Sekolah</p>
             </div>
           </div>
           <button type="button" @click="closeModal()" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg hover:bg-slate-200/50 transition-colors cursor-pointer">
-=======
-              <p class="text-xs text-slate-500">Master Pos Anggaran Dana BOS</p>
-            </div>
-          </div>
-          <button type="button" @click="openModal = false" class="text-slate-400 hover:text-slate-600 p-1 cursor-pointer">
->>>>>>> Stashed changes
             <i class="fa-solid fa-xmark text-lg"></i>
           </button>
         </div>
@@ -270,7 +252,6 @@
           <div class="p-6 space-y-4">
             <!-- Input Nama Kategori -->
             <div>
-<<<<<<< Updated upstream
               <label for="modal_nama_kategori" class="block text-xs font-semibold text-slate-700 mb-1.5">
                 Nama Kategori <span class="text-rose-500">*</span>
               </label>
@@ -288,15 +269,10 @@
                   {{ $errors->first('nama_kategori') }}
                 </p>
               @endif
-=======
-              <label class="block text-xs font-semibold text-slate-700 mb-1.5">Nama Kategori <span class="text-rose-500">*</span></label>
-              <input type="text" name="nama_kategori" x-model="formKategori" required placeholder="Contoh: Pemeliharaan Sarana & Prasarana" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs focus:border-indigo-500">
->>>>>>> Stashed changes
             </div>
             
             <!-- Input Pagu Anggaran -->
             <div>
-<<<<<<< Updated upstream
               <label for="modal_pagu_anggaran" class="block text-xs font-semibold text-slate-700 mb-1.5">
                 Pagu Anggaran (Rp) <span class="text-rose-500">*</span>
               </label>
@@ -319,16 +295,10 @@
                   {{ $errors->first('pagu_anggaran') }}
                 </p>
               @endif
-=======
-              <label class="block text-xs font-semibold text-slate-700 mb-1.5">Pagu Anggaran (Rp) <span class="text-rose-500">*</span></label>
-              <input type="number" name="pagu_anggaran" x-model="formPagu" required min="0" placeholder="Contoh: 15000000" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs focus:border-indigo-500 font-mono">
-              <p class="text-[11px] text-slate-400 mt-1">Masukkan nominal angka tanpa pemisah titik atau koma.</p>
->>>>>>> Stashed changes
             </div>
 
             <!-- Input Deskripsi -->
             <div>
-<<<<<<< Updated upstream
               <label for="modal_deskripsi" class="block text-xs font-semibold text-slate-700 mb-1.5">
                 Deskripsi / Cakupan Anggaran
               </label>
@@ -356,7 +326,7 @@
             </button>
             <button type="submit" 
                     :disabled="isSubmitting"
-                    class="px-5 py-2 bg-[#2b337c] hover:bg-[#1e255e] text-white font-semibold rounded-xl shadow-xs transition-colors cursor-pointer flex items-center gap-1.5 disabled:opacity-75 disabled:cursor-not-allowed">
+                    class="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl shadow-xs transition-colors cursor-pointer flex items-center gap-1.5 disabled:opacity-75 disabled:cursor-not-allowed">
               <span x-show="!isSubmitting" class="flex items-center gap-1.5">
                 <i class="fa-solid fa-check text-xs"></i>
                 <span x-text="editMode ? 'Simpan Perubahan' : 'Tambah Kategori'"></span>
@@ -365,18 +335,6 @@
                 <i class="fa-solid fa-circle-notch fa-spin text-xs"></i>
                 <span>Menyimpan...</span>
               </span>
-=======
-              <label class="block text-xs font-semibold text-slate-700 mb-1.5">Deskripsi / Cakupan Anggaran</label>
-              <textarea name="deskripsi" x-model="formDeskripsi" rows="3" placeholder="Jelaskan cakupan penggunaan untuk kategori anggaran ini..." class="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs focus:border-indigo-500"></textarea>
-            </div>
-          </div>
-
-          <div class="px-6 py-3.5 border-t border-slate-200 bg-slate-50 flex justify-end gap-2 text-xs">
-            <button type="button" @click="openModal = false" class="px-4 py-2 bg-white hover:bg-slate-100 text-slate-700 font-semibold rounded-xl border border-slate-300 transition-colors cursor-pointer">Batal</button>
-            <button type="submit" class="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl shadow-xs transition-colors cursor-pointer flex items-center gap-1.5">
-              <i class="fa-solid fa-check text-xs"></i>
-              <span x-text="editMode ? 'Simpan Perubahan' : 'Tambah Kategori'"></span>
->>>>>>> Stashed changes
             </button>
           </div>
         </form>

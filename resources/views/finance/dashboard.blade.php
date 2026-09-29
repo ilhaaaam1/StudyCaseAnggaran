@@ -31,35 +31,37 @@
 
   <!-- Stats Grid -->
   <div class="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
-    <div class="bg-white border border-slate-200 rounded-xl p-4.5 flex flex-col justify-between relative shadow-sm hover:shadow-md transition-shadow">
+    {{-- PRESENTASI: Penyesuaian Ruang Kosong (Padding) pada Card Statistik --}}
+    {{-- Mengubah class p-4.5 (yang tidak valid di Tailwind bawaan) menjadi p-5 agar konten memiliki whitespace yang memadai --}}
+    <div class="bg-white border border-slate-200 rounded-xl p-5 flex flex-col justify-between relative shadow-sm hover:shadow-md transition-shadow">
       <div>
         <div class="text-[11px] font-bold uppercase text-slate-500 tracking-wide mb-2">Antrean Review</div>
         <div class="text-2xl font-bold text-[#d97706] mb-1.5 font-mono">{{ $totalAntreanPending ?? 0 }}</div>
       </div>
       <div class="text-xs text-slate-500">Menunggu verifikasi Tahap 1</div>
     </div>
-    <div class="bg-white border border-slate-200 rounded-xl p-4.5 flex flex-col justify-between relative shadow-sm hover:shadow-md transition-shadow">
+    <div class="bg-white border border-slate-200 rounded-xl p-5 flex flex-col justify-between relative shadow-sm hover:shadow-md transition-shadow">
       <div>
         <div class="text-[11px] font-bold uppercase text-slate-500 tracking-wide mb-2">Menunggu Pimpinan</div>
         <div class="text-2xl font-bold text-blue-600 mb-1.5 font-mono">{{ $totalAccFinance ?? 0 }}</div>
       </div>
       <div class="text-xs text-slate-500">Diteruskan ke Pimpinan</div>
     </div>
-    <div class="bg-white border border-slate-200 rounded-xl p-4.5 flex flex-col justify-between relative shadow-sm hover:shadow-md transition-shadow">
+    <div class="bg-white border border-slate-200 rounded-xl p-5 flex flex-col justify-between relative shadow-sm hover:shadow-md transition-shadow">
       <div>
         <div class="text-[11px] font-bold uppercase text-slate-500 tracking-wide mb-2">Proses Pencairan</div>
         <div class="text-2xl font-bold text-slate-800 mb-1.5 font-mono">{{ \App\Models\PengajuanRab::where('status', \App\Enums\StatusPengajuan::PROSES_PENCAIRAN)->count() }}</div>
       </div>
       <a href="{{ route('finance.pencairan') }}" class="text-[12px] text-blue-600 font-semibold hover:underline flex items-center gap-2 mt-1">Lihat Antrean &rarr;</a>
     </div>
-    <div class="bg-white border border-slate-200 rounded-xl p-4.5 flex flex-col justify-between relative shadow-sm hover:shadow-md transition-shadow">
+    <div class="bg-white border border-slate-200 rounded-xl p-5 flex flex-col justify-between relative shadow-sm hover:shadow-md transition-shadow">
       <div>
         <div class="text-[11px] font-bold uppercase text-slate-500 tracking-wide mb-2">Revisi / Ditolak</div>
         <div class="text-2xl font-bold text-red-600 mb-1.5 font-mono">{{ $totalDitolakFinance ?? 0 }}</div>
       </div>
       <div class="text-xs text-slate-500">Dikembalikan ke Staff</div>
     </div>
-    <div class="bg-white border border-slate-200 rounded-xl p-4.5 flex flex-col justify-between relative shadow-sm hover:shadow-md transition-shadow">
+    <div class="bg-white border border-slate-200 rounded-xl p-5 flex flex-col justify-between relative shadow-sm hover:shadow-md transition-shadow">
       <div>
         <div class="text-[11px] font-bold uppercase text-slate-500 tracking-wide mb-2">Total Nominal Pending</div>
         <div class="text-lg font-bold text-slate-800 mb-1.5 font-mono">Rp {{ number_format($totalNominalPending ?? 0, 0, ',', '.') }}</div>
@@ -86,7 +88,9 @@
           <tr>
             <th class="text-[11px] uppercase text-slate-500 font-bold px-3 py-2.5 border-b border-slate-200 tracking-wide">No. RAB</th>
             <th class="text-[11px] uppercase text-slate-500 font-bold px-3 py-2.5 border-b border-slate-200 tracking-wide">Pemohon</th>
-            <th class="text-[11px] uppercase text-slate-500 font-bold px-3 py-2.5 border-b border-slate-200 tracking-wide">Unit Kerja</th>
+            {{-- PRESENTASI: Penyesuaian Istilah Tabel (Copywriting) --}}
+            {{-- Mengubah istilah korporat 'Unit Kerja' menjadi 'Bidang / Bagian' agar lebih sesuai dengan lingkungan sekolah --}}
+            <th class="text-[11px] uppercase text-slate-500 font-bold px-3 py-2.5 border-b border-slate-200 tracking-wide">Bidang / Bagian</th>
             <th class="text-[11px] uppercase text-slate-500 font-bold px-3 py-2.5 border-b border-slate-200 tracking-wide">Judul Pengajuan</th>
             <th class="text-[11px] uppercase text-slate-500 font-bold px-3 py-2.5 border-b border-slate-200 tracking-wide text-right">Estimasi Biaya</th>
             <th class="text-[11px] uppercase text-slate-500 font-bold px-3 py-2.5 border-b border-slate-200 tracking-wide text-center">Aksi Review</th>
@@ -136,7 +140,8 @@
           <tr>
             <th class="text-[11px] uppercase text-slate-500 font-bold px-3 py-2.5 border-b border-slate-200 tracking-wide">No. RAB</th>
             <th class="text-[11px] uppercase text-slate-500 font-bold px-3 py-2.5 border-b border-slate-200 tracking-wide">Pemohon</th>
-            <th class="text-[11px] uppercase text-slate-500 font-bold px-3 py-2.5 border-b border-slate-200 tracking-wide">Unit Kerja</th>
+            {{-- PRESENTASI: Penyesuaian Istilah Tabel (Copywriting) --}}
+            <th class="text-[11px] uppercase text-slate-500 font-bold px-3 py-2.5 border-b border-slate-200 tracking-wide">Bidang / Bagian</th>
             <th class="text-[11px] uppercase text-slate-500 font-bold px-3 py-2.5 border-b border-slate-200 tracking-wide">Judul Pengajuan</th>
             <th class="text-[11px] uppercase text-slate-500 font-bold px-3 py-2.5 border-b border-slate-200 tracking-wide text-right">Estimasi Biaya</th>
             <th class="text-[11px] uppercase text-slate-500 font-bold px-3 py-2.5 border-b border-slate-200 tracking-wide text-center">Aksi Pencairan</th>

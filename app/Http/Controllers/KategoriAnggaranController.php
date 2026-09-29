@@ -24,6 +24,8 @@ class KategoriAnggaranController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
+        // PRESENTASI: Logika Tambah Data (Create) Master Pagu Anggaran
+        // Memvalidasi data yang dikirim dan menyimpannya ke database
         $validated = $request->validate([
             'nama_kategori' => 'required|string|max:255|unique:kategori_anggarans,nama_kategori',
             'deskripsi' => 'nullable|string',
@@ -46,6 +48,8 @@ class KategoriAnggaranController extends Controller
      */
     public function update(Request $request, int|string $id): RedirectResponse
     {
+        // PRESENTASI: Logika Edit Data (Update) Master Pagu Anggaran
+        // Menerima input dari modal edit dan memperbarui data yang bersesuaian di database
         $kategori = KategoriAnggaran::findOrFail($id);
 
         $validated = $request->validate([
@@ -70,6 +74,7 @@ class KategoriAnggaranController extends Controller
      */
     public function destroy(int|string $id): RedirectResponse
     {
+        // PRESENTASI: Logika Hapus Data (Delete) Master Pagu Anggaran
         $kategori = KategoriAnggaran::findOrFail($id);
         $kategori->delete();
 

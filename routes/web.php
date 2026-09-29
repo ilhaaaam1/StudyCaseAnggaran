@@ -8,10 +8,16 @@ use App\Http\Controllers\AdminUserController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\FinanceController;
 use App\Http\Controllers\KategoriAnggaranController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PimpinanController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\RekapitulasiController;
 use App\Http\Controllers\StaffRabController;
 use App\Http\Controllers\UserRabController;
+use App\Models\Pengguna;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -86,9 +92,8 @@ Route::middleware(['auth', 'role:finance'])->prefix('finance')->name('finance.')
     Route::post('/kategori-pagu', [KategoriAnggaranController::class, 'store'])->name('kategori.store');
     Route::put('/kategori-pagu/{id}', [KategoriAnggaranController::class, 'update'])->name('kategori.update');
     Route::delete('/kategori-pagu/{id}', [KategoriAnggaranController::class, 'destroy'])->name('kategori.destroy');
-    Route::get('/rekapitulasi', function () {
-        return 'Rekapitulasi Laporan';
-    })->name('rekapitulasi.index');
+    Route::get('/rekapitulasi', [RekapitulasiController::class, 'index'])->name('rekapitulasi.index');
+    Route::get('/rekapitulasi/pdf', [RekapitulasiController::class, 'exportPdf'])->name('rekapitulasi.pdf');
 });
 
 // -------------------------------------------------------------------------
@@ -140,6 +145,16 @@ Route::middleware(['auth', 'role:admin_it,admin'])->prefix('admin-it')->name('ad
 Route::middleware('auth')->group(function (): void {
     Route::get('/dokumen/{id}/preview', [AdminRabController::class, 'previewDokumen'])->name('dokumen.preview');
     Route::get('/dokumen/{id}/download', [AdminRabController::class, 'downloadDokumen'])->name('dokumen.download');
+
+    // PRESENTASI: Route Pengaturan Akun
+    // Menambahkan route profile yang diakses oleh semua role dengan middleware auth
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('/profile', [ProfileController::class, 'updateProfile'])->name('profile.update');
+    Route::delete('/profile/photo', [ProfileController::class, 'deletePhoto'])->name('profile.photo.destroy');
+    Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password.update');
+
+    // Route Notifikasi
+    Route::get('/notifications/{id}/read', [NotificationController::class, 'read'])->name('notifications.read');
 });
 
 // -------------------------------------------------------------------------
@@ -168,3 +183,63 @@ Route::middleware(['auth', 'role:staff,user'])->prefix('user')->name('user.')->g
     Route::get('/rab/{id}', [UserRabController::class, 'show'])->name('rab.show');
     Route::get('/laporan', [UserRabController::class, 'laporan'])->name('laporan');
 });
+
+// -------------------------------------------------------------------------
+// CONTOH TUGAS: Eloquent ORM & Query Builder
+// -------------------------------------------------------------------------
+// 2. Contoh Penerapan Eloquent ORM
+Route::get('/tugas/eloquent', function () {
+    // Menggunakan Eloquent Model Pengguna beserta relasinya (Eager Loading), Filtering, dan Sorting
+    $data = Pengguna::with('divisi')
+        ->where('role', 'user')
+        ->orderBy('nama_lengkap', 'asc')
+        ->take(5)
+        ->get();
+
+    return response()->json([
+        'pesan' => 'Berhasil menggunakan Eloquent ORM (dengan Relasi, Filter, dan Sort)',
+        'data' => $data,
+    ]);
+});
+
+// 3. Contoh Penerapan SQL Query Builder
+Route::get('/tugas/query-builder', function () {
+    // Menggunakan Query Builder (DB facade) untuk JOIN tabel, SELECT spesifik, dan WHERE
+    $data = DB::table('rincian_item')
+        ->join('pengajuan_rab', 'rincian_item.id_pengajuan', '=', 'pengajuan_rab.id_pengajuan')
+        ->select('rincian_item.uraian_barang', 'rincian_item.total_harga', 'pengajuan_rab.no_rab')
+        ->where('rincian_item.harga_satuan', '>', 50000)
+        ->orderBy('rincian_item.total_harga', 'desc')
+        ->limit(5)
+        ->get();
+
+    return response()->json([
+        'pesan' => 'Berhasil menggunakan SQL Query Builder (dengan JOIN, Select, Where, Order, Limit)',
+        'data' => $data,
+    ]);
+});
+
+// 1. Rute untuk MENAMPILKAN form tambah divisi
+Route::get('/tugas/tambah-divisi', function () {
+    return view('uji_tambah_divisi');
+})->name('uji.divisi.create');
+
+// 2. Rute untuk MEMPROSES data (Fungsi 'store' disederhanakan dalam rute)
+Route::post('/tugas/tambah-divisi', function (Request $request) {
+    // Validasi
+    $validated = $request->validate([
+        'nama_divisi' => 'required|string|max:50', // Wajib, teks, maks 50 huruf
+    ], [
+        'nama_divisi.required' => 'Nama divisi wajib diisi, tidak boleh kosong!',
+        'nama_divisi.max' => 'Nama divisi terlalu panjang, maksimal 50 huruf.',
+    ]);
+
+    // Simpan ke database (menggunakan Query Builder)
+    DB::table('divisi')->insert([ // Pastikan nama tabel benar
+        'nama_divisi' => $validated['nama_divisi'],
+        'created_at' => now(),
+        'updated_at' => now(),
+    ]);
+
+    return back()->with('sukses', 'Divisi baru berhasil ditambahkan ke database!');
+})->name('uji.divisi.store');

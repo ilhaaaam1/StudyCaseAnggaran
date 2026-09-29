@@ -484,11 +484,18 @@
         <input type="hidden" name="password" id="hiddenPassword">
     </form>
 
+    @php
+        $logoPath = \App\Models\Setting::getSetting('app_logo');
+        $logoUrl = $logoPath ? asset('storage/' . $logoPath) : asset('images/logo-sdn3.png');
+        $appName = \App\Models\Setting::getSetting('app_name', 'SD Negeri Sidokare 3');
+    @endphp
+
     <!-- HEADER UTAMA ABSOLUTE -->
     <header class="absolute top-0 left-0 w-full flex items-center justify-between px-10 py-8 md:px-16 md:py-10 z-[60] bg-transparent pointer-events-none">
         <div class="flex items-center gap-4 pointer-events-auto">
-            <img src="{{ asset('images/logo-sdn3.png') }}" alt="Logo" class="h-14 w-14 object-contain">
-            <h1 class="text-2xl md:text-3xl font-semibold text-gray-800" style="margin:0; font-family: 'Poppins', sans-serif;">SD Negeri Sidokare 3</h1>
+            {{-- PRESENTASI: Menampilkan Logo Dinamis Instansi --}}
+            <img src="{{ $logoUrl }}" alt="Logo" class="h-14 w-14 object-contain">
+            <h1 class="text-2xl md:text-3xl font-semibold text-gray-800" style="margin:0; font-family: 'Poppins', sans-serif;">{{ $appName }}</h1>
         </div>
 
         <div class="pointer-events-auto">
@@ -512,8 +519,9 @@
         <!-- HEADER OVERLAY (IDENTIK) -->
         <header class="absolute top-0 left-0 w-full flex items-center justify-between px-10 py-8 md:px-16 md:py-10 z-[80] bg-transparent">
             <div class="flex items-center gap-4">
-                <img src="{{ asset('images/logo-sdn3.png') }}" alt="Logo" class="h-14 w-14 object-contain">
-                <h1 class="text-2xl md:text-3xl font-semibold text-white" style="margin:0;">SD Negeri Sidokare 3</h1>
+                {{-- PRESENTASI: Menampilkan Logo Dinamis Instansi --}}
+                <img src="{{ $logoUrl }}" alt="Logo" class="h-14 w-14 object-contain">
+                <h1 class="text-2xl md:text-3xl font-semibold text-white" style="margin:0;">{{ $appName }}</h1>
             </div>
 
             <div>
@@ -553,8 +561,9 @@
         <div class="hero-left">
             <header class="header-left" style="opacity: 0; pointer-events: none;">
                 <div class="logo-wrap">
-                    <img src="{{ asset('images/logo-sdn3.png') }}" alt="Logo SDN Sidokare 3" class="logo-img">
-                    <span class="logo-text">SD Negeri Sidokare 3</span>
+                    {{-- PRESENTASI: Menampilkan Logo Dinamis Instansi --}}
+                    <img src="{{ $logoUrl }}" alt="Logo Instansi" class="logo-img">
+                    <span class="logo-text">{{ $appName }}</span>
                 </div>
             </header>
 
@@ -639,7 +648,8 @@
             </div>
             <div class="footer-top-right">
                 <div class="footer-logo">
-                    <img src="{{ asset('images/logo-sdn3.png') }}" alt="Logo SDN Sidokare 3" style="width:100%; height:100%; object-fit:contain;">
+                    {{-- PRESENTASI: Menampilkan Logo Dinamis Instansi --}}
+                    <img src="{{ $logoUrl }}" alt="Logo Instansi" style="width:100%; height:100%; object-fit:contain;">
                 </div>
                 <p>
                     Cangkring, Sidokare, Kec. Sidoarjo, Kabupaten Sidoarjo<br />Telepon: (031) 8965532
