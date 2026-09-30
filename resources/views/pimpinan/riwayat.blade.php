@@ -50,7 +50,7 @@
               <td class="px-5 py-3.5 text-slate-800">{{ $item->judul_pengajuan }}</td>
               <td class="px-5 py-3.5 text-right font-mono font-bold text-slate-900">Rp {{ number_format((float) $item->estimasi_total, 0, ',', '.') }}</td>
               <td class="px-5 py-3.5 text-center">
-                <span class="px-2.5 py-1 rounded-full text-[10px] font-bold 
+                <span class="inline-block whitespace-nowrap px-2.5 py-1 rounded-full text-[10px] font-bold 
                   {{ $item->status === \App\Enums\StatusPengajuan::SELESAI || $item->status === \App\Enums\StatusPengajuan::PROSES_PENCAIRAN ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800' }}">
                   {{ $item->status }}
                 </span>

@@ -12,6 +12,7 @@ use App\Http\Controllers\StaffRabController;
 use App\Http\Controllers\UserRabController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\PengajuanRABController;
 
 /*
 |--------------------------------------------------------------------------
@@ -239,3 +240,14 @@ Route::post('/tugas/tambah-divisi', function (Request $request) {
 
     return back()->with('sukses', 'Divisi baru berhasil ditambahkan ke database!');
 })->name('uji.divisi.store');
+
+
+
+
+// Rute untuk fitur Pengajuan RAB
+Route::get('/pengajuan', [PengajuanRABController::class, 'index'])->name('pengajuan.index');
+Route::get('/pengajuan/create', [PengajuanRABController::class, 'create'])->name('pengajuan.create');
+Route::post('/pengajuan', [PengajuanRABController::class, 'store'])->name('pengajuan.store');
+Route::get('/pengajuan/antrean', [PengajuanRABController::class, 'antreanPersetujuan'])->name('pengajuan.antrean');
+Route::post('/pengajuan/{id}/approve', [PengajuanRABController::class, 'processApproval'])->name('pengajuan.approve');
+Route::get('/pengajuan/{id}', [PengajuanRABController::class, 'show'])->name('pengajuan.show');

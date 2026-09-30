@@ -7,16 +7,12 @@
     <title>Login - Sistem Informasi RAB</title>
     <!-- Alpine.js -->
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-    <!-- Import Font dari Google -->
-    <link
-        href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap"
-        rel="stylesheet" />
-    <!-- Font Awesome untuk Icon -->
-    <link
-        rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 
-    <!-- Tailwind CSS CDN (No Preflight) -->
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -30,9 +26,9 @@
         :root {
             --primary-purple: #8b8df7;
             --primary-blue: #2e358b;
-            --text-dark: #000000;
-            --text-gray: #444444;
-            --btn-gray: #6d757f;
+            --text-dark: #1f2937;
+            --text-gray: #4b5563;
+            --btn-gray: #4b5563;
             --bg-light: #ffffff;
         }
 
@@ -51,79 +47,46 @@
         /* --- HERO SECTION --- */
         .hero {
             display: flex;
-            min-height: 120vh;
+            min-height: 100vh;
             position: relative;
             background: var(--bg-light);
         }
 
         .hero-left {
-            flex: 0 0 68%;
-            padding: 40px 80px;
+            flex: 0 0 65%;
+            padding: 140px 80px 60px 80px; /* Padding atas besar agar tidak mentok header */
             display: flex;
             flex-direction: column;
+            justify-content: center;
             position: relative;
         }
 
         .hero-right {
-            flex: 0 0 32%;
+            flex: 0 0 35%;
             background-color: var(--primary-purple);
-            padding: 40px;
             position: relative;
         }
 
-        .header-left {
-            margin-bottom: auto;
-        }
-
-        .logo-wrap {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        /* --- LOGO IMAGE --- */
-        .logo-img {
-            width: 65px;
-            height: 65px;
-            border-radius: 50%;
-            object-fit: contain;
-        }
-
-        .logo-text {
-            font-size: 24px;
-            font-weight: 600;
-            color: #4b5563;
-        }
-
-        .header-right {
-            text-align: right;
-            margin-right: 20px;
-        }
-
-        .menu-icon {
-            color: white;
-            font-size: 24px;
-            cursor: pointer;
-        }
-
-        /* --- BAGIAN KONTEN TEKS --- */
+        /* --- MAIN CONTENT LAYOUT FIX --- */
         .main-content {
-            margin-top: -100px;
-            margin-bottom: auto;
             position: relative;
-            max-width: 650px;
+            max-width: 620px;
+            z-index: 10;
         }
 
         .bg-text {
             position: absolute;
-            top: -65px;
-            left: -10px;
-            font-size: clamp(170px, 23vw, 250px);
-            font-weight: 800;
-            color: #aeb1fa;
+            top: -90px;
+            left: -20px;
+            font-size: clamp(120px, 16vw, 190px);
+            font-weight: 900;
+            color: #8b8df7;
+            opacity: 0.18; /* Transparansi agar tidak mengganggu bacaan */
             z-index: 1;
             line-height: 1;
             letter-spacing: -2px;
+            user-select: none;
+            pointer-events: none;
         }
 
         .content-inner {
@@ -132,19 +95,19 @@
         }
 
         .content-inner h1 {
-            font-size: 56px;
+            font-size: 48px;
             font-weight: 800;
             color: var(--text-dark);
-            line-height: 1.15;
-            margin-bottom: 25px;
+            line-height: 1.2;
+            margin-bottom: 20px;
         }
 
         .content-inner p {
-            font-size: 18px;
+            font-size: 16px;
             color: var(--text-gray);
             line-height: 1.6;
-            margin-bottom: 35px;
-            max-width: 95%;
+            margin-bottom: 30px;
+            max-width: 90%;
         }
 
         .btn-login {
@@ -154,194 +117,77 @@
             background-color: var(--btn-gray);
             color: white;
             padding: 14px 28px;
-            border-radius: 6px;
+            border-radius: 8px;
             text-decoration: none;
             font-weight: 600;
-            font-size: 16px;
-            transition: background 0.3s;
+            font-size: 15px;
+            transition: all 0.2s ease;
             border: none;
             cursor: pointer;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
 
         .btn-login:hover {
-            background-color: #555c65;
+            background-color: #374151;
+            transform: translateY(-2px);
         }
 
-        /* --- DROPDOWN CUSTOM STYLES --- */
-        .dropdown {
-            position: relative;
-            display: inline-block;
-        }
-
-        .dropdown-content {
-            display: none;
-            position: absolute;
-            background-color: var(--bg-light);
-            min-width: 250px;
-            box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.1);
-            z-index: 20;
-            border-radius: 8px;
-            margin-top: 10px;
-            overflow: hidden;
-            border: 1px solid #eee;
-        }
-
-        .dropdown-content a {
-            color: var(--text-gray);
-            padding: 12px 16px;
-            text-decoration: none;
-            display: block;
-            font-size: 14px;
-            font-weight: 500;
-            border-bottom: 1px solid #f1f1f1;
-            transition: all 0.2s;
-            cursor: pointer;
-        }
-
-        .dropdown-content a:last-child {
-            border-bottom: none;
-        }
-
-        .dropdown-content a:hover {
-            background-color: var(--btn-gray);
-            color: white;
-        }
-
-        .dropdown-content.show {
-            display: block;
-        }
-
-        /* --- GRAFIS & KLASE --- */
+        /* --- HERO GRAPHICS --- */
         .hero-graphics {
             position: absolute;
-            top: 45%;
-            left: 78%;
+            top: 50%;
+            left: 75%;
             transform: translate(-50%, -50%);
-            width: 600px;
-            height: 600px;
+            width: 550px;
+            height: 550px;
             pointer-events: none;
-            z-index: 10;
+            z-index: 20;
         }
 
         .mask {
             position: absolute;
             object-fit: cover;
             border: 4px solid #fff;
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
             background-color: #e2e8f0;
         }
 
         .mask-1 {
-            width: 220px;
-            height: 240px;
-            top: 80px;
+            width: 200px;
+            height: 220px;
+            top: 60px;
             left: 20px;
-            border-radius: 40px 10px 100px 10px;
+            border-radius: 40px 10px 90px 10px;
         }
 
         .mask-2 {
-            width: 140px;
-            height: 190px;
-            top: 130px;
-            left: 250px;
-            border-radius: 80px 80px 15px 15px;
+            width: 130px;
+            height: 170px;
+            top: 110px;
+            left: 235px;
+            border-radius: 70px 70px 15px 15px;
         }
 
         .mask-3 {
-            width: 160px;
-            height: 160px;
-            top: 340px;
+            width: 150px;
+            height: 150px;
+            top: 300px;
             left: 50px;
             border-radius: 50%;
         }
 
         .mask-4 {
-            width: 210px;
-            height: 260px;
-            top: 290px;
-            left: 215px;
-            border-radius: 60px 60px 15px 60px;
+            width: 190px;
+            height: 240px;
+            top: 260px;
+            left: 210px;
+            border-radius: 50px 50px 15px 50px;
         }
 
-        /* Elemen Dekoratif Mengambang */
-        .float {
-            position: absolute;
-        }
-
-        .dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-        }
-
-        .dash {
-            width: 25px;
-            height: 4px;
-            border-radius: 2px;
-        }
-
-        .pill {
-            width: 45px;
-            height: 14px;
-            border-radius: 7px;
-        }
-
-        .dot-1 {
-            background-color: #00bcd4;
-            top: 290px;
-            left: -10px;
-        }
-
-        .dot-2 {
-            background-color: #ff9800;
-            top: 340px;
-            left: -30px;
-        }
-
-        .dot-3 {
-            background-color: #ffc107;
-            bottom: 120px;
-            left: 480px;
-        }
-
-        .dash-1 {
-            background-color: #00bcd4;
-            top: 70px;
-            left: 400px;
-        }
-
-        .dash-2 {
-            background-color: #8bc34a;
-            top: 160px;
-            left: 420px;
-        }
-
-        .pill-1 {
-            background-color: #ffc107;
-            top: 90px;
-            left: 270px;
-            width: 35px;
-            height: 10px;
-        }
-
-        .pill-2 {
-            background-color: #ffc107;
-            bottom: 130px;
-            left: -40px;
-        }
-
-        .pill-3 {
-            background-color: #8bc34a;
-            bottom: 40px;
-            left: 130px;
-            width: 35px;
-            height: 10px;
-        }
-
-        /* --- FOOTER SECTION --- */
+        /* --- FOOTER --- */
         .footer-top {
             background-color: var(--primary-blue);
-            padding: 100px 80px;
+            padding: 80px 80px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -349,17 +195,16 @@
         }
 
         .footer-top-left h4 {
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 600;
             margin-bottom: 5px;
-            color: #f1f5f9;
+            color: #cbd5e1;
         }
 
         .footer-top-left h2 {
-            font-size: 56px;
+            font-size: 42px;
             font-weight: 800;
-            line-height: 1.1;
-            letter-spacing: -1px;
+            line-height: 1.2;
         }
 
         .footer-top-right {
@@ -367,53 +212,39 @@
             display: flex;
             flex-direction: column;
             align-items: flex-end;
+            font-size: 14px;
+            color: #e2e8f0;
         }
 
         .footer-logo {
-            width: 120px;
-            height: 120px;
+            width: 90px;
+            height: 90px;
             border-radius: 50%;
             overflow: hidden;
-            margin-bottom: 20px;
-        }
-
-        .footer-logo .seal-inner {
-            width: 100px;
-            height: 100px;
-            background-color: #1e3a8a;
-            border-radius: 50%;
-            color: #fff;
-            font-size: 22px;
-            font-weight: bold;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .footer-top-right p {
-            font-size: 15px;
-            line-height: 1.6;
-            font-weight: 500;
+            margin-bottom: 15px;
+            background: white;
+            padding: 5px;
         }
 
         .footer-bottom {
             background-color: #fff;
-            padding: 25px 80px;
+            padding: 20px 80px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            border-top: 1px solid #f1f5f9;
         }
 
         .copyright {
-            font-size: 11px;
-            color: #000;
-            font-weight: 700;
+            font-size: 12px;
+            color: #64748b;
+            font-weight: 600;
         }
 
         .footer-links {
             display: flex;
             align-items: center;
-            gap: 40px;
+            gap: 30px;
         }
 
         .links {
@@ -423,9 +254,9 @@
 
         .links a {
             text-decoration: none;
-            color: #000;
+            color: #475569;
             font-size: 12px;
-            font-weight: 700;
+            font-weight: 600;
         }
 
         .socials {
@@ -434,55 +265,47 @@
         }
 
         .socials a {
-            color: #000;
-            font-size: 16px;
+            color: #475569;
+            font-size: 15px;
         }
 
         @media (max-width: 1024px) {
-            .hero {
-                flex-direction: column;
-            }
-
-            .hero-left {
-                flex: 1;
-                width: 100%;
-                padding: 40px 30px;
-            }
-
-            .hero-right,
-            .hero-graphics {
-                display: none;
-            }
-
-            .footer-top {
-                flex-direction: column;
-                align-items: flex-start;
-                padding: 50px 30px;
-                gap: 40px;
-            }
-
-            .footer-top-right {
-                align-items: flex-start;
-                text-align: left;
-            }
-
-            .footer-bottom {
-                flex-direction: column;
-                gap: 20px;
-                padding: 25px 30px;
-                text-align: center;
-            }
+            .hero { flex-direction: column; }
+            .hero-left { width: 100%; padding: 120px 30px 60px 30px; }
+            .hero-right, .hero-graphics { display: none; }
+            .footer-top { flex-direction: column; align-items: flex-start; padding: 40px 30px; gap: 30px; }
+            .footer-top-right { align-items: flex-start; text-align: left; }
+            .footer-bottom { flex-direction: column; gap: 15px; padding: 20px 30px; text-align: center; }
         }
     </style>
 </head>
 
-<body x-data="{ overlayOpen: false }">
-    <!-- Hidden Form untuk Login Otomatis -->
-    <form id="hiddenLoginForm" action="{{ route('login.post') }}" method="POST" style="display: none;">
-        @csrf
-        <input type="hidden" name="email" id="hiddenEmail">
-        <input type="hidden" name="password" id="hiddenPassword">
-    </form>
+<body x-data="{ 
+    overlayOpen: false, 
+    loginModalOpen: {{ $errors->any() ? 'true' : 'false' }},
+    selectedRole: '',
+    email: '',
+    password: '',
+    setRolePreset(role) {
+        this.selectedRole = role;
+        if (role === 'pimpinan') {
+            this.email = 'pimpinan@test.com';
+            this.password = 'password';
+        } else if (role === 'finance') {
+            this.email = 'finance@test.com';
+            this.password = 'password';
+        } else if (role === 'admin') {
+            this.email = 'admin@test.com';
+            this.password = 'password';
+        } else if (role === 'user') {
+            this.email = 'staff@test.com';
+            this.password = 'password';
+        } else {
+            this.email = '';
+            this.password = '';
+        }
+    }
+}">
 
     @php
         $logoPath = \App\Models\Setting::getSetting('app_logo');
@@ -490,22 +313,21 @@
         $appName = \App\Models\Setting::getSetting('app_name', 'SD Negeri Sidokare 3');
     @endphp
 
-    <!-- HEADER UTAMA ABSOLUTE -->
-    <header class="absolute top-0 left-0 w-full flex items-center justify-between px-10 py-8 md:px-16 md:py-10 z-[60] bg-transparent pointer-events-none">
-        <div class="flex items-center gap-4 pointer-events-auto">
-            {{-- PRESENTASI: Menampilkan Logo Dinamis Instansi --}}
-            <img src="{{ $logoUrl }}" alt="Logo" class="h-14 w-14 object-contain">
-            <h1 class="text-2xl md:text-3xl font-semibold text-gray-800" style="margin:0; font-family: 'Poppins', sans-serif;">{{ $appName }}</h1>
+    <!-- HEADER UTAMA -->
+    <header class="absolute top-0 left-0 w-full flex items-center justify-between px-8 py-6 md:px-16 md:py-8 z-[50] bg-transparent">
+        <div class="flex items-center gap-4">
+            <img src="{{ $logoUrl }}" alt="Logo" class="h-12 w-12 object-contain">
+            <h1 class="text-xl md:text-2xl font-bold text-gray-800" style="margin:0;">{{ $appName }}</h1>
         </div>
 
-        <div class="pointer-events-auto">
-            <button @click="overlayOpen = true" class="text-gray-800 lg:text-white text-3xl hover:opacity-80 transition-opacity" style="background:transparent; border:none; cursor:pointer;">
+        <div>
+            <button @click="overlayOpen = true" class="text-gray-800 lg:text-white text-2xl hover:opacity-80 transition-opacity bg-transparent border-none cursor-pointer">
                 <i class="fa-solid fa-bars"></i>
             </button>
         </div>
     </header>
 
-    <!-- OVERLAY MENU -->
+    <!-- OVERLAY MENU SIDEBAR -->
     <div x-show="overlayOpen"
         x-transition:enter="transition ease-out duration-300"
         x-transition:enter-start="-translate-y-full"
@@ -514,40 +336,35 @@
         x-transition:leave-start="translate-y-0"
         x-transition:leave-end="-translate-y-full"
         class="fixed inset-0 z-[70] bg-[#8b8df7] flex items-center justify-center"
-        style="display: none; font-family: 'Poppins', sans-serif;">
+        style="display: none;">
 
-        <!-- HEADER OVERLAY (IDENTIK) -->
-        <header class="absolute top-0 left-0 w-full flex items-center justify-between px-10 py-8 md:px-16 md:py-10 z-[80] bg-transparent">
+        <header class="absolute top-0 left-0 w-full flex items-center justify-between px-8 py-6 md:px-16 md:py-8 z-[80]">
             <div class="flex items-center gap-4">
-                {{-- PRESENTASI: Menampilkan Logo Dinamis Instansi --}}
-                <img src="{{ $logoUrl }}" alt="Logo" class="h-14 w-14 object-contain">
-                <h1 class="text-2xl md:text-3xl font-semibold text-white" style="margin:0;">{{ $appName }}</h1>
+                <img src="{{ $logoUrl }}" alt="Logo" class="h-12 w-12 object-contain">
+                <h1 class="text-xl md:text-2xl font-bold text-white" style="margin:0;">{{ $appName }}</h1>
             </div>
 
             <div>
-                <button @click="overlayOpen = false" class="text-white text-4xl hover:opacity-80 transition-opacity font-light leading-none" style="background:transparent; border:none; cursor:pointer;">
+                <button @click="overlayOpen = false" class="text-white text-3xl hover:opacity-80 transition-opacity font-light leading-none bg-transparent border-none cursor-pointer">
                     &times;
                 </button>
             </div>
         </header>
 
-        <!-- CONTENT OVERLAY -->
-        <div class="w-full max-w-7xl mx-auto px-10 md:px-16 grid grid-cols-1 md:grid-cols-2 gap-16 mt-20 text-left">
-            <!-- Kiri -->
+        <div class="w-full max-w-7xl mx-auto px-8 md:px-16 grid grid-cols-1 md:grid-cols-2 gap-12 mt-16 text-left">
             <div>
                 <h2 class="text-2xl md:text-3xl font-bold text-white mb-4" style="margin-top:0;">Apa itu Gate SDN Sidokare 3 ?</h2>
                 <p class="text-white/90 text-sm md:text-base leading-relaxed" style="max-width: 500px;">
-                    Gate SDN Sidokare 3 adalah sebuah portal berbasis Single Sign On (SSO) yang berfungsi sebagai pintu masuk ke dalam sistem informasi layanan terpadu yang telah kami kembangkan untuk memberikan kemudahan akses akan informasi dan layanan bagi seluruh pengguna layanan Sistem Informasi SD Negeri Sidokare 3.
+                    Gate SDN Sidokare 3 adalah sebuah portal berbasis Single Sign On (SSO) yang berfungsi sebagai pintu masuk ke dalam sistem informasi layanan terpadu.
                 </p>
             </div>
 
-            <!-- Kanan -->
             <div>
                 <h2 class="text-2xl md:text-3xl font-bold text-white mb-4" style="margin-top:0;">Akses</h2>
-                <div class="flex flex-wrap gap-4 mb-10">
-                    <button @click="overlayOpen = false" class="bg-[#4ade80] hover:bg-[#22c55e] text-white font-semibold py-2 px-6 rounded shadow-sm transition-colors" style="border:none; cursor:pointer;">Login</button>
-                    <button class="bg-[#4ade80] hover:bg-[#22c55e] text-white font-semibold py-2 px-6 rounded shadow-sm transition-colors" style="border:none; cursor:pointer;">Lupa Kata Sandi</button>
-                    <button class="bg-[#4ade80] hover:bg-[#22c55e] text-white font-semibold py-2 px-6 rounded shadow-sm transition-colors" style="border:none; cursor:pointer;">Bantuan</button>
+                <div class="flex flex-wrap gap-3 mb-8">
+                    <button @click="overlayOpen = false; loginModalOpen = true" class="bg-[#4ade80] hover:bg-[#22c55e] text-white font-semibold py-2 px-5 rounded shadow-sm border-none cursor-pointer">Login</button>
+                    <button class="bg-[#4ade80] hover:bg-[#22c55e] text-white font-semibold py-2 px-5 rounded shadow-sm border-none cursor-pointer">Lupa Kata Sandi</button>
+                    <button class="bg-[#4ade80] hover:bg-[#22c55e] text-white font-semibold py-2 px-5 rounded shadow-sm border-none cursor-pointer">Bantuan</button>
                 </div>
 
                 <p class="text-white/70 text-xs italic">
@@ -557,16 +374,9 @@
         </div>
     </div>
 
+    <!-- HERO SECTION -->
     <section class="hero">
         <div class="hero-left">
-            <header class="header-left" style="opacity: 0; pointer-events: none;">
-                <div class="logo-wrap">
-                    {{-- PRESENTASI: Menampilkan Logo Dinamis Instansi --}}
-                    <img src="{{ $logoUrl }}" alt="Logo Instansi" class="logo-img">
-                    <span class="logo-text">{{ $appName }}</span>
-                </div>
-            </header>
-
             <div class="main-content">
                 <div class="bg-text">GATE</div>
                 <div class="content-inner">
@@ -577,69 +387,140 @@
                         layanan terpadu.
                     </p>
 
-                    <!-- Dropdown Button -->
-                    <div class="dropdown">
-                        <button onclick="toggleDropdown(event)" class="btn-login">
-                            Login / Masuk <i class="fa-solid fa-chevron-down"></i>
+                    <!-- Tombol Login Dropdown -->
+                    <div x-data="{ dropdownOpen: false }" class="relative inline-block text-left mt-2">
+                        <button @click="dropdownOpen = !dropdownOpen" @click.outside="dropdownOpen = false" class="btn-login">
+                            Login / Masuk <i class="fa-solid fa-chevron-down ml-1 text-sm"></i>
                         </button>
-                        <div id="loginDropdown" class="dropdown-content">
-                            <a onclick="loginAs('arif@sirab.local')">Login sebagai Administrator</a>
-                            <a onclick="loginAs('sari@sirab.local')">Login sebagai Staff Pemohon</a>
-                            <a onclick="loginAs('finance@sirab.local')">Login sebagai Finance</a>
-                            <a onclick="loginAs('pimpinan@sirab.local')">Login sebagai Pimpinan</a>
+
+                        <div x-show="dropdownOpen"
+                             x-transition:enter="transition ease-out duration-100"
+                             x-transition:enter-start="transform opacity-0 scale-95"
+                             x-transition:enter-end="transform opacity-100 scale-100"
+                             x-transition:leave="transition ease-in duration-75"
+                             x-transition:leave-start="transform opacity-100 scale-100"
+                             x-transition:leave-end="transform opacity-0 scale-95"
+                             class="absolute left-0 mt-3 w-64 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-[60]"
+                             style="display: none;">
+                            <div class="py-1">
+                                <form method="POST" action="{{ route('login.post') }}" class="m-0">
+                                    @csrf
+                                    <input type="hidden" name="password" value="password">
+                                    <input type="hidden" name="email" value="admin@test.com">
+                                    <button type="submit" class="w-full text-left block px-5 py-3.5 text-sm font-medium text-gray-700 hover:bg-[#6b7280] hover:text-white border-b border-gray-100 transition-colors border-none cursor-pointer bg-white">
+                                        Login sebagai Administrator
+                                    </button>
+                                </form>
+                                <form method="POST" action="{{ route('login.post') }}" class="m-0">
+                                    @csrf
+                                    <input type="hidden" name="password" value="password">
+                                    <input type="hidden" name="email" value="staff@test.com">
+                                    <button type="submit" class="w-full text-left block px-5 py-3.5 text-sm font-medium text-gray-700 hover:bg-[#6b7280] hover:text-white border-b border-gray-100 transition-colors border-none cursor-pointer bg-white">
+                                        Login sebagai Staff Pemohon
+                                    </button>
+                                </form>
+                                <form method="POST" action="{{ route('login.post') }}" class="m-0">
+                                    @csrf
+                                    <input type="hidden" name="password" value="password">
+                                    <input type="hidden" name="email" value="finance@test.com">
+                                    <button type="submit" class="w-full text-left block px-5 py-3.5 text-sm font-medium text-gray-700 hover:bg-[#6b7280] hover:text-white border-b border-gray-100 transition-colors border-none cursor-pointer bg-white">
+                                        Login sebagai Finance
+                                    </button>
+                                </form>
+                                <form method="POST" action="{{ route('login.post') }}" class="m-0">
+                                    @csrf
+                                    <input type="hidden" name="password" value="password">
+                                    <input type="hidden" name="email" value="pimpinan@test.com">
+                                    <button type="submit" class="w-full text-left block px-5 py-3.5 text-sm font-medium text-gray-700 hover:bg-[#6b7280] hover:text-white transition-colors border-none cursor-pointer bg-white rounded-b-md">
+                                        Login sebagai Pimpinan
+                                    </button>
+                                </form>
+                            </div>
                         </div>
                     </div>
-
-                    <!-- Menampilkan Error jika ada -->
-                    @if ($errors->any())
-                    <div style="color: #e3342f; margin-top: 15px; font-size: 13px; font-weight: 500;">
-                        @foreach ($errors->all() as $error)
-                        <div>{{ $error }}</div>
-                        @endforeach
-                    </div>
-                    @endif
-
                 </div>
             </div>
         </div>
 
-        <div class="hero-right">
-            <header class="header-right" style="opacity: 0; pointer-events: none;">
-                <i class="fa-solid fa-bars menu-icon"></i>
-            </header>
-        </div>
+        <div class="hero-right"></div>
 
         <div class="hero-graphics">
-            <!-- 4 GAMBAR SUDAH DIGANTI DARI FOLDER UI FIGMA -->
-            <img
-                src="{{ asset('images/FotoKegiatan1.jpeg') }}"
-                alt="Foto Kegiatan 1"
-                class="mask mask-1" />
-            <img
-                src="{{ asset('images/FotoKegiatan2.jpeg') }}"
-                alt="Foto Kegiatan 2"
-                class="mask mask-2" />
-            <img
-                src="{{ asset('images/FotoKegiatan3.jpeg') }}"
-                alt="Foto Kegiatan 3"
-                class="mask mask-3" />
-            <img
-                src="{{ asset('images/FotoKegiatan4.jpeg') }}"
-                alt="Foto Kegiatan 4"
-                class="mask mask-4" />
-
-            <!-- Elemen Geometris -->
-            <div class="float dot dot-1"></div>
-            <div class="float dot dot-2"></div>
-            <div class="float dot dot-3"></div>
-            <div class="float dash dash-1"></div>
-            <div class="float dash dash-2"></div>
-            <div class="float pill pill-1"></div>
-            <div class="float pill pill-2"></div>
-            <div class="float pill pill-3"></div>
+            <img src="{{ asset('images/FotoKegiatan1.jpeg') }}" alt="Foto 1" class="mask mask-1" />
+            <img src="{{ asset('images/FotoKegiatan2.jpeg') }}" alt="Foto 2" class="mask mask-2" />
+            <img src="{{ asset('images/FotoKegiatan3.jpeg') }}" alt="Foto 3" class="mask mask-3" />
+            <img src="{{ asset('images/FotoKegiatan4.jpeg') }}" alt="Foto 4" class="mask mask-4" />
         </div>
     </section>
 
+    <!-- MODAL POPUP FORM LOGIN -->
+    <div x-show="loginModalOpen" 
+         x-transition:enter="transition ease-out duration-200"
+         x-transition:enter-start="opacity-0 scale-95"
+         x-transition:enter-end="opacity-100 scale-100"
+         x-transition:leave="transition ease-in duration-150"
+         x-transition:leave-start="opacity-100 scale-100"
+         x-transition:leave-end="opacity-0 scale-95"
+         class="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 p-4"
+         style="display: none;">
+
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 md:p-8 relative">
+            <!-- Tombol Close Modal -->
+            <button @click="loginModalOpen = false" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-2xl font-bold bg-transparent border-none cursor-pointer">
+                &times;
+            </button>
+
+            <!-- Title -->
+            <div class="text-center mb-6">
+                <h3 class="text-2xl font-bold text-gray-800">Login Sistem RAB</h3>
+                <p class="text-xs text-gray-500 mt-1">Pilih Jabatan / Role atau Masukkan Akun Anda</p>
+            </div>
+
+            <!-- Pesan Error -->
+            @if ($errors->any())
+                <div class="bg-red-50 border-l-4 border-red-500 text-red-700 p-3 mb-4 rounded text-xs">
+                    @foreach ($errors->all() as $error)
+                        <div>{{ $error }}</div>
+                    @endforeach
+                </div>
+            @endif
+
+            <!-- Form Login -->
+            <form action="{{ route('login.post') }}" method="POST" class="space-y-4">
+                @csrf
+
+                <!-- Dropdown Pilih Role -->
+                <div>
+                    <label class="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1">Pilih Jabatan / Role (Opsional)</label>
+                    <select x-model="selectedRole" @change="setRolePreset($event.target.value)" class="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#8b8df7]">
+                        <option value="">-- Masukkan Manual --</option>
+                        <option value="pimpinan">Pimpinan</option>
+                        <option value="finance">Finance</option>
+                        <option value="admin">Admin IT</option>
+                        <option value="user">User</option>
+                    </select>
+                </div>
+
+                <!-- Input Email -->
+                <div>
+                    <label class="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1">Email</label>
+                    <input type="email" name="email" x-model="email" required placeholder="nama@domain.com" class="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#8b8df7]">
+                </div>
+
+                <!-- Input Password -->
+                <div>
+                    <label class="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1">Password</label>
+                    <input type="password" name="password" x-model="password" required placeholder="••••••••" class="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#8b8df7]">
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" class="w-full py-3 bg-[#2e358b] hover:bg-[#1e2360] text-white font-semibold rounded-lg text-sm shadow transition-colors border-none cursor-pointer mt-2">
+                    Masuk ke Sistem
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
     <footer>
         <div class="footer-top">
             <div class="footer-top-left">
@@ -648,11 +529,10 @@
             </div>
             <div class="footer-top-right">
                 <div class="footer-logo">
-                    {{-- PRESENTASI: Menampilkan Logo Dinamis Instansi --}}
                     <img src="{{ $logoUrl }}" alt="Logo Instansi" style="width:100%; height:100%; object-fit:contain;">
                 </div>
                 <p>
-                    Cangkring, Sidokare, Kec. Sidoarjo, Kabupaten Sidoarjo<br />Telepon: (031) 8965532
+                    Cangkring, Sidokare, Kec. Sidoarjo, Kabupaten Sidoarjo<br />Telepon: (031) 8965532<br />
                     Jawa Timur 61214, Indonesia
                 </p>
             </div>
@@ -660,7 +540,7 @@
 
         <div class="footer-bottom">
             <div class="copyright">
-                © TIK SDN Sidokare 4 2026. All rights reserved.
+                © TIK SDN Sidokare 3 2026. All rights reserved.
             </div>
             <div class="footer-links">
                 <div class="links">
@@ -676,32 +556,6 @@
             </div>
         </div>
     </footer>
-
-    <!-- Script untuk Logika Dropdown dan Login -->
-    <script>
-        function toggleDropdown(event) {
-            event.stopPropagation();
-            document.getElementById("loginDropdown").classList.toggle("show");
-        }
-
-        window.onclick = function(event) {
-            if (!event.target.matches('.btn-login') && !event.target.closest('.btn-login')) {
-                var dropdowns = document.getElementsByClassName("dropdown-content");
-                for (var i = 0; i < dropdowns.length; i++) {
-                    var openDropdown = dropdowns[i];
-                    if (openDropdown.classList.contains('show')) {
-                        openDropdown.classList.remove('show');
-                    }
-                }
-            }
-        }
-
-        function loginAs(email) {
-            document.getElementById('hiddenEmail').value = email;
-            document.getElementById('hiddenPassword').value = 'password';
-            document.getElementById('hiddenLoginForm').submit();
-        }
-    </script>
 </body>
 
 </html>

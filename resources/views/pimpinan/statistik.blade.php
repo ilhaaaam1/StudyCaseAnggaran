@@ -95,10 +95,10 @@
       <table class="w-full text-left text-xs border-collapse">
         <thead class="bg-slate-50 text-slate-600 uppercase font-semibold border-b border-slate-200">
           <tr>
-            <th class="px-5 py-3 align-middle text-center">No. RAB</th>
+            <th class="px-5 py-3 align-middle text-left">No. RAB</th>
             <th class="px-5 py-3 align-middle text-left">Judul</th>
             <th class="px-5 py-3 align-middle text-left">Bidang</th>
-            <th class="px-5 py-3 align-middle text-center">Nominal Cair</th>
+            <th class="px-5 py-3 align-middle text-right">Nominal Cair</th>
             <th class="px-5 py-3 align-middle text-center">Tanggal Cair</th>
             <th class="px-5 py-3 align-middle text-center">Aksi</th>
           </tr>
@@ -106,10 +106,10 @@
         <tbody class="divide-y divide-slate-100">
           @forelse($riwayatPencairan ?? [] as $item)
             <tr class="hover:bg-slate-50">
-              <td class="px-5 py-3.5 align-middle text-center font-mono font-bold text-indigo-700">{{ $item->no_rab }}</td>
+              <td class="px-5 py-3.5 align-middle font-mono font-bold text-indigo-700">{{ $item->no_rab }}</td>
               <td class="px-5 py-3.5 align-middle text-slate-800">{{ $item->judul_pengajuan ?? '-' }}</td>
               <td class="px-5 py-3.5 align-middle text-slate-600">{{ $item->divisi->nama_divisi ?? '-' }}</td>
-              <td class="px-5 py-3.5 align-middle text-center whitespace-nowrap font-mono font-bold text-slate-900">Rp {{ number_format((float) $item->estimasi_total, 0, ',', '.') }}</td>
+              <td class="px-5 py-3.5 align-middle text-right font-mono font-bold text-slate-900">Rp {{ number_format((float) $item->estimasi_total, 0, ',', '.') }}</td>
               <td class="px-5 py-3.5 align-middle text-center text-slate-500 font-mono">
                 {{ $item->updated_at ? $item->updated_at->format('d/m/Y') : '-' }}
               </td>

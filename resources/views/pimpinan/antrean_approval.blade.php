@@ -27,50 +27,35 @@
       <table class="w-full text-left text-xs border-collapse">
         <thead class="bg-slate-50 text-slate-600 uppercase font-semibold border-b border-slate-200">
           <tr>
-            <th class="px-5 py-3.5 w-10 text-center">#</th>
-            <th class="px-5 py-3.5">No. RAB</th>
-            <th class="px-5 py-3.5">Pemohon &amp; Unit Kerja</th>
-            <th class="px-5 py-3.5">Kegiatan &amp; Rentang Waktu</th>
-            <th class="px-5 py-3.5 text-right">Estimasi Biaya</th>
+            <th class="px-5 py-3.5 text-left">No. RAB</th>
+            <th class="px-5 py-3.5 text-left">Pemohon</th>
+            <th class="px-5 py-3.5 text-left">Judul Pengajuan</th>
+            <th class="px-5 py-3.5 text-right whitespace-nowrap">Estimasi Biaya</th>
             <th class="px-5 py-3.5 text-center">Status Tahap 1</th>
             <th class="px-5 py-3.5 text-center">Aksi</th>
           </tr>
         </thead>
         <tbody class="divide-y divide-slate-100">
-          @forelse($pengajuanList ?? [] as $idx => $item)
+          @forelse($pengajuanList ?? [] as $item)
             <tr class="hover:bg-slate-50">
-              <td class="px-5 py-3.5 text-center text-slate-400 font-mono">{{ $idx + 1 }}</td>
               <td class="px-5 py-3.5 font-mono font-bold text-indigo-700">{{ $item->no_rab }}</td>
-              <td class="px-5 py-3.5">
-                <div class="font-semibold text-slate-900">{{ $item->pengguna->nama_lengkap ?? 'Staf' }}</div>
-                <div class="text-[10px] text-slate-500 font-medium">{{ $item->divisi->nama_divisi ?? '-' }}</div>
-              </td>
-              <td class="px-5 py-3.5 text-slate-800">
-                <div class="font-medium text-slate-900">{{ $item->judul_pengajuan }}</div>
-                <div class="text-[10px] text-indigo-600 mt-0.5 flex items-center gap-1">
-                  <i class="fa-regular fa-calendar-days text-[10px]"></i>
-                  <span>{{ $item->rentang_tanggal_formatted }}</span>
-                  @if($item->durasi_hari)
-                    <span class="text-slate-400">({{ $item->durasi_hari }} hr)</span>
-                  @endif
-                </div>
-              </td>
-              <td class="px-5 py-3.5 text-right font-mono font-bold text-slate-900">Rp {{ number_format((float) $item->estimasi_total, 0, ',', '.') }}</td>
+              <td class="px-5 py-3.5 text-slate-800 font-medium">{{ $item->pengguna->nama_lengkap ?? 'Staf' }}</td>
+              <td class="px-5 py-3.5 text-slate-800">{{ $item->judul_pengajuan }}</td>
+              <td class="px-5 py-3.5 text-right font-mono font-bold text-slate-900 whitespace-nowrap">Rp {{ number_format((float) $item->estimasi_total, 0, ',', '.') }}</td>
               <td class="px-5 py-3.5 text-center">
-                <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-blue-100 text-blue-800 border border-blue-200">
+                <span class="inline-block whitespace-nowrap px-2.5 py-1 rounded-full text-[10px] font-bold bg-blue-100 text-blue-800 border border-blue-200">
                   ACC Finance
                 </span>
               </td>
               <td class="px-5 py-3.5 text-center">
-                <a href="{{ route('pimpinan.show', $item->id_pengajuan) }}" 
-                   class="inline-flex items-center px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-semibold shadow-sm">
-                  Keputusan Final &rarr;
+                <a href="{{ route('pimpinan.show', $item->id_pengajuan) }}" class="px-3 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-semibold">
+                  Detail
                 </a>
               </td>
             </tr>
           @empty
             <tr>
-              <td colspan="7" class="px-5 py-10 text-center text-slate-400">
+              <td colspan="6" class="px-5 py-10 text-center text-slate-400">
                 Tidak ada antrean ACC Finance saat ini.
               </td>
             </tr>

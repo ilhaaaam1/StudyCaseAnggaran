@@ -113,7 +113,7 @@
                 Rp {{ number_format((float) $item->estimasi_total, 0, ',', '.') }}
               </td>
               <td class="px-5 py-3.5 text-center">
-                <span class="px-2.5 py-1 rounded-full text-[10px] font-bold {{ $item->status->badge() }}">
+                <span class="inline-block whitespace-nowrap px-2.5 py-1 rounded-full text-[10px] font-bold {{ $item->status->badge() }}">
                   {{ $item->status->label() }}
                 </span>
               </td>

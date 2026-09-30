@@ -74,11 +74,11 @@ class AuthController extends Controller
         } elseif (! empty($validated['role'])) {
             $role = $validated['role'];
             $defaultEmail = match ($role) {
-                'admin', 'admin_it' => 'arif@sirab.local',
-                'finance' => 'finance@sirab.local',
-                'pimpinan' => 'pimpinan@sirab.local',
-                'user', 'staff' => 'sari@sirab.local',
-                default => 'sari@sirab.local',
+                'admin', 'admin_it' => 'admin@test.com',
+                'finance' => 'finance@test.com',
+                'pimpinan' => 'pimpinan@test.com',
+                'user', 'staff' => 'staff@test.com',
+                default => 'staff@test.com',
             };
             $user = $modelClass::where('email', $defaultEmail)->first()
                 ?? $modelClass::where('role', $role)->first();

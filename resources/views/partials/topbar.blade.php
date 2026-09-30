@@ -106,7 +106,7 @@
           <form action="{{ route('role.switch') }}" method="POST">
             @csrf
             <input type="hidden" name="role" value="admin">
-            <input type="hidden" name="email" value="arif@sirab.local">
+            <input type="hidden" name="email" value="admin@test.com">
             <button type="submit" class="w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs transition-colors cursor-pointer text-left
               {{ ($currentRole === 'admin' || $currentRole === 'admin_it') ? 'bg-indigo-50 text-indigo-900 font-semibold ring-1 ring-indigo-200' : 'text-slate-700 hover:bg-slate-50' }}">
               <div class="flex items-center gap-2.5">
@@ -115,7 +115,7 @@
                 </div>
                 <div>
                   <div class="font-medium text-slate-800">Administrator IT</div>
-                  <div class="text-[10px] text-slate-400">arif@sirab.local &bull; Direktur Keuangan</div>
+                  <div class="text-[10px] text-slate-400">admin@test.com &bull; Administrator IT</div>
                 </div>
               </div>
               @if($currentRole === 'admin' || $currentRole === 'admin_it')
@@ -128,7 +128,7 @@
           <form action="{{ route('role.switch') }}" method="POST">
             @csrf
             <input type="hidden" name="role" value="staff">
-            <input type="hidden" name="email" value="sari@sirab.local">
+            <input type="hidden" name="email" value="staff@test.com">
             <button type="submit" class="w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs transition-colors cursor-pointer text-left
               {{ ($currentRole === 'staff' || $currentRole === 'user') ? 'bg-blue-50 text-blue-900 font-semibold ring-1 ring-blue-200' : 'text-slate-700 hover:bg-slate-50' }}">
               <div class="flex items-center gap-2.5">
@@ -137,7 +137,7 @@
                 </div>
                 <div>
                   <div class="font-medium text-slate-800">Staff Pemohon RAB</div>
-                  <div class="text-[10px] text-slate-400">sari@sirab.local &bull; Staf IT</div>
+                  <div class="text-[10px] text-slate-400">staff@test.com &bull; Staff Kesiswaan</div>
                 </div>
               </div>
               @if($currentRole === 'staff' || $currentRole === 'user')
@@ -150,7 +150,7 @@
           <form action="{{ route('role.switch') }}" method="POST">
             @csrf
             <input type="hidden" name="role" value="finance">
-            <input type="hidden" name="email" value="finance@sirab.local">
+            <input type="hidden" name="email" value="finance@test.com">
             <button type="submit" class="w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs transition-colors cursor-pointer text-left
               {{ $currentRole === 'finance' ? 'bg-emerald-50 text-emerald-900 font-semibold ring-1 ring-emerald-200' : 'text-slate-700 hover:bg-slate-50' }}">
               <div class="flex items-center gap-2.5">
@@ -159,7 +159,7 @@
                 </div>
                 <div>
                   <div class="font-medium text-slate-800">Finance (Reviewer 1)</div>
-                  <div class="text-[10px] text-slate-400">finance@sirab.local &bull; Bendahara</div>
+                  <div class="text-[10px] text-slate-400">finance@test.com &bull; Finance Verificator</div>
                 </div>
               </div>
               @if($currentRole === 'finance')
@@ -172,7 +172,7 @@
           <form action="{{ route('role.switch') }}" method="POST">
             @csrf
             <input type="hidden" name="role" value="pimpinan">
-            <input type="hidden" name="email" value="pimpinan@sirab.local">
+            <input type="hidden" name="email" value="pimpinan@test.com">
             <button type="submit" class="w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs transition-colors cursor-pointer text-left
               {{ $currentRole === 'pimpinan' ? 'bg-purple-50 text-purple-900 font-semibold ring-1 ring-purple-200' : 'text-slate-700 hover:bg-slate-50' }}">
               <div class="flex items-center gap-2.5">
@@ -181,7 +181,7 @@
                 </div>
                 <div>
                   <div class="font-medium text-slate-800">Pimpinan (Approval Final)</div>
-                  <div class="text-[10px] text-slate-400">pimpinan@sirab.local &bull; Kepala Sekolah</div>
+                  <div class="text-[10px] text-slate-400">pimpinan@test.com &bull; Kepala Lembaga / Pimpinan</div>
                 </div>
               </div>
               @if($currentRole === 'pimpinan')

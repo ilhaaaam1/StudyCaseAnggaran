@@ -20,6 +20,10 @@ class DatabaseSeeder extends Seeder
             PenggunaSeeder::class,
             UserSeeder::class,
             KategoriAnggaranSeeder::class,
+            PengajuanRabSeeder::class,
         ]);
     }
+
+
+    
 }
