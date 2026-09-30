@@ -17,6 +17,7 @@ class DivisiSeeder extends Seeder
             'Perpustakaan',
             'UKS (Unit Kesehatan Sekolah)',
             'Laboratorium',
+            'raadhittt',
         ];
 
         foreach ($units as $unitName) {
