@@ -346,4 +346,63 @@ class MultiRoleRabApprovalTest extends TestCase
         $this->assertSame('pimpinan', $newUser->role);
         $this->assertTrue($newUser->isPimpinan());
     }
+
+    /**
+     * 8. Pimpinan dapat melihat halaman statistik dengan grafik bulanan tanpa error database SQL.
+     */
+    public function test_pimpinan_can_view_statistik_page_with_monthly_charts_and_all_filters(): void
+    {
+        $this->actingAs($this->pimpinan);
+
+        // Buat data pengajuan dengan berbagai status
+        PengajuanRab::create([
+            'id_pengguna' => $this->staff->id_pengguna,
+            'id_divisi' => $this->divisi->id_divisi,
+            'no_rab' => 'RAB-TEST-STAT-001',
+            'judul_pengajuan' => 'Pengadaan Laptop Staff',
+            'latar_belakang' => 'Pengadaan laptop baru untuk staff TU',
+            'estimasi_total' => 15000000,
+            'status' => StatusPengajuan::SELESAI,
+            'tanggal_pengajuan' => now(),
+            'tanggal_mulai' => now(),
+            'tanggal_selesai' => now()->addDays(5),
+            'periode_penggunaan' => '2026/2027 Ganjil',
+            'kategori_anggaran' => 'BOS Reguler',
+            'tahun_ajaran' => '2026/2027',
+            'semester' => 'Ganjil',
+            'tahun_ajaran_semester' => '2026/2027 - Ganjil',
+            'tahap_bos' => 'Tahap 1',
+        ]);
+
+        PengajuanRab::create([
+            'id_pengguna' => $this->staff->id_pengguna,
+            'id_divisi' => $this->divisi->id_divisi,
+            'no_rab' => 'RAB-TEST-STAT-002',
+            'judul_pengajuan' => 'Perbaikan Server Jaringan',
+            'latar_belakang' => 'Pemeliharaan server jaringan utama',
+            'estimasi_total' => 8000000,
+            'status' => StatusPengajuan::PROSES_PENCAIRAN,
+            'tanggal_pengajuan' => now(),
+            'tanggal_mulai' => now(),
+            'tanggal_selesai' => now()->addDays(5),
+            'periode_penggunaan' => '2026/2027 Ganjil',
+            'kategori_anggaran' => 'BOS Reguler',
+            'tahun_ajaran' => '2026/2027',
+            'semester' => 'Ganjil',
+            'tahun_ajaran_semester' => '2026/2027 - Ganjil',
+            'tahap_bos' => 'Tahap 1',
+        ]);
+
+        foreach (['bulan_ini', 'kuartal_ini', 'tahun_ini'] as $filter) {
+            $response = $this->get(route('pimpinan.statistik.index', ['filter_waktu' => $filter]));
+            $response->assertOk();
+            $response->assertViewIs('pimpinan.statistik');
+            $response->assertViewHas('dataPenyerapanDisetujui', function (array $data): bool {
+                return count($data) === 12;
+            });
+            $response->assertViewHas('dataPenyerapanDicairkan', function (array $data): bool {
+                return count($data) === 12;
+            });
+        }
+    }
 }
