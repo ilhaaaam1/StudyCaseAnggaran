@@ -27,7 +27,7 @@ return new class extends Migration
             $table->foreign('id_divisi')
                 ->references('id_divisi')
                 ->on('divisi')
-                ->onDelete('restrict');
+                ->onDelete('cascade');
         });
     }
 

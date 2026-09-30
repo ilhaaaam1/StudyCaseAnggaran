@@ -88,6 +88,8 @@ class PimpinanController extends Controller
      */
     public function show(int $id): View
     {
+        // PRESENTASI: Contoh penerapan Eloquent ORM
+        // Mengambil 1 pengajuan RAB beserta relasi tabel secara efisien (Eager Loading)
         $pengajuan = PengajuanRab::with([
             'pengguna.divisi',
             'divisi',

@@ -30,12 +30,12 @@ return new class extends Migration
             $table->foreign('id_pengguna')
                 ->references('id_pengguna')
                 ->on('pengguna')
-                ->onDelete('restrict');
+                ->onDelete('cascade');
 
             $table->foreign('id_divisi')
                 ->references('id_divisi')
                 ->on('divisi')
-                ->onDelete('restrict');
+                ->onDelete('cascade');
         });
     }
 

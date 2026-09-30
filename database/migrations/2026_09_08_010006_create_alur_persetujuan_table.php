@@ -31,7 +31,7 @@ return new class extends Migration
             $table->foreign('id_reviewer')
                 ->references('id_pengguna')
                 ->on('pengguna')
-                ->onDelete('restrict');
+                ->onDelete('cascade');
         });
     }
 

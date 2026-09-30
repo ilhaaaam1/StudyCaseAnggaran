@@ -21,9 +21,17 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             KategoriAnggaranSeeder::class,
             PengajuanRabSeeder::class,
+        // Jalankan semua seeder aplikasi SIRAB
+        $this->call([
+            DivisiSeeder::class,           // 1. Seed Master Unit Kerja / Divisi
+            PenggunaSeeder::class,         // 2. Seed Master User (termasuk User Legacy)
+            KategoriAnggaranSeeder::class, // 3. Seed Master Kategori Anggaran
+            PengajuanRabSeeder::class,     // 4. Seed 20 baris data Pengajuan RAB Dummy
+            AlurPersetujuanSeeder::class,  // 5. Seed histori Alur Persetujuan (Opsional)
+            DummyDataSeeder::class,        // 6. Seed data dummy spesifik lainnya
         ]);
     }
 
 
-    
+
 }
