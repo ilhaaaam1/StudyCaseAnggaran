@@ -256,33 +256,43 @@ class PimpinanController extends Controller
 
         $baseQuery = PengajuanRab::query();
         $now = now();
+        $isSqlite = DB::getDriverName() === 'sqlite';
 
         if ($filterWaktu === 'bulan_ini') {
             $baseQuery->whereMonth('tanggal_pengajuan', $now->month)
                 ->whereYear('tanggal_pengajuan', $now->year);
         } elseif ($filterWaktu === 'kuartal_ini') {
-            $baseQuery->whereRaw('QUARTER(tanggal_pengajuan) = ?', [$now->quarter])
-                ->whereYear('tanggal_pengajuan', $now->year);
+            if ($isSqlite) {
+                $baseQuery->whereRaw("CAST((CAST(strftime('%m', tanggal_pengajuan) AS INTEGER) + 2) / 3 AS INTEGER) = ?", [$now->quarter])
+                    ->whereYear('tanggal_pengajuan', $now->year);
+            } else {
+                $baseQuery->whereRaw('QUARTER(tanggal_pengajuan) = ?', [$now->quarter])
+                    ->whereYear('tanggal_pengajuan', $now->year);
+            }
         } elseif ($filterWaktu === 'tahun_ini') {
             $baseQuery->whereYear('tanggal_pengajuan', $now->year);
         }
 
         // Summary Cards
-        $totalDisetujui = (clone $baseQuery)->whereIn('status', [StatusPengajuan::PROSES_PENCAIRAN, StatusPengajuan::SELESAI])->sum('estimasi_total');
-        $totalDicairkan = (clone $baseQuery)->where('status', StatusPengajuan::SELESAI)->sum('estimasi_total');
-        $totalMenunggu = (clone $baseQuery)->where('status', StatusPengajuan::MENUNGGU_PIMPINAN)->sum('estimasi_total');
-        $totalDitolak = (clone $baseQuery)->where('status', StatusPengajuan::DITOLAK)->sum('estimasi_total');
+        $totalDisetujui = (clone $baseQuery)->whereIn('status', [StatusPengajuan::PROSES_PENCAIRAN->value, StatusPengajuan::SELESAI->value])->sum('estimasi_total');
+        $totalDicairkan = (clone $baseQuery)->where('status', StatusPengajuan::SELESAI->value)->sum('estimasi_total');
+        $totalMenunggu = (clone $baseQuery)->where('status', StatusPengajuan::MENUNGGU_PIMPINAN->value)->sum('estimasi_total');
+        $totalDitolak = (clone $baseQuery)->where('status', StatusPengajuan::DITOLAK->value)->sum('estimasi_total');
 
         // Data Grafik Penyerapan per Bulan (Tahun Berjalan)
-        $chartBulanDisetujui = PengajuanRab::selectRaw('MONTH(tanggal_pengajuan) as bulan, SUM(estimasi_total) as total')
-            ->whereIn('status', [StatusPengajuan::PROSES_PENCAIRAN, StatusPengajuan::SELESAI])
+        $monthExpr = $isSqlite
+            ? "CAST(strftime('%m', tanggal_pengajuan) AS INTEGER)"
+            : 'MONTH(tanggal_pengajuan)';
+
+        $chartBulanDisetujui = PengajuanRab::selectRaw("{$monthExpr} as bulan, SUM(estimasi_total) as total")
+            ->whereIn('status', [StatusPengajuan::PROSES_PENCAIRAN->value, StatusPengajuan::SELESAI->value])
             ->whereYear('tanggal_pengajuan', $now->year)
             ->groupBy('bulan')
             ->pluck('total', 'bulan')
             ->toArray();
 
-        $chartBulanDicairkan = PengajuanRab::selectRaw('MONTH(tanggal_pengajuan) as bulan, SUM(estimasi_total) as total')
-            ->where('status', StatusPengajuan::SELESAI)
+        $chartBulanDicairkan = PengajuanRab::selectRaw("{$monthExpr} as bulan, SUM(estimasi_total) as total")
+            ->where('status', StatusPengajuan::SELESAI->value)
             ->whereYear('tanggal_pengajuan', $now->year)
             ->groupBy('bulan')
             ->pluck('total', 'bulan')
@@ -291,14 +301,14 @@ class PimpinanController extends Controller
         $dataPenyerapanDisetujui = [];
         $dataPenyerapanDicairkan = [];
         for ($i = 1; $i <= 12; $i++) {
-            $dataPenyerapanDisetujui[] = $chartBulanDisetujui[$i] ?? 0;
-            $dataPenyerapanDicairkan[] = $chartBulanDicairkan[$i] ?? 0;
+            $dataPenyerapanDisetujui[] = (float) ($chartBulanDisetujui[$i] ?? $chartBulanDisetujui[(string) $i] ?? 0);
+            $dataPenyerapanDicairkan[] = (float) ($chartBulanDicairkan[$i] ?? $chartBulanDicairkan[(string) $i] ?? 0);
         }
 
         // Data Alokasi per Divisi (berdasarkan filter waktu)
         $chartDivisi = (clone $baseQuery)
             ->selectRaw('id_divisi, SUM(estimasi_total) as total')
-            ->whereIn('status', [StatusPengajuan::PROSES_PENCAIRAN, StatusPengajuan::SELESAI])
+            ->whereIn('status', [StatusPengajuan::PROSES_PENCAIRAN->value, StatusPengajuan::SELESAI->value])
             ->groupBy('id_divisi')
             ->with('divisi')
             ->get();
@@ -312,7 +322,7 @@ class PimpinanController extends Controller
 
         // Riwayat Pencairan Terkini
         $riwayatPencairan = PengajuanRab::with(['divisi'])
-            ->where('status', StatusPengajuan::SELESAI)
+            ->where('status', StatusPengajuan::SELESAI->value)
             ->orderBy('updated_at', 'desc')
             ->take(5)
             ->get();
