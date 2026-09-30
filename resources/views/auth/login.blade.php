@@ -289,16 +289,16 @@
     setRolePreset(role) {
         this.selectedRole = role;
         if (role === 'pimpinan') {
-            this.email = 'pimpinan@test.com';
+            this.email = 'pimpinan@sirab.local';
             this.password = 'password';
         } else if (role === 'finance') {
-            this.email = 'finance@test.com';
+            this.email = 'finance@sirab.local';
             this.password = 'password';
         } else if (role === 'admin') {
-            this.email = 'admin@test.com';
+            this.email = 'arif@sirab.local';
             this.password = 'password';
         } else if (role === 'user') {
-            this.email = 'staff@test.com';
+            this.email = 'sari@sirab.local';
             this.password = 'password';
         } else {
             this.email = '';
@@ -406,7 +406,7 @@
                                 <form method="POST" action="{{ route('login.post') }}" class="m-0">
                                     @csrf
                                     <input type="hidden" name="password" value="password">
-                                    <input type="hidden" name="email" value="admin@test.com">
+                                    <input type="hidden" name="email" value="arif@sirab.local">
                                     <button type="submit" class="w-full text-left block px-5 py-3.5 text-sm font-medium text-gray-700 hover:bg-[#6b7280] hover:text-white border-b border-gray-100 transition-colors border-none cursor-pointer bg-white">
                                         Login sebagai Administrator
                                     </button>
@@ -414,7 +414,7 @@
                                 <form method="POST" action="{{ route('login.post') }}" class="m-0">
                                     @csrf
                                     <input type="hidden" name="password" value="password">
-                                    <input type="hidden" name="email" value="staff@test.com">
+                                    <input type="hidden" name="email" value="sari@sirab.local">
                                     <button type="submit" class="w-full text-left block px-5 py-3.5 text-sm font-medium text-gray-700 hover:bg-[#6b7280] hover:text-white border-b border-gray-100 transition-colors border-none cursor-pointer bg-white">
                                         Login sebagai Staff Pemohon
                                     </button>
@@ -422,7 +422,7 @@
                                 <form method="POST" action="{{ route('login.post') }}" class="m-0">
                                     @csrf
                                     <input type="hidden" name="password" value="password">
-                                    <input type="hidden" name="email" value="finance@test.com">
+                                    <input type="hidden" name="email" value="finance@sirab.local">
                                     <button type="submit" class="w-full text-left block px-5 py-3.5 text-sm font-medium text-gray-700 hover:bg-[#6b7280] hover:text-white border-b border-gray-100 transition-colors border-none cursor-pointer bg-white">
                                         Login sebagai Finance
                                     </button>
@@ -430,7 +430,7 @@
                                 <form method="POST" action="{{ route('login.post') }}" class="m-0">
                                     @csrf
                                     <input type="hidden" name="password" value="password">
-                                    <input type="hidden" name="email" value="pimpinan@test.com">
+                                    <input type="hidden" name="email" value="pimpinan@sirab.local">
                                     <button type="submit" class="w-full text-left block px-5 py-3.5 text-sm font-medium text-gray-700 hover:bg-[#6b7280] hover:text-white transition-colors border-none cursor-pointer bg-white rounded-b-md">
                                         Login sebagai Pimpinan
                                     </button>
