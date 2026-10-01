@@ -93,7 +93,7 @@
             <tr class="hover:bg-slate-50 transition-colors">
               <td class="text-[13px] text-slate-800 px-3 py-3.5 border-b border-slate-200">{{ $log->created_at->format('d/m/Y H:i') }}</td>
               <td class="text-[13px] text-slate-800 px-3 py-3.5 border-b border-slate-200 font-medium">{{ $log->user->nama_lengkap ?? 'Sistem' }}</td>
-              <td class="text-[13px] text-slate-800 px-3 py-3.5 border-b border-slate-200">{{ $log->aktivitas }}</td>
+              <td class="text-[13px] text-slate-800 px-3 py-3.5 border-b border-slate-200">{{ $log->activity }}</td>
               <td class="text-[13px] text-slate-800 px-3 py-3.5 border-b border-slate-200 text-right font-mono text-[11px]">{{ $log->ip_address }}</td>
             </tr>
           @empty

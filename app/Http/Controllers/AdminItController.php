@@ -22,23 +22,23 @@ class AdminItController extends Controller
      */
     public function dashboard(): View
     {
-        $totalPengguna = Pengguna::count();
-        $totalStaff = Pengguna::whereIn('role', ['staff', 'user'])->count();
-        $totalFinance = Pengguna::where('role', 'finance')->count();
-        $totalPimpinan = Pengguna::where('role', 'pimpinan')->count();
+        $totalUsers = Pengguna::count();
+        $countStaff = Pengguna::whereIn('role', ['staff', 'user'])->count();
+        $countFinance = Pengguna::where('role', 'finance')->count();
+        $countPimpinan = Pengguna::where('role', 'pimpinan')->count();
         $totalAdminIt = Pengguna::whereIn('role', ['admin_it', 'admin'])->count();
         $totalDivisi = Divisi::count();
 
-        $penggunaTerbaru = Pengguna::with('divisi')->latest('id_pengguna')->take(6)->get();
+        $recentLogs = ActivityLog::with('user')->latest()->take(5)->get();
 
         return view('admin_it.dashboard', compact(
-            'totalPengguna',
-            'totalStaff',
-            'totalFinance',
-            'totalPimpinan',
+            'totalUsers',
+            'countStaff',
+            'countFinance',
+            'countPimpinan',
             'totalAdminIt',
             'totalDivisi',
-            'penggunaTerbaru'
+            'recentLogs'
         ));
     }
 
@@ -175,26 +175,14 @@ class AdminItController extends Controller
     public function userDestroy(int $id): RedirectResponse
     {
         $user = Pengguna::findOrFail($id);
-
-        // Proteksi jika memiliki riwayat pengajuan RAB
-        if (PengajuanRab::where('id_pengguna', $id)->exists()) {
-            return redirect()->route('admin-it.users.index')
-                ->with('error', "Akun {$user->nama_lengkap} tidak dapat dihapus karena memiliki riwayat pengajuan RAB.");
-        }
-
-        // Proteksi jika pernah menjadi reviewer (data jejak audit persetujuan)
-        if (\DB::table('alur_persetujuan')->where('id_reviewer', $id)->exists()) {
-            return redirect()->route('admin-it.users.index')
-                ->with('error', "Akun {$user->nama_lengkap} tidak dapat dihapus karena memiliki riwayat sebagai reviewer/penyetuju pengajuan RAB.");
-        }
-
         $nama = $user->nama_lengkap;
+        
         $user->delete();
 
         ActivityLog::log("Menghapus pengguna: {$nama}.");
 
         return redirect()->route('admin-it.users.index')
-            ->with('success', "Akun {$nama} berhasil dihapus dari sistem.");
+            ->with('success', "Akun {$nama} berhasil dihapus dari sistem beserta seluruh riwayat terkaitnya.");
     }
 
     // -------------------------------------------------------------------------

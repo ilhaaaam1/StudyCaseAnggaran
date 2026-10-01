@@ -5,7 +5,6 @@ namespace Database\Seeders;
 use App\Models\KategoriAnggaran;
 use Illuminate\Database\Seeder;
 
-
 class KategoriAnggaranSeeder extends Seeder
 {
     /**
@@ -14,14 +13,7 @@ class KategoriAnggaranSeeder extends Seeder
     public function run(): void
     {
         // PRESENTASI: Dipisah menjadi seeder mandiri sesuai instruksi materi
-        // KategoriAnggaran::factory()->count(20)->create();
-use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
-
-class KategoriAnggaranSeeder extends Seeder
-{
-    public function run(): void
-    {
+        
         $categories = [
             ['nama_kategori' => 'Belanja Barang Operasional & ATK', 'deskripsi' => 'Pengadaan barang habis pakai', 'pagu_anggaran' => 50000000],
             ['nama_kategori' => 'Pengembangan Perpustakaan & Literasi', 'deskripsi' => 'Pengadaan buku teks dan non-teks', 'pagu_anggaran' => 30000000],
@@ -31,7 +23,7 @@ class KategoriAnggaranSeeder extends Seeder
         ];
 
         foreach ($categories as $cat) {
-            \App\Models\KategoriAnggaran::updateOrCreate(
+            KategoriAnggaran::updateOrCreate(
                 ['nama_kategori' => $cat['nama_kategori']],
                 $cat
             );

@@ -60,5 +60,15 @@ class UserSeeder extends Seeder
                 'position' => 'Kepala Sekolah',
             ]
         );
+        User::updateOrCreate(
+            ['email' => 'afid@sirab.local'],
+            [
+                'name' => 'Akun afid',
+                'password' => $defaultPassword,
+                'role' => UserRole::PIMPINAN,
+                'division' => 'Administrasi',
+                'position' => 'wakil Kepala Sekolah',
+            ]
+        );
     }
 }

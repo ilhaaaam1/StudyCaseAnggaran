@@ -14,24 +14,15 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // Panggil semua seeder
-        $this->call([
-            DivisiSeeder::class,
-            PenggunaSeeder::class,
-            UserSeeder::class,
-            KategoriAnggaranSeeder::class,
-            PengajuanRabSeeder::class,
-        // Jalankan semua seeder aplikasi SIRAB
+        // Jalankan semua seeder aplikasi SIRAB secara berurutan
         $this->call([
             DivisiSeeder::class,           // 1. Seed Master Unit Kerja / Divisi
-            PenggunaSeeder::class,         // 2. Seed Master User (termasuk User Legacy)
-            KategoriAnggaranSeeder::class, // 3. Seed Master Kategori Anggaran
-            PengajuanRabSeeder::class,     // 4. Seed 20 baris data Pengajuan RAB Dummy
-            AlurPersetujuanSeeder::class,  // 5. Seed histori Alur Persetujuan (Opsional)
-            DummyDataSeeder::class,        // 6. Seed data dummy spesifik lainnya
+            PenggunaSeeder::class,         // 2. Seed Master User
+            UserSeeder::class,             // 3. Seed User Legacy (jika ada)
+            KategoriAnggaranSeeder::class, // 4. Seed Master Kategori Anggaran
+            PengajuanRabSeeder::class,     // 5. Seed 20 baris data Pengajuan RAB Dummy
+            AlurPersetujuanSeeder::class,  // 6. Seed histori Alur Persetujuan (Opsional)
+            DummyDataSeeder::class,        // 7. Seed data dummy spesifik lainnya
         ]);
     }
-
-
-
 }

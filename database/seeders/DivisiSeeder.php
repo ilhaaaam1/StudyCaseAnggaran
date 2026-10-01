@@ -13,8 +13,6 @@ class DivisiSeeder extends Seeder
     public function run(): void
     {
         // PRESENTASI: Dipisah menjadi seeder mandiri sesuai instruksi materi
-    public function run(): void
-    {
         $units = [
             'Kurikulum & Pembelajaran',
             'Kesiswaan & Ekstrakurikuler',
@@ -22,12 +20,6 @@ class DivisiSeeder extends Seeder
             'Tata Usaha & Operasional (TU)',
             'Perpustakaan',
             'UKS (Unit Kesehatan Sekolah)',
-        ];
-
-        foreach ($units as $unitName) {
-            Divisi::updateOrCreate(
-                ['nama_divisi' => $unitName]
-            );
             'Laboratorium',
             'raadhittt',
         ];

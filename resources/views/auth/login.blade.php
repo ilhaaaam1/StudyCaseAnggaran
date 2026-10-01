@@ -219,11 +219,7 @@
         .footer-logo {
             width: 90px;
             height: 90px;
-            border-radius: 50%;
-            overflow: hidden;
             margin-bottom: 15px;
-            background: white;
-            padding: 5px;
         }
 
         .footer-bottom {
