@@ -73,7 +73,7 @@
                 <td class="px-5 py-3.5 text-slate-500 max-w-xs truncate" title="{{ $kategori->deskripsi }}">{{ $kategori->deskripsi ?? '-' }}</td>
                 <td class="px-5 py-3.5 text-right font-mono font-bold text-emerald-600">Rp {{ number_format($kategori->pagu_anggaran, 0, ',', '.') }}</td>
                 <td class="px-5 py-3.5 text-center space-x-2">
-                  <button type="button" @click="openModal = true; editMode = true; formAction = '{{ route('finance.kategori.update', '') }}/{{ $kategori->id }}'; formMethod = 'PUT'; formKategori = '{{ addslashes($kategori->nama_kategori) }}'; formDeskripsi = '{{ addslashes($kategori->deskripsi) }}'; formPagu = '{{ $kategori->pagu_anggaran }}';" 
+                  <button type="button" @click="openModal = true; editMode = true; formAction = '{{ route('finance.kategori.update', $kategori->id) }}'; formMethod = 'PUT'; formKategori = @js($kategori->nama_kategori); formDeskripsi = @js($kategori->deskripsi ?? ''); formPagu = @js($kategori->pagu_anggaran);" 
                           class="text-blue-600 hover:text-blue-800 transition-colors" title="Edit">
                     <i class="fa-solid fa-pen-to-square"></i>
                   </button>

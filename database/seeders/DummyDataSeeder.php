@@ -28,11 +28,17 @@ class DummyDataSeeder extends Seeder
 
         $admin = Pengguna::where('email', 'arif@sirab.local')->first();
         $sari = Pengguna::where('email', 'sari@sirab.local')->first();
-        $budi = Pengguna::where('email', 'aufa@sirab.local')->first();
-        $dina = Pengguna::where('email', 'nanda@sirab.local')->first();
+        $budi = Pengguna::where('email', 'admin@sirab.local')->first()
+            ?? Pengguna::where('email', 'aufa@sirab.local')->first()
+            ?? Pengguna::where('email', 'budi@sirab.local')->first()
+            ?? $sari;
+        $dina = Pengguna::where('email', 'nanda@sirab.local')->first()
+            ?? Pengguna::where('email', 'dina@sirab.local')->first()
+            ?? $sari;
 
         if (! $sari || ! $unitKurikulum) {
             $this->command->warn('Master data pengguna/divisi belum siap. Pastikan Anda menjalankan db:seed dari DatabaseSeeder utama.');
+
             return;
         }
 
