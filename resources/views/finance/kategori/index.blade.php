@@ -58,11 +58,11 @@
         <table class="w-full text-left text-xs border-collapse">
           <thead class="bg-slate-50 text-slate-600 uppercase font-semibold border-b border-slate-200">
             <tr>
-              <th class="px-5 py-3.5 w-10 text-center">#</th>
+              <th class="px-5 py-3.5 w-10 text-center">No</th>
               <th class="px-5 py-3.5">Nama Kategori</th>
               <th class="px-5 py-3.5">Deskripsi</th>
               <th class="px-5 py-3.5 text-right">Pagu Anggaran</th>
-              <th class="px-5 py-3.5 text-center w-32">Aksi</th>
+              <th class="px-5 py-3.5 text-center w-48">Aksi</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-slate-100">
@@ -73,17 +73,25 @@
                 <td class="px-5 py-3.5 text-slate-500 max-w-xs truncate" title="{{ $kategori->deskripsi }}">{{ $kategori->deskripsi ?? '-' }}</td>
                 <td class="px-5 py-3.5 text-right font-mono font-bold text-emerald-600">Rp {{ number_format($kategori->pagu_anggaran, 0, ',', '.') }}</td>
                 <td class="px-5 py-3.5 text-center space-x-2">
-                  <button type="button" @click="openModal = true; editMode = true; formAction = '{{ route('finance.kategori.update', $kategori->id) }}'; formMethod = 'PUT'; formKategori = '{{ addslashes($kategori->nama_kategori) }}'; formDeskripsi = '{{ addslashes($kategori->deskripsi) }}'; formPagu = '{{ $kategori->pagu_anggaran }}';" 
-                          class="text-blue-600 hover:text-blue-800 transition-colors" title="Edit">
-                    <i class="fa-solid fa-pen-to-square"></i>
-                  </button>
-                  <form action="{{ route('finance.kategori.destroy', $kategori->id) }}" method="POST" class="inline-block" onsubmit="return confirm('Apakah Anda yakin ingin menghapus kategori ini?');">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit" class="text-rose-500 hover:text-rose-700 transition-colors" title="Hapus">
-                      <i class="fa-solid fa-trash-can"></i>
+                  <div class="inline-flex items-center justyfy-center gap-2">
+                    <button type="button" 
+                            @click="openModal = true; editMode = true; formAction = '{{ route('finance.kategori.update', $kategori->id) }}'; formMethod = 'PUT'; formKategori = @js($kategori->nama_kategori); formDeskripsi = @js($kategori->deskripsi ?? ''); formPagu = @js($kategori->pagu_anggaran);" 
+                            class="bg-[#2b337c] hover:bg-[#1e255e] text-white px-3 py-1.5 rounded-xl text-xs font-semibold inline-flex items-center gap-1.2 shadow-sm transition-colors cursor-pointer"
+                            title="Edit Kategori">
+                      <i class="fa-solid fa-pen-to-square"></i>
+                      <span>Edit</span>
                     </button>
-                  </form>
+                    <form action="{{ route('finance.kategori.destroy', $kategori->id) }}" method="POST" class="inline-block" onsubmit="return confirm('Apakah Anda yakin ingin menghapus kategori ini?');">
+                      @csrf
+                      @method('DELETE')
+                      <button type="submit" 
+                      class="bg-rose-600 hover:bg-rose-700 text-white px-3 py-1.5 rounded-xl text-xs font-semibold inline-flex items-center gap-1.2 shadow-smtransition-colors cursor-pointer" 
+                      title="Hapus Kategori">
+                        <i class="fa-solid fa-trash-can"></i>
+                        <span>Hapus</span>
+                      </button>
+                    </form>
+                  </div>
                 </td>
               </tr>
             @empty

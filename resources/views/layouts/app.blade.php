@@ -49,10 +49,34 @@
       }
       .table-container::-webkit-scrollbar-thumb {
         background-color: #cbd5e1;
-        '''''''''border-radius: 4px;
+        border-radius: 4px;
       }
       .table-container::-webkit-scrollbar-track {
         background-color: #f1f5f9;
+      }
+      /* Custom sleek scrollbar for sidebar navigation */
+      .sidebar-scroll,
+      #mainSidebar .overflow-y-auto {
+        scrollbar-width: thin;
+        scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+        overscroll-behavior: contain;
+      }
+      .sidebar-scroll::-webkit-scrollbar,
+      #mainSidebar .overflow-y-auto::-webkit-scrollbar {
+        width: 5px;
+      }
+      .sidebar-scroll::-webkit-scrollbar-track,
+      #mainSidebar .overflow-y-auto::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      .sidebar-scroll::-webkit-scrollbar-thumb,
+      #mainSidebar .overflow-y-auto::-webkit-scrollbar-thumb {
+        background-color: rgba(255, 255, 255, 0.18);
+        border-radius: 9999px;
+      }
+      .sidebar-scroll::-webkit-scrollbar-thumb:hover,
+      #mainSidebar .overflow-y-auto::-webkit-scrollbar-thumb:hover {
+        background-color: rgba(255, 255, 255, 0.38);
       }
       input:focus, select:focus, textarea:focus {
         outline: none;
