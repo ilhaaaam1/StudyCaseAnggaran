@@ -4,37 +4,36 @@
      onclick="toggleSidebar()"></div>
 
 <aside id="mainSidebar" 
-       class="fixed md:sticky top-0 left-0 z-50 md:z-30 h-screen w-[260px] bg-[#1e255e] text-white flex flex-col justify-between shrink-0 transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out">
+       class="fixed md:sticky top-0 left-0 z-50 md:z-30 h-screen w-[260px] bg-[#1e255e] text-white flex flex-col justify-between shrink-0 transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out select-none">
   
-  <div class="flex-1 overflow-y-auto">
-    <!-- Sidebar Header / Brand -->
-    <div class="flex items-center gap-3 px-3 py-4 mx-4 mt-2 border-b border-white/10 mb-5">
-      <div class="w-10 h-10 flex items-center justify-center shrink-0">
-        {{-- PRESENTASI: Pemanggilan Logo Instansi Dinamis (White-labeling) --}}
-        {{-- Jika setting app_logo memiliki value, render logo dari storage. Jika kosong, fallback ke logo statis bawaan. --}}
-        @if(\App\Models\Setting::getSetting('app_logo'))
-          <img src="{{ asset('storage/' . \App\Models\Setting::getSetting('app_logo')) }}" alt="Logo Instansi" class="w-full h-full object-contain drop-shadow-sm">
-        @else
-          <img src="{{ asset('images/logo-sdn3.png') }}" alt="Logo Bawaan" class="w-full h-full object-contain drop-shadow-sm">
-        @endif
-      </div>
-      <div>
-        <h1 class="text-base font-bold tracking-wide leading-tight">SIRAB</h1>
-        <p class="text-[10px] text-slate-400 tracking-wide uppercase leading-tight mt-0.5">Sistem Informasi RAB</p>
-      </div>
-      <button type="button" 
-              onclick="toggleSidebar()" 
-              class="md:hidden ml-auto text-white/50 hover:text-white p-1 rounded-lg focus:outline-none cursor-pointer"
-              aria-label="Tutup Sidebar">
-        <i class="fa-solid fa-xmark"></i>
-      </button>
+  <!-- Sidebar Header / Brand (Fixed Header) -->
+  <div class="shrink-0 flex items-center gap-3 px-3 py-4 mx-4 mt-2 border-b border-white/10 mb-2">
+    <div class="w-10 h-10 flex items-center justify-center shrink-0">
+      {{-- PRESENTASI: Pemanggilan Logo Instansi Dinamis (White-labeling) --}}
+      {{-- Jika setting app_logo memiliki value, render logo dari storage. Jika kosong, fallback ke logo statis bawaan. --}}
+      @if(\App\Models\Setting::getSetting('app_logo'))
+        <img src="{{ asset('storage/' . \App\Models\Setting::getSetting('app_logo')) }}" alt="Logo Instansi" class="w-full h-full object-contain drop-shadow-sm">
+      @else
+        <img src="{{ asset('images/logo-sdn3.png') }}" alt="Logo Bawaan" class="w-full h-full object-contain drop-shadow-sm">
+      @endif
     </div>
+    <div>
+      <h1 class="text-base font-bold tracking-wide leading-tight">SIRAB</h1>
+      <p class="text-[10px] text-slate-400 tracking-wide uppercase leading-tight mt-0.5">Sistem Informasi RAB</p>
+    </div>
+    <button type="button" 
+            onclick="toggleSidebar()" 
+            class="md:hidden ml-auto text-white/50 hover:text-white p-1 rounded-lg focus:outline-none cursor-pointer"
+            aria-label="Tutup Sidebar">
+      <i class="fa-solid fa-xmark"></i>
+    </button>
+  </div>
 
-    <!-- Navigation Links -->
-    <div class="px-3.5 pb-6 space-y-1">
-      @php
-        $userRole = Auth::user()?->role;
-      @endphp
+  <!-- Navigation Links (Scrollable middle container) -->
+  <div class="flex-1 overflow-y-auto overflow-x-hidden sidebar-scroll px-3.5 pb-4 space-y-1">
+    @php
+      $userRole = Auth::user()?->role;
+    @endphp
 
       @if($userRole === 'admin_it' || $userRole === 'admin')
         <!-- Admin IT Menu -->
@@ -89,48 +88,48 @@
 
       @if($userRole === 'finance')
         <!-- Finance Menu -->
-        <div class="text-[10px] uppercase text-slate-400 px-2.5 pb-2 tracking-wide font-semibold mt-4 mb-1">
+        <div class="text-[10px] uppercase text-slate-400 px-2.5 pb-2 tracking-wide font-semibold mt-3 mb-1">
           Menu Reviewer Finance
         </div>
-        <a href="{{ route('finance.dashboard') }}" class="flex items-center justify-between px-3 py-2.5 rounded-lg mb-1 text-[13px] font-medium transition-all {{ request()->routeIs('finance.dashboard') ? 'bg-[#2b337c] text-white' : 'text-slate-300 hover:bg-white/5 hover:text-white' }}">
-          <div class="flex items-center gap-3">
-            <i class="fa-solid fa-house w-[18px] text-center text-[15px]"></i>
-            <span>Dashboard Finance</span>
+        <a href="{{ route('finance.dashboard') }}" class="flex items-center justify-between px-3 py-2 rounded-lg mb-1 text-[13px] font-medium transition-all {{ request()->routeIs('finance.dashboard') ? 'bg-[#2b337c] text-white' : 'text-slate-300 hover:bg-white/5 hover:text-white' }}">
+          <div class="flex items-center gap-3 min-w-0">
+            <i class="fa-solid fa-house w-[18px] text-center text-[15px] shrink-0"></i>
+            <span class="truncate">Dashboard Finance</span>
           </div>
         </a>
-        <a href="{{ route('finance.antrean') }}" class="flex items-center justify-between px-3 py-2.5 rounded-lg mb-1 text-[13px] font-medium transition-all {{ request()->routeIs('finance.antrean*') || request()->routeIs('finance.show') ? 'bg-[#2b337c] text-white' : 'text-slate-300 hover:bg-white/5 hover:text-white' }}">
-          <div class="flex items-center gap-3">
-            <i class="fa-solid fa-folder-open w-[18px] text-center text-[15px]"></i>
-            <span>Antrean Verifikasi</span>
+        <a href="{{ route('finance.antrean') }}" class="flex items-center justify-between px-3 py-2 rounded-lg mb-1 text-[13px] font-medium transition-all {{ request()->routeIs('finance.antrean*') || request()->routeIs('finance.show') ? 'bg-[#2b337c] text-white' : 'text-slate-300 hover:bg-white/5 hover:text-white' }}">
+          <div class="flex items-center gap-3 min-w-0">
+            <i class="fa-solid fa-folder-open w-[18px] text-center text-[15px] shrink-0"></i>
+            <span class="truncate">Antrean Verifikasi</span>
           </div>
-          <span class="bg-amber-500 text-white text-[10px] px-1.5 py-0.5 rounded font-semibold tracking-wide">Tahap 1</span>
+          <span class="bg-amber-500 text-white text-[10px] px-1.5 py-0.5 rounded font-semibold tracking-wide shrink-0 ml-1">Tahap 1</span>
         </a>
-        <a href="{{ route('finance.pencairan') }}" class="flex items-center justify-between px-3 py-2.5 rounded-lg mb-1 text-[13px] font-medium transition-all {{ request()->routeIs('finance.pencairan*') ? 'bg-[#2b337c] text-white' : 'text-slate-300 hover:bg-white/5 hover:text-white' }}">
-          <div class="flex items-center gap-3">
-            <i class="fa-solid fa-wallet w-[18px] text-center text-[15px]"></i>
-            <span>Pencairan Dana</span>
+        <a href="{{ route('finance.pencairan') }}" class="flex items-center justify-between px-3 py-2 rounded-lg mb-1 text-[13px] font-medium transition-all {{ request()->routeIs('finance.pencairan*') ? 'bg-[#2b337c] text-white' : 'text-slate-300 hover:bg-white/5 hover:text-white' }}">
+          <div class="flex items-center gap-3 min-w-0">
+            <i class="fa-solid fa-wallet w-[18px] text-center text-[15px] shrink-0"></i>
+            <span class="truncate">Pencairan Dana</span>
           </div>
         </a>
-        <a href="{{ route('finance.riwayat') }}" class="flex items-center justify-between px-3 py-2.5 rounded-lg mb-1 text-[13px] font-medium transition-all {{ request()->routeIs('finance.riwayat') ? 'bg-[#2b337c] text-white' : 'text-slate-300 hover:bg-white/5 hover:text-white' }}">
-          <div class="flex items-center gap-3">
-            <i class="fa-solid fa-clock-rotate-left w-[18px] text-center text-[15px]"></i>
-            <span>Riwayat Review</span>
+        <a href="{{ route('finance.riwayat') }}" class="flex items-center justify-between px-3 py-2 rounded-lg mb-1 text-[13px] font-medium transition-all {{ request()->routeIs('finance.riwayat') ? 'bg-[#2b337c] text-white' : 'text-slate-300 hover:bg-white/5 hover:text-white' }}">
+          <div class="flex items-center gap-3 min-w-0">
+            <i class="fa-solid fa-clock-rotate-left w-[18px] text-center text-[15px] shrink-0"></i>
+            <span class="truncate">Riwayat Review</span>
           </div>
         </a>
 
-        <div class="text-[10px] uppercase text-slate-400 px-2.5 pb-2 tracking-wide font-semibold mt-6 mb-1">
+        <div class="text-[10px] uppercase text-slate-400 px-2.5 pb-2 tracking-wide font-semibold mt-4 mb-1">
           Manajemen Data
         </div>
-        <a href="{{ route('finance.kategori.index') }}" class="flex items-center justify-between px-3 py-2.5 rounded-lg mb-1 text-[13px] font-medium transition-all {{ request()->routeIs('finance.kategori.*') ? 'bg-[#2b337c] text-white' : 'text-slate-300 hover:bg-white/5 hover:text-white' }}">
-          <div class="flex items-center gap-3">
-            <i class="fa-solid fa-layer-group w-[18px] text-center text-[15px]"></i>
-            <span>Master Kategori & Pagu</span>
+        <a href="{{ route('finance.kategori.index') }}" class="flex items-center justify-between px-3 py-2 rounded-lg mb-1 text-[13px] font-medium transition-all {{ request()->routeIs('finance.kategori.*') ? 'bg-[#2b337c] text-white' : 'text-slate-300 hover:bg-white/5 hover:text-white' }}">
+          <div class="flex items-center gap-3 min-w-0">
+            <i class="fa-solid fa-layer-group w-[18px] text-center text-[15px] shrink-0"></i>
+            <span class="truncate">Master Kategori & Pagu</span>
           </div>
         </a>
-        <a href="{{ route('finance.rekapitulasi.index') }}" class="flex items-center justify-between px-3 py-2.5 rounded-lg mb-1 text-[13px] font-medium transition-all {{ request()->routeIs('finance.rekapitulasi.*') ? 'bg-[#2b337c] text-white' : 'text-slate-300 hover:bg-white/5 hover:text-white' }}">
-          <div class="flex items-center gap-3">
-            <i class="fa-solid fa-chart-pie w-[18px] text-center text-[15px]"></i>
-            <span>Rekapitulasi Laporan</span>
+        <a href="{{ route('finance.rekapitulasi.index') }}" class="flex items-center justify-between px-3 py-2 rounded-lg mb-1 text-[13px] font-medium transition-all {{ request()->routeIs('finance.rekapitulasi.*') ? 'bg-[#2b337c] text-white' : 'text-slate-300 hover:bg-white/5 hover:text-white' }}">
+          <div class="flex items-center gap-3 min-w-0">
+            <i class="fa-solid fa-chart-pie w-[18px] text-center text-[15px] shrink-0"></i>
+            <span class="truncate">Rekapitulasi Laporan</span>
           </div>
         </a>
       @endif
@@ -145,92 +144,112 @@
           {{-- PRESENTASI: Penanda visual (Badge) "Delegated" --}}
           {{-- Badge ini dimunculkan agar user (misal Finance) sadar bahwa menu ini adalah menu tambahan dari pimpinan --}}
           @if($userRole !== 'pimpinan')
-            <span class="bg-indigo-600 text-white text-[8px] px-1.5 py-0.5 rounded font-bold uppercase tracking-widest">Delegated</span>
+            <span class="bg-indigo-600 text-white text-[8px] px-1.5 py-0.5 rounded font-bold uppercase tracking-widest shrink-0 ml-1">Delegated</span>
           @endif
         </div>
         
         @if($userRole === 'pimpinan')
-        <a href="{{ route('pimpinan.dashboard') }}" class="flex items-center justify-between px-3 py-2.5 rounded-lg mb-1 text-[13px] font-medium transition-all {{ request()->routeIs('pimpinan.dashboard') ? 'bg-[#2b337c] text-white' : 'text-slate-300 hover:bg-white/5 hover:text-white' }}">
-          <div class="flex items-center gap-3">
-            <i class="fa-solid fa-house w-[18px] text-center text-[15px]"></i>
-            <span>Dashboard Pimpinan</span>
+        <a href="{{ route('pimpinan.dashboard') }}" class="flex items-center justify-between px-3 py-2 rounded-lg mb-1 text-[13px] font-medium transition-all {{ request()->routeIs('pimpinan.dashboard') ? 'bg-[#2b337c] text-white' : 'text-slate-300 hover:bg-white/5 hover:text-white' }}">
+          <div class="flex items-center gap-3 min-w-0">
+            <i class="fa-solid fa-house w-[18px] text-center text-[15px] shrink-0"></i>
+            <span class="truncate">Dashboard Pimpinan</span>
           </div>
         </a>
         @endif
         
-        <a href="{{ route('pimpinan.antrean') }}" class="flex items-center justify-between px-3 py-2.5 rounded-lg mb-1 text-[13px] font-medium transition-all {{ request()->routeIs('pimpinan.antrean*') || request()->routeIs('pimpinan.show') ? 'bg-[#2b337c] text-white' : 'text-slate-300 hover:bg-white/5 hover:text-white' }}">
-          <div class="flex items-center gap-3">
-            <i class="fa-solid fa-folder-open w-[18px] text-center text-[15px]"></i>
-            <span>Antrean Persetujuan</span>
+        <a href="{{ route('pimpinan.antrean') }}" class="flex items-center justify-between px-3 py-2 rounded-lg mb-1 text-[13px] font-medium transition-all {{ request()->routeIs('pimpinan.antrean*') || request()->routeIs('pimpinan.show') ? 'bg-[#2b337c] text-white' : 'text-slate-300 hover:bg-white/5 hover:text-white' }}">
+          <div class="flex items-center gap-3 min-w-0">
+            <i class="fa-solid fa-folder-open w-[18px] text-center text-[15px] shrink-0"></i>
+            <span class="truncate">Antrean Persetujuan</span>
           </div>
           @if($userRole !== 'pimpinan')
-            <span class="bg-indigo-500 text-white text-[10px] px-1.5 py-0.5 rounded font-semibold tracking-wide">Delegated</span>
+            <span class="bg-indigo-500 text-white text-[10px] px-1.5 py-0.5 rounded font-semibold tracking-wide shrink-0 ml-1">Delegated</span>
           @else
-            <span class="bg-blue-500 text-white text-[10px] px-1.5 py-0.5 rounded font-semibold tracking-wide">Tahap 2</span>
+            <span class="bg-blue-500 text-white text-[10px] px-1.5 py-0.5 rounded font-semibold tracking-wide shrink-0 ml-1">Tahap 2</span>
           @endif
         </a>
         
         @if($userRole === 'pimpinan')
-        <a href="{{ route('pimpinan.riwayat') }}" class="flex items-center justify-between px-3 py-2.5 rounded-lg mb-1 text-[13px] font-medium transition-all {{ request()->routeIs('pimpinan.riwayat') ? 'bg-[#2b337c] text-white' : 'text-slate-300 hover:bg-white/5 hover:text-white' }}">
-          <div class="flex items-center gap-3">
-            <i class="fa-solid fa-clock-rotate-left w-[18px] text-center text-[15px]"></i>
-            <span>Riwayat Final</span>
+        <a href="{{ route('pimpinan.riwayat') }}" class="flex items-center justify-between px-3 py-2 rounded-lg mb-1 text-[13px] font-medium transition-all {{ request()->routeIs('pimpinan.riwayat') ? 'bg-[#2b337c] text-white' : 'text-slate-300 hover:bg-white/5 hover:text-white' }}">
+          <div class="flex items-center gap-3 min-w-0">
+            <i class="fa-solid fa-clock-rotate-left w-[18px] text-center text-[15px] shrink-0"></i>
+            <span class="truncate">Riwayat Final</span>
           </div>
         </a>
-        <a href="{{ route('pimpinan.statistik.index') }}" class="flex items-center justify-between px-3 py-2.5 rounded-lg mb-1 text-[13px] font-medium transition-all {{ request()->routeIs('pimpinan.statistik.*') ? 'bg-[#2b337c] text-white' : 'text-slate-300 hover:bg-white/5 hover:text-white' }}">
-          <div class="flex items-center gap-3">
-            <i class="fa-solid fa-chart-line w-[18px] text-center text-[15px]"></i>
-            <span>Statistik Anggaran</span>
+        <a href="{{ route('pimpinan.statistik.index') }}" class="flex items-center justify-between px-3 py-2 rounded-lg mb-1 text-[13px] font-medium transition-all {{ request()->routeIs('pimpinan.statistik.*') ? 'bg-[#2b337c] text-white' : 'text-slate-300 hover:bg-white/5 hover:text-white' }}">
+          <div class="flex items-center gap-3 min-w-0">
+            <i class="fa-solid fa-chart-line w-[18px] text-center text-[15px] shrink-0"></i>
+            <span class="truncate">Statistik Anggaran</span>
           </div>
         </a>
-        <a href="{{ route('pimpinan.delegasi.index') }}" class="flex items-center justify-between px-3 py-2.5 rounded-lg mb-1 text-[13px] font-medium transition-all {{ request()->routeIs('pimpinan.delegasi.*') ? 'bg-[#2b337c] text-white' : 'text-slate-300 hover:bg-white/5 hover:text-white' }}">
-          <div class="flex items-center gap-3">
-            <i class="fa-solid fa-user-shield w-[18px] text-center text-[15px]"></i>
-            <span>Delegasi Wewenang</span>
+        <a href="{{ route('pimpinan.delegasi.index') }}" class="flex items-center justify-between px-3 py-2 rounded-lg mb-1 text-[13px] font-medium transition-all {{ request()->routeIs('pimpinan.delegasi.*') ? 'bg-[#2b337c] text-white' : 'text-slate-300 hover:bg-white/5 hover:text-white' }}">
+          <div class="flex items-center gap-3 min-w-0">
+            <i class="fa-solid fa-user-shield w-[18px] text-center text-[15px] shrink-0"></i>
+            <span class="truncate">Delegasi Wewenang</span>
           </div>
         </a>
         @endif
       @endif
 
       @if(in_array($userRole, ['staff', 'user']))
+        @php
+          $draftCount = \App\Models\PengajuanRab::where('id_pengguna', Auth::id())
+            ->where(function ($query) {
+              $query->where('status', \App\Enums\StatusPengajuan::DRAFT)
+                ->orWhere('status', 'draft');
+            })
+            ->count();
+        @endphp
         <!-- Staff Menu -->
         <div class="text-[10px] uppercase text-slate-400 px-2.5 pb-2 tracking-wide font-semibold mt-4 mb-1">
           Menu Pemohon / Staf
         </div>
         <a href="{{ route('staff.dashboard') }}" class="flex items-center justify-between px-3 py-2.5 rounded-lg mb-1 text-[13px] font-medium transition-all {{ request()->routeIs('staff.dashboard') || request()->routeIs('user.dashboard') ? 'bg-[#2b337c] text-white' : 'text-slate-300 hover:bg-white/5 hover:text-white' }}">
-          <div class="flex items-center gap-3">
-            <i class="fa-solid fa-house w-[18px] text-center text-[15px]"></i>
-            <span>Dashboard Staf</span>
+          <div class="flex items-center gap-3 min-w-0">
+            <i class="fa-solid fa-house w-[18px] text-center text-[15px] shrink-0"></i>
+            <span class="truncate">Dashboard Staf</span>
           </div>
         </a>
         
-        {{-- PRESENTASI: Penyembunyian Menu Navigasi (Frontend) --}}
+        {{-- PRESENTASI: Menu Utama / CTA Staf (Buat Pengajuan RAB) --}}
         {{-- Tombol 'Buat Pengajuan RAB' hanya dirender jika sistem tidak dalam mode pemeliharaan --}}
         @if(\App\Models\Setting::getSetting('maintenance_mode', '0') != '1')
-          <a href="{{ route('staff.rab.create') }}" class="flex items-center justify-between px-3 py-2.5 rounded-lg mb-1 text-[13px] font-medium transition-all {{ request()->routeIs('staff.rab.create') || request()->routeIs('user.rab.create') ? 'bg-[#2b337c] text-white' : 'text-slate-300 hover:bg-white/5 hover:text-white' }}">
-            <div class="flex items-center gap-3">
-              <i class="fa-solid fa-file-circle-plus w-[18px] text-center text-[15px]"></i>
-              <span>Buat Pengajuan RAB</span>
+          @php
+            $isCreateRabActive = request()->routeIs('staff.rab.create') || request()->routeIs('user.rab.create');
+          @endphp
+          <a href="{{ route('staff.rab.create') }}" 
+             class="group flex items-center justify-between px-3 py-2.5 rounded-lg mb-1 text-[13px] font-medium transition-all {{ $isCreateRabActive ? 'bg-emerald-600/30 border border-emerald-500/40 text-white shadow-sm' : 'border border-emerald-500/20 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-200 hover:text-white' }}">
+            <div class="flex items-center gap-3 min-w-0">
+              <i class="fa-solid fa-file-circle-plus w-[18px] text-center text-[15px] shrink-0 text-emerald-400 transition-colors group-hover:text-emerald-300"></i>
+              <span class="truncate font-semibold">Buat Pengajuan RAB</span>
             </div>
+            <span class="ml-auto shrink-0 {{ $isCreateRabActive ? 'bg-emerald-500 text-white shadow-sm' : 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' }} text-[10px] font-bold px-1.5 py-0.5 rounded tracking-wide">
+              + Baru
+            </span>
           </a>
         @endif
 
         <a href="{{ route('staff.riwayat') }}" class="flex items-center justify-between px-3 py-2.5 rounded-lg mb-1 text-[13px] font-medium transition-all {{ request()->routeIs('staff.riwayat') || request()->routeIs('user.laporan') ? 'bg-[#2b337c] text-white' : 'text-slate-300 hover:bg-white/5 hover:text-white' }}">
-          <div class="flex items-center gap-3">
-            <i class="fa-solid fa-folder-open w-[18px] text-center text-[15px]"></i>
-            <span>Riwayat Pengajuan</span>
+          <div class="flex items-center gap-3 min-w-0">
+            <i class="fa-solid fa-folder-open w-[18px] text-center text-[15px] shrink-0"></i>
+            <span class="truncate">Riwayat Pengajuan</span>
           </div>
         </a>
         <a href="{{ route('staff.draft') }}" class="flex items-center justify-between px-3 py-2.5 rounded-lg mb-1 text-[13px] font-medium transition-all {{ request()->routeIs('staff.draft') ? 'bg-[#2b337c] text-white' : 'text-slate-300 hover:bg-white/5 hover:text-white' }}">
-          <div class="flex items-center gap-3">
-            <i class="fa-solid fa-file-lines w-[18px] text-center text-[15px]"></i>
-            <span>Draft Pengajuan</span>
+          <div class="flex items-center gap-3 min-w-0">
+            <i class="fa-solid fa-file-lines w-[18px] text-center text-[15px] shrink-0"></i>
+            <span class="truncate">Draft Pengajuan</span>
           </div>
+          @if($draftCount > 0)
+            <span class="ml-auto shrink-0 {{ request()->routeIs('staff.draft') ? 'bg-amber-400 text-slate-950 font-bold' : 'bg-amber-500/20 text-amber-300 border border-amber-500/30 font-bold' }} text-[10px] px-2 py-0.5 rounded-full">
+              {{ $draftCount }}
+            </span>
+          @endif
         </a>
         <a href="{{ route('staff.panduan') }}" class="flex items-center justify-between px-3 py-2.5 rounded-lg mb-1 text-[13px] font-medium transition-all {{ request()->routeIs('staff.panduan') ? 'bg-[#2b337c] text-white' : 'text-slate-300 hover:bg-white/5 hover:text-white' }}">
-          <div class="flex items-center gap-3">
-            <i class="fa-solid fa-book-open w-[18px] text-center text-[15px]"></i>
-            <span>Panduan / SOP</span>
+          <div class="flex items-center gap-3 min-w-0">
+            <i class="fa-solid fa-book-open w-[18px] text-center text-[15px] shrink-0"></i>
+            <span class="truncate">Panduan / SOP</span>
           </div>
         </a>
       @endif
@@ -241,18 +260,17 @@
         <div class="text-[10px] uppercase text-slate-400 px-2.5 pb-2 tracking-wide font-semibold mt-4 mb-1">
           Pengaturan
         </div>
-        <a href="{{ route('profile.edit') }}" class="flex items-center justify-between px-3 py-2.5 rounded-lg mb-1 text-[13px] font-medium transition-all {{ request()->routeIs('profile.edit') ? 'bg-[#2b337c] text-white' : 'text-slate-300 hover:bg-white/5 hover:text-white' }}">
-          <div class="flex items-center gap-3">
-            <i class="fa-solid fa-user-gear w-[18px] text-center text-[15px]"></i>
-            <span>Pengaturan Akun</span>
+        <a href="{{ route('profile.edit') }}" class="flex items-center justify-between px-3 py-2 rounded-lg mb-1 text-[13px] font-medium transition-all {{ request()->routeIs('profile.edit') ? 'bg-[#2b337c] text-white' : 'text-slate-300 hover:bg-white/5 hover:text-white' }}">
+          <div class="flex items-center gap-3 min-w-0">
+            <i class="fa-solid fa-user-gear w-[18px] text-center text-[15px] shrink-0"></i>
+            <span class="truncate">Pengaturan Akun</span>
           </div>
         </a>
       @endif
 
-    </div>
   </div>
   <!-- Sidebar Footer: Profile Info & Logout -->
-  <div class="p-4 m-3 bg-black/20 rounded-xl flex items-center justify-between">
+  <div class="shrink-0 p-3.5 m-3 bg-black/20 rounded-xl flex items-center justify-between">
     <div class="flex items-center gap-3 min-w-0">
       <div class="w-9 h-9 rounded-full bg-blue-500 text-white font-semibold text-[13px] flex items-center justify-center shrink-0 overflow-hidden">
         @if(Auth::user()->foto_profil)
