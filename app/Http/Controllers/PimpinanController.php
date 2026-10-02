@@ -353,8 +353,10 @@ class PimpinanController extends Controller
             ->orderBy('created_at', 'desc')
             ->get();
 
-        // Ambil semua pengguna selain diri sendiri untuk dropdown
-        $users = Pengguna::where('id_pengguna', '!=', Auth::id())->get();
+        // Ambil pengguna dengan role finance selain diri sendiri untuk dropdown
+        $users = Pengguna::where('id_pengguna', '!=', Auth::id())
+            ->where('role', 'finance')
+            ->get();
 
         return view('pimpinan.delegasi', compact('delegations', 'users'));
     }
