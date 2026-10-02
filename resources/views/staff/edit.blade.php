@@ -394,7 +394,7 @@
                 <li class="flex items-center justify-between text-xs text-indigo-700 bg-indigo-50 px-3 py-2 rounded-xl border border-indigo-100">
                   <div class="flex items-center gap-2">
                     <i class="fa-solid fa-file-pdf text-rose-500 text-sm"></i>
-                    <a href="{{ asset('storage/' . $doc->path_file) }}" target="_blank" class="hover:underline font-medium">
+                    <a href="{{ route('dokumen.preview', $doc->id_dokumen) }}" target="_blank" class="hover:underline font-medium">
                       {{ $doc->nama_file }}
                     </a>
                   </div>
