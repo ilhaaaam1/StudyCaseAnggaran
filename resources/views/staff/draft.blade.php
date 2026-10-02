@@ -46,14 +46,14 @@
     </div>
 
     <div class="overflow-x-auto">
-      <table class="w-full text-left text-xs border-collapse">
+      <table class="w-full min-w-[800px] text-left text-xs border-collapse">
         <thead class="bg-slate-50/70 text-slate-400 uppercase font-semibold text-[11px] tracking-wider border-b border-slate-200/80">
           <tr>
-            <th class="px-5 py-3.5">No. Urut</th>
-            <th class="px-5 py-3.5">Judul Pengajuan</th>
-            <th class="px-5 py-3.5">Unit Kerja</th>
-            <th class="px-5 py-3.5 text-right">Estimasi Sementara</th>
-            <th class="px-5 py-3.5 text-center">Tanggal Dibuat</th>
+            <th class="px-5 py-3.5 whitespace-nowrap">No. Urut</th>
+            <th class="px-5 py-3.5 whitespace-nowrap">Judul Pengajuan</th>
+            <th class="px-5 py-3.5 whitespace-nowrap">Unit Kerja</th>
+            <th class="px-5 py-3.5 text-right whitespace-nowrap">Estimasi Sementara</th>
+            <th class="px-5 py-3.5 text-center whitespace-nowrap">Tanggal Dibuat</th>
             <th class="px-4 py-3.5 text-center whitespace-nowrap">Aksi</th>
           </tr>
         </thead>

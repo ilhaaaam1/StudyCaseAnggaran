@@ -23,11 +23,27 @@ class PengajuanRABController extends Controller
      */
     public function index(Request $request): View
     {
-        $pengajuanList = PengajuanRab::with(['pengguna', 'divisi', 'rincianItem'])
-            ->latest('tanggal_pengajuan')
-            ->paginate(10);
+        $statusFilter = $request->query('status');
+        $search = $request->query('q');
 
-        return view('pengajuan.index', compact('pengajuanList'));
+        $query = PengajuanRab::with(['pengguna', 'divisi', 'rincianItem']);
+
+        if ($statusFilter && $statusFilter !== 'semua') {
+            $query->where('status', $statusFilter);
+        }
+
+        if ($search) {
+            $query->where(function ($q) use ($search): void {
+                $q->where('no_rab', 'like', "%{$search}%")
+                    ->orWhere('judul_pengajuan', 'like', "%{$search}%");
+            });
+        }
+
+        $pengajuanList = $query->latest('tanggal_pengajuan')
+            ->paginate(10)
+            ->withQueryString();
+
+        return view('pengajuan.index', compact('pengajuanList', 'statusFilter', 'search'));
     }
 
     /**

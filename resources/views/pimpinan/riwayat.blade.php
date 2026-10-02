@@ -23,47 +23,92 @@
   </div>
 
   <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-    <div class="p-4 border-b border-slate-100 flex flex-wrap items-center gap-2">
-      <a href="{{ route('pimpinan.riwayat') }}" class="px-3 py-1.5 rounded-lg text-xs font-semibold {{ empty($statusFilter) ? 'bg-slate-800 text-white' : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50' }}">Semua</a>
-      <a href="{{ route('pimpinan.riwayat', ['status' => \App\Enums\StatusPengajuan::PROSES_PENCAIRAN]) }}" class="px-3 py-1.5 rounded-lg text-xs font-semibold {{ $statusFilter === \App\Enums\StatusPengajuan::PROSES_PENCAIRAN ? 'bg-indigo-600 text-white' : 'bg-indigo-50 text-indigo-800' }}">Pencairan</a>
-      <a href="{{ route('pimpinan.riwayat', ['status' => \App\Enums\StatusPengajuan::SELESAI]) }}" class="px-3 py-1.5 rounded-lg text-xs font-semibold {{ $statusFilter === \App\Enums\StatusPengajuan::SELESAI ? 'bg-emerald-600 text-white' : 'bg-emerald-50 text-emerald-800' }}">Selesai</a>
-      <a href="{{ route('pimpinan.riwayat', ['status' => \App\Enums\StatusPengajuan::DITOLAK]) }}" class="px-3 py-1.5 rounded-lg text-xs font-semibold {{ $statusFilter === \App\Enums\StatusPengajuan::DITOLAK ? 'bg-rose-600 text-white' : 'bg-rose-50 text-rose-800' }}">Ditolak</a>
+    <!-- Quick Filter Tabs -->
+    <div class="p-3.5 border-b border-slate-100 bg-slate-50/50 flex flex-wrap items-center gap-1.5">
+      @php
+        $isSemua = empty($statusFilter) || $statusFilter === 'semua';
+      @endphp
+      <a href="{{ route('pimpinan.riwayat', array_merge(request()->except(['status', 'page']), ['status' => ''])) }}" 
+         class="px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors {{ $isSemua ? 'bg-slate-900 text-white shadow-xs' : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50' }}">
+        Semua
+      </a>
+
+      @php
+        $isPencairan = $statusFilter === \App\Enums\StatusPengajuan::PROSES_PENCAIRAN->value;
+      @endphp
+      <a href="{{ route('pimpinan.riwayat', array_merge(request()->except(['status', 'page']), ['status' => \App\Enums\StatusPengajuan::PROSES_PENCAIRAN->value])) }}" 
+         class="px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors flex items-center gap-1.5 {{ $isPencairan ? 'bg-indigo-600 text-white shadow-xs' : 'bg-white border border-slate-200 text-slate-600 hover:bg-indigo-50/60 hover:text-indigo-700' }}">
+        <span class="w-1.5 h-1.5 rounded-full {{ $isPencairan ? 'bg-white' : 'bg-indigo-500' }}"></span>
+        <span>Pencairan</span>
+      </a>
+
+      @php
+        $isSelesai = $statusFilter === \App\Enums\StatusPengajuan::SELESAI->value;
+      @endphp
+      <a href="{{ route('pimpinan.riwayat', array_merge(request()->except(['status', 'page']), ['status' => \App\Enums\StatusPengajuan::SELESAI->value])) }}" 
+         class="px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors flex items-center gap-1.5 {{ $isSelesai ? 'bg-emerald-600 text-white shadow-xs' : 'bg-white border border-slate-200 text-slate-600 hover:bg-emerald-50/60 hover:text-emerald-700' }}">
+        <span class="w-1.5 h-1.5 rounded-full {{ $isSelesai ? 'bg-white' : 'bg-emerald-500' }}"></span>
+        <span>Selesai</span>
+      </a>
+
+      @php
+        $isDitolak = $statusFilter === \App\Enums\StatusPengajuan::DITOLAK->value;
+      @endphp
+      <a href="{{ route('pimpinan.riwayat', array_merge(request()->except(['status', 'page']), ['status' => \App\Enums\StatusPengajuan::DITOLAK->value])) }}" 
+         class="px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors flex items-center gap-1.5 {{ $isDitolak ? 'bg-rose-600 text-white shadow-xs' : 'bg-white border border-slate-200 text-slate-600 hover:bg-rose-50/60 hover:text-rose-700' }}">
+        <span class="w-1.5 h-1.5 rounded-full {{ $isDitolak ? 'bg-white' : 'bg-rose-500' }}"></span>
+        <span>Ditolak</span>
+      </a>
     </div>
 
+    <!-- Responsive Table Container -->
     <div class="overflow-x-auto">
-      <table class="w-full text-left text-xs border-collapse">
+      <table class="w-full min-w-[800px] text-left text-xs border-collapse">
         <thead class="bg-slate-50 text-slate-600 uppercase font-semibold border-b border-slate-200">
           <tr>
-            <th class="px-5 py-3.5">No. RAB</th>
-            <th class="px-5 py-3.5">Pemohon</th>
-            <th class="px-5 py-3.5">Judul Pengajuan</th>
-            <th class="px-5 py-3.5 text-right">Estimasi Biaya</th>
-            <th class="px-5 py-3.5 text-center">Status Akhir</th>
-            <th class="px-5 py-3.5 text-center">Aksi</th>
+            <th class="px-5 py-3.5 whitespace-nowrap">No. RAB</th>
+            <th class="px-5 py-3.5 whitespace-nowrap">Pemohon &amp; Divisi</th>
+            <th class="px-5 py-3.5 whitespace-nowrap">Judul Pengajuan</th>
+            <th class="px-5 py-3.5 text-right whitespace-nowrap">Estimasi Biaya</th>
+            <th class="px-5 py-3.5 text-center whitespace-nowrap">Status Akhir</th>
+            <th class="px-5 py-3.5 text-center whitespace-nowrap">Aksi</th>
           </tr>
         </thead>
         <tbody class="divide-y divide-slate-100">
           @forelse($pengajuanList ?? [] as $item)
-            <tr class="hover:bg-slate-50">
-              <td class="px-5 py-3.5 font-mono font-bold text-indigo-700">{{ $item->no_rab }}</td>
-              <td class="px-5 py-3.5 text-slate-800 font-medium">{{ $item->pengguna->nama_lengkap ?? 'Staf' }}</td>
-              <td class="px-5 py-3.5 text-slate-800">{{ $item->judul_pengajuan }}</td>
-              <td class="px-5 py-3.5 text-right font-mono font-bold text-slate-900">Rp {{ number_format((float) $item->estimasi_total, 0, ',', '.') }}</td>
-              <td class="px-5 py-3.5 text-center">
+            <tr class="hover:bg-slate-50 transition-colors">
+              <td class="px-5 py-3.5 font-mono font-bold text-indigo-700 whitespace-nowrap">{{ $item->no_rab }}</td>
+              <td class="px-5 py-3.5 whitespace-nowrap">
+                <div class="font-semibold text-slate-800">{{ $item->pengguna->nama_lengkap ?? 'Staf' }}</div>
+                <div class="text-[10px] text-slate-500 font-medium">{{ $item->divisi->nama_divisi ?? '-' }}</div>
+              </td>
+              <td class="px-5 py-3.5 text-slate-800 max-w-xs md:max-w-sm">
+                <div class="font-medium text-slate-900 truncate" title="{{ $item->judul_pengajuan }}">{{ $item->judul_pengajuan }}</div>
+                <div class="text-[10px] text-slate-400 mt-0.5 whitespace-nowrap">
+                  {{ $item->tanggal_pengajuan ? $item->tanggal_pengajuan->format('d M Y') : '-' }}
+                </div>
+              </td>
+              <td class="px-5 py-3.5 text-right font-mono font-bold text-slate-900 whitespace-nowrap tabular-nums">
+                Rp {{ number_format((float) $item->estimasi_total, 0, ',', '.') }}
+              </td>
+              <td class="px-5 py-3.5 text-center whitespace-nowrap">
                 <span class="inline-block whitespace-nowrap px-2.5 py-1 rounded-full text-[10px] font-bold 
                   {{ $item->status === \App\Enums\StatusPengajuan::SELESAI || $item->status === \App\Enums\StatusPengajuan::PROSES_PENCAIRAN ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800' }}">
                   {{ $item->status }}
                 </span>
               </td>
-              <td class="px-5 py-3.5 text-center">
-                <a href="{{ route('pimpinan.show', $item->id_pengajuan) }}" class="px-3 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-semibold">
-                  Detail
+              <td class="px-5 py-3.5 text-center whitespace-nowrap">
+                <a href="{{ route('pimpinan.show', $item->id_pengajuan) }}" 
+                   class="inline-flex items-center gap-1 px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-semibold transition-colors shrink-0"
+                   title="Lihat Detail & Keputusan">
+                  <i class="fa-regular fa-eye text-[11px]"></i>
+                  <span>Detail</span>
                 </a>
               </td>
             </tr>
           @empty
             <tr>
-              <td colspan="6" class="px-5 py-8 text-center text-slate-400">Belum ada pengajuan berstatus final.</td>
+              <td colspan="6" class="px-5 py-8 text-center text-slate-400">Belum ada pengajuan yang cocok dengan filter ini.</td>
             </tr>
           @endforelse
         </tbody>
