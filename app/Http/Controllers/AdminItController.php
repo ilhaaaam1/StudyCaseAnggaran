@@ -176,7 +176,7 @@ class AdminItController extends Controller
     {
         $user = Pengguna::findOrFail($id);
         $nama = $user->nama_lengkap;
-        
+
         $user->delete();
 
         ActivityLog::log("Menghapus pengguna: {$nama}.");

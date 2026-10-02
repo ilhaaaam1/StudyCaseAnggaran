@@ -8,10 +8,13 @@ use App\Enums\StatusPengajuan;
 use App\Models\ActivityLog;
 use App\Models\AlurPersetujuan;
 use App\Models\PengajuanRab;
+use App\Models\Pengguna;
+use App\Notifications\RabStatusUpdated;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\View\View;
 
 class FinanceController extends Controller
@@ -22,7 +25,7 @@ class FinanceController extends Controller
     public function index(Request $request): View
     {
         // PRESENTASI: Contoh penerapan SQL Builder / Agregat
-        // Menggunakan SQL Agregat (SUM, CASE, COALESCE) untuk kalkulasi 
+        // Menggunakan SQL Agregat (SUM, CASE, COALESCE) untuk kalkulasi
         // statistik dashboard yang cepat dan efisien langsung di level database.
         $stats = PengajuanRab::selectRaw('
                 SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) as total_antrean_pending,
@@ -239,9 +242,9 @@ class FinanceController extends Controller
 
         // PRESENTASI: Logika Trigger Pengiriman Notifikasi (Finance -> Staff/Pimpinan)
         $pengajuanRef = PengajuanRab::with('pengguna')->find($id);
-        
+
         // Notify Staff
-        $pengajuanRef->pengguna->notify(new \App\Notifications\RabStatusUpdated(
+        $pengajuanRef->pengguna->notify(new RabStatusUpdated(
             $pengajuanRef,
             "RAB {$pengajuanRef->no_rab} telah diproses oleh Finance dengan status: {$validated['status_decision']}.",
             route('staff.rab.show', $pengajuanRef->id_pengajuan)
@@ -249,8 +252,8 @@ class FinanceController extends Controller
 
         // Notify Pimpinan if ACC
         if ($validated['status_decision'] === 'ACC') {
-            $pimpinanUsers = \App\Models\Pengguna::where('role', 'pimpinan')->get();
-            \Illuminate\Support\Facades\Notification::send($pimpinanUsers, new \App\Notifications\RabStatusUpdated(
+            $pimpinanUsers = Pengguna::where('role', 'pimpinan')->get();
+            Notification::send($pimpinanUsers, new RabStatusUpdated(
                 $pengajuanRef,
                 "RAB {$pengajuanRef->no_rab} menunggu persetujuan Final Anda.",
                 route('pimpinan.show', $pengajuanRef->id_pengajuan)

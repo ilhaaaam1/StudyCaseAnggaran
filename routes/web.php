@@ -7,12 +7,12 @@ use App\Http\Controllers\AdminRabController;
 use App\Http\Controllers\AdminUserController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\FinanceController;
+use App\Http\Controllers\PengajuanRABController;
 use App\Http\Controllers\PimpinanController;
 use App\Http\Controllers\StaffRabController;
 use App\Http\Controllers\UserRabController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\PengajuanRABController;
 
 /*
 |--------------------------------------------------------------------------
@@ -81,13 +81,13 @@ Route::middleware(['auth', 'role:finance'])->prefix('finance')->name('finance.')
     Route::get('/riwayat', [FinanceController::class, 'riwayat'])->name('riwayat');
 
     // New placeholder routes
-    Route::get('/kategori-pagu', [App\Http\Controllers\KategoriAnggaranController::class, 'index'])->name('kategori.index');
-    Route::post('/kategori-pagu', [App\Http\Controllers\KategoriAnggaranController::class, 'store'])->name('kategori.store');
-    Route::put('/kategori-pagu/{id}', [App\Http\Controllers\KategoriAnggaranController::class, 'update'])->name('kategori.update');
-    Route::delete('/kategori-pagu/{id}', [App\Http\Controllers\KategoriAnggaranController::class, 'destroy'])->name('kategori.destroy');
-    Route::get('/rekapitulasi', [App\Http\Controllers\RekapitulasiController::class, 'index'])->name('rekapitulasi.index');
-    Route::get('/rekapitulasi/pdf', [App\Http\Controllers\RekapitulasiController::class, 'exportPdf'])->name('rekapitulasi.pdf');
-    Route::get('/rekapitulasi/excel', [App\Http\Controllers\RekapitulasiController::class, 'exportExcel'])->name('rekapitulasi.excel');
+    Route::get('/kategori-pagu', [KategoriAnggaranController::class, 'index'])->name('kategori.index');
+    Route::post('/kategori-pagu', [KategoriAnggaranController::class, 'store'])->name('kategori.store');
+    Route::put('/kategori-pagu/{id}', [KategoriAnggaranController::class, 'update'])->name('kategori.update');
+    Route::delete('/kategori-pagu/{id}', [KategoriAnggaranController::class, 'destroy'])->name('kategori.destroy');
+    Route::get('/rekapitulasi', [RekapitulasiController::class, 'index'])->name('rekapitulasi.index');
+    Route::get('/rekapitulasi/pdf', [RekapitulasiController::class, 'exportPdf'])->name('rekapitulasi.pdf');
+    Route::get('/rekapitulasi/excel', [RekapitulasiController::class, 'exportExcel'])->name('rekapitulasi.excel');
 });
 
 // -------------------------------------------------------------------------
@@ -139,16 +139,16 @@ Route::middleware(['auth', 'role:admin_it,admin'])->prefix('admin-it')->name('ad
 Route::middleware('auth')->group(function (): void {
     Route::get('/dokumen/{id}/preview', [AdminRabController::class, 'previewDokumen'])->name('dokumen.preview');
     Route::get('/dokumen/{id}/download', [AdminRabController::class, 'downloadDokumen'])->name('dokumen.download');
-    
+
     // PRESENTASI: Route Pengaturan Akun
     // Menambahkan route profile yang diakses oleh semua role dengan middleware auth
-    Route::get('/profile', [App\Http\Controllers\ProfileController::class, 'edit'])->name('profile.edit');
-    Route::put('/profile', [App\Http\Controllers\ProfileController::class, 'updateProfile'])->name('profile.update');
-    Route::delete('/profile/photo', [App\Http\Controllers\ProfileController::class, 'deletePhoto'])->name('profile.photo.destroy');
-    Route::put('/profile/password', [App\Http\Controllers\ProfileController::class, 'updatePassword'])->name('profile.password.update');
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('/profile', [ProfileController::class, 'updateProfile'])->name('profile.update');
+    Route::delete('/profile/photo', [ProfileController::class, 'deletePhoto'])->name('profile.photo.destroy');
+    Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password.update');
 
     // Route Notifikasi
-    Route::get('/notifications/{id}/read', [App\Http\Controllers\NotificationController::class, 'read'])->name('notifications.read');
+    Route::get('/notifications/{id}/read', [NotificationController::class, 'read'])->name('notifications.read');
 });
 
 // -------------------------------------------------------------------------
@@ -181,6 +181,10 @@ Route::middleware(['auth', 'role:staff,user'])->prefix('user')->name('user.')->g
 // -------------------------------------------------------------------------
 // CONTOH TUGAS: Eloquent ORM & Query Builder
 // -------------------------------------------------------------------------
+use App\Http\Controllers\KategoriAnggaranController;
+use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\RekapitulasiController;
 use App\Models\Pengguna;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -241,9 +245,6 @@ Route::post('/tugas/tambah-divisi', function (Request $request) {
 
     return back()->with('sukses', 'Divisi baru berhasil ditambahkan ke database!');
 })->name('uji.divisi.store');
-
-
-
 
 // Rute untuk fitur Pengajuan RAB
 Route::get('/pengajuan', [PengajuanRABController::class, 'index'])->name('pengajuan.index');

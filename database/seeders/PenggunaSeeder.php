@@ -24,7 +24,7 @@ class PenggunaSeeder extends Seeder
         // Password default: 'password'
         $defaultPassword = Hash::make('password');
 
-        if (!$unitTU || !$unitKurikulum || !$unitSarpras || !$unitKesiswaan) {
+        if (! $unitTU || ! $unitKurikulum || ! $unitSarpras || ! $unitKesiswaan) {
             return; // Kembalikan jika divisi tidak lengkap
         }
 

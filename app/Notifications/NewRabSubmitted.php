@@ -3,8 +3,6 @@
 namespace App\Notifications;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
 class NewRabSubmitted extends Notification
@@ -40,10 +38,10 @@ class NewRabSubmitted extends Notification
     public function toArray(object $notifiable): array
     {
         $this->pengajuanRab->loadMissing('pengguna');
-        
+
         $noRab = $this->pengajuanRab->no_rab;
         $judul = $this->pengajuanRab->judul_pengajuan;
-        $nominal = 'Rp ' . number_format((float) $this->pengajuanRab->estimasi_total, 0, ',', '.');
+        $nominal = 'Rp '.number_format((float) $this->pengajuanRab->estimasi_total, 0, ',', '.');
         $pemohon = $this->pengajuanRab->pengguna->nama_lengkap ?? 'Staf';
 
         // PRESENTASI: Format data notifikasi yang lebih spesifik dan informatif (Perbaikan atribut judul_pengajuan)
@@ -51,7 +49,7 @@ class NewRabSubmitted extends Notification
             'title' => 'Pengajuan RAB Baru',
             'message' => "RAB {$noRab} ({$judul}) senilai {$nominal} telah diajukan oleh {$pemohon} dan menunggu proses verifikasi Anda.",
             'url' => route('finance.show', $this->pengajuanRab->id_pengajuan),
-            'id_pengajuan' => $this->pengajuanRab->id_pengajuan
+            'id_pengajuan' => $this->pengajuanRab->id_pengajuan,
         ];
     }
 }

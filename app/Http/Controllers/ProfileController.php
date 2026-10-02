@@ -8,7 +8,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Validation\Rule;
 
 class ProfileController extends Controller
 {
@@ -18,6 +17,7 @@ class ProfileController extends Controller
     public function edit()
     {
         $user = Auth::user();
+
         return view('profile.edit', compact('user'));
     }
 
@@ -53,7 +53,7 @@ class ProfileController extends Controller
 
             // 3. Simpan file baru ke folder 'profile-photos' di disk public (storage/app/public/profile-photos)
             $path = $request->file('foto_profil')->store('profile-photos', 'public');
-            
+
             // 4. Masukkan path ke dalam array data yang akan di-update ke database
             $data['foto_profil'] = $path;
         }
@@ -77,7 +77,7 @@ class ProfileController extends Controller
             if (Storage::disk('public')->exists($user->foto_profil)) {
                 Storage::disk('public')->delete($user->foto_profil);
             }
-            
+
             // 3. Update nilai kolom 'foto_profil' di database menjadi null
             $user->update(['foto_profil' => null]);
         }
@@ -101,15 +101,15 @@ class ProfileController extends Controller
 
         // PRESENTASI: Pengecekan Password Saat Ini (Hashing)
         // Mengecek kecocokan password yang diinput dengan yang ada di database menggunakan Hash::check()
-        if (!Hash::check($request->current_password, $user->password)) {
+        if (! Hash::check($request->current_password, $user->password)) {
             return back()->withErrors(['current_password' => 'Password saat ini tidak sesuai.']);
         }
 
         // PRESENTASI: Update Password Baru (Hashing)
-        // Menyimpan password baru ke database (Otomatis di-hash jika di model ada cast 'hashed', 
+        // Menyimpan password baru ke database (Otomatis di-hash jika di model ada cast 'hashed',
         // atau kita bisa memanggil Hash::make($request->password) untuk keamanan tambahan)
         $user->update([
-            'password' => Hash::make($request->password)
+            'password' => Hash::make($request->password),
         ]);
 
         return redirect()->route('profile.edit')->with('success', 'Password berhasil diperbarui.');

@@ -9,12 +9,17 @@ use App\Http\Requests\StoreRabRequest;
 use App\Models\ActivityLog;
 use App\Models\Divisi;
 use App\Models\DokumenPendukung;
+use App\Models\KategoriAnggaran;
 use App\Models\PengajuanRab;
+use App\Models\Pengguna;
 use App\Models\RincianItem;
+use App\Models\Setting;
+use App\Notifications\NewRabSubmitted;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 
@@ -82,12 +87,12 @@ class StaffRabController extends Controller
     /**
      * Tampilkan form pembuatan pengajuan RAB baru.
      */
-    public function create(): View|\Illuminate\Http\RedirectResponse
+    public function create(): View|RedirectResponse
     {
         // PRESENTASI: Proteksi Akses URL (Backend)
-        // Mengecek status maintenance dari tabel settings. Jika bernilai 1 (aktif), 
+        // Mengecek status maintenance dari tabel settings. Jika bernilai 1 (aktif),
         // pengguna yang memaksa masuk ke URL ini akan langsung dilempar kembali (redirect)
-        if (\App\Models\Setting::getSetting('maintenance_mode', '0') == '1') {
+        if (Setting::getSetting('maintenance_mode', '0') == '1') {
             return redirect()->route('staff.dashboard')->with('error', 'Maaf, pembuatan pengajuan RAB sedang dinonaktifkan sementara untuk pemeliharaan sistem.');
         }
 
@@ -109,15 +114,15 @@ class StaffRabController extends Controller
         ];
 
         // Hitung sisa pagu tiap kategori untuk UI
-        $kategoriListDb = \App\Models\KategoriAnggaran::all();
+        $kategoriListDb = KategoriAnggaran::all();
         $sisaPaguList = [];
         foreach ($kategoriListDb as $kat) {
-            $paguTerpakai = \App\Models\PengajuanRab::where('kategori_anggaran', $kat->nama_kategori)
+            $paguTerpakai = PengajuanRab::where('kategori_anggaran', $kat->nama_kategori)
                 ->whereIn('status', [
                     StatusPengajuan::MENUNGGU_FINANCE,
                     StatusPengajuan::MENUNGGU_PIMPINAN,
                     StatusPengajuan::PROSES_PENCAIRAN,
-                    StatusPengajuan::SELESAI
+                    StatusPengajuan::SELESAI,
                 ])
                 ->sum('estimasi_total');
             $sisaPaguList[$kat->nama_kategori] = max(0, $kat->pagu_anggaran - $paguTerpakai);
@@ -132,16 +137,16 @@ class StaffRabController extends Controller
     public function store(StoreRabRequest $request): RedirectResponse
     {
         // PRESENTASI: Proteksi Akses Form Submit (Backend)
-        // Lapis keamanan kedua: Mencegah user yang mungkin mencoba mengirim form (POST request) via tools seperti Postman 
+        // Lapis keamanan kedua: Mencegah user yang mungkin mencoba mengirim form (POST request) via tools seperti Postman
         // ketika sistem sedang dalam mode pemeliharaan.
-        if (\App\Models\Setting::getSetting('maintenance_mode', '0') == '1') {
+        if (Setting::getSetting('maintenance_mode', '0') == '1') {
             return redirect()->route('staff.dashboard')->with('error', 'Maaf, pembuatan pengajuan RAB sedang dinonaktifkan sementara untuk pemeliharaan sistem.');
         }
 
         // PRESENTASI: Validasi Business Logic - Mencegah staf mengajukan RAB melebihi Pagu Anggaran Kategori
         if ($request->input('action') !== 'draft') {
             $kategoriNama = $request->input('kategori_anggaran');
-            $kategori = \App\Models\KategoriAnggaran::where('nama_kategori', $kategoriNama)->first();
+            $kategori = KategoriAnggaran::where('nama_kategori', $kategoriNama)->first();
 
             if ($kategori) {
                 $totalEstimasiBaru = 0;
@@ -150,18 +155,18 @@ class StaffRabController extends Controller
                 }
 
                 // Hitung akumulasi pagu yang sudah digunakan (RAB aktif/disetujui)
-                $paguTerpakai = \App\Models\PengajuanRab::where('kategori_anggaran', $kategoriNama)
+                $paguTerpakai = PengajuanRab::where('kategori_anggaran', $kategoriNama)
                     ->whereIn('status', [
                         StatusPengajuan::MENUNGGU_FINANCE,
                         StatusPengajuan::MENUNGGU_PIMPINAN,
                         StatusPengajuan::PROSES_PENCAIRAN,
-                        StatusPengajuan::SELESAI
+                        StatusPengajuan::SELESAI,
                     ])
                     ->sum('estimasi_total');
 
                 if (($paguTerpakai + $totalEstimasiBaru) > $kategori->pagu_anggaran) {
                     return back()
-                        ->withErrors(['kategori_anggaran' => 'Total pengajuan beserta akumulasi RAB lain (Rp ' . number_format($paguTerpakai + $totalEstimasiBaru, 0, ',', '.') . ') melebihi Pagu Anggaran kategori ini. Maksimal sisa pagu yang bisa diajukan: Rp ' . number_format(max(0, $kategori->pagu_anggaran - $paguTerpakai), 0, ',', '.')])
+                        ->withErrors(['kategori_anggaran' => 'Total pengajuan beserta akumulasi RAB lain (Rp '.number_format($paguTerpakai + $totalEstimasiBaru, 0, ',', '.').') melebihi Pagu Anggaran kategori ini. Maksimal sisa pagu yang bisa diajukan: Rp '.number_format(max(0, $kategori->pagu_anggaran - $paguTerpakai), 0, ',', '.')])
                         ->withInput();
                 }
             }
@@ -265,8 +270,8 @@ class StaffRabController extends Controller
         // PRESENTASI: Logika Trigger Pengiriman Notifikasi (Staff -> Finance)
         // Jika pengajuan di-submit (bukan draft), kirim notifikasi ke semua user Finance
         if ($pengajuan->status === StatusPengajuan::MENUNGGU_FINANCE) {
-            $financeUsers = \App\Models\Pengguna::where('role', 'finance')->get();
-            \Illuminate\Support\Facades\Notification::send($financeUsers, new \App\Notifications\NewRabSubmitted($pengajuan));
+            $financeUsers = Pengguna::where('role', 'finance')->get();
+            Notification::send($financeUsers, new NewRabSubmitted($pengajuan));
         }
 
         $msg = ($request->input('action') === 'draft')
@@ -433,16 +438,16 @@ class StaffRabController extends Controller
         ];
 
         // Hitung sisa pagu tiap kategori untuk UI
-        $kategoriListDb = \App\Models\KategoriAnggaran::all();
+        $kategoriListDb = KategoriAnggaran::all();
         $sisaPaguList = [];
         foreach ($kategoriListDb as $kat) {
-            $paguTerpakai = \App\Models\PengajuanRab::where('kategori_anggaran', $kat->nama_kategori)
+            $paguTerpakai = PengajuanRab::where('kategori_anggaran', $kat->nama_kategori)
                 ->where('id_pengajuan', '!=', $pengajuan->id_pengajuan)
                 ->whereIn('status', [
                     StatusPengajuan::MENUNGGU_FINANCE,
                     StatusPengajuan::MENUNGGU_PIMPINAN,
                     StatusPengajuan::PROSES_PENCAIRAN,
-                    StatusPengajuan::SELESAI
+                    StatusPengajuan::SELESAI,
                 ])
                 ->sum('estimasi_total');
             $sisaPaguList[$kat->nama_kategori] = max(0, $kat->pagu_anggaran - $paguTerpakai);
@@ -471,7 +476,7 @@ class StaffRabController extends Controller
         // PRESENTASI: Validasi Business Logic - Mencegah staf mengajukan RAB melebihi Pagu Anggaran Kategori
         if ($request->input('action') !== 'draft') {
             $kategoriNama = $request->input('kategori_anggaran');
-            $kategori = \App\Models\KategoriAnggaran::where('nama_kategori', $kategoriNama)->first();
+            $kategori = KategoriAnggaran::where('nama_kategori', $kategoriNama)->first();
 
             if ($kategori) {
                 $totalEstimasiBaru = 0;
@@ -480,19 +485,19 @@ class StaffRabController extends Controller
                 }
 
                 // Hitung akumulasi pagu yang sudah digunakan (kecualikan RAB yang sedang diupdate ini)
-                $paguTerpakai = \App\Models\PengajuanRab::where('kategori_anggaran', $kategoriNama)
+                $paguTerpakai = PengajuanRab::where('kategori_anggaran', $kategoriNama)
                     ->where('id_pengajuan', '!=', $pengajuan->id_pengajuan)
                     ->whereIn('status', [
                         StatusPengajuan::MENUNGGU_FINANCE,
                         StatusPengajuan::MENUNGGU_PIMPINAN,
                         StatusPengajuan::PROSES_PENCAIRAN,
-                        StatusPengajuan::SELESAI
+                        StatusPengajuan::SELESAI,
                     ])
                     ->sum('estimasi_total');
 
                 if (($paguTerpakai + $totalEstimasiBaru) > $kategori->pagu_anggaran) {
                     return back()
-                        ->withErrors(['kategori_anggaran' => 'Total pengajuan beserta akumulasi RAB lain (Rp ' . number_format($paguTerpakai + $totalEstimasiBaru, 0, ',', '.') . ') melebihi Pagu Anggaran kategori ini. Maksimal sisa pagu yang bisa diajukan: Rp ' . number_format(max(0, $kategori->pagu_anggaran - $paguTerpakai), 0, ',', '.')])
+                        ->withErrors(['kategori_anggaran' => 'Total pengajuan beserta akumulasi RAB lain (Rp '.number_format($paguTerpakai + $totalEstimasiBaru, 0, ',', '.').') melebihi Pagu Anggaran kategori ini. Maksimal sisa pagu yang bisa diajukan: Rp '.number_format(max(0, $kategori->pagu_anggaran - $paguTerpakai), 0, ',', '.')])
                         ->withInput();
                 }
             }
@@ -587,8 +592,8 @@ class StaffRabController extends Controller
 
         // PRESENTASI: Logika Trigger Pengiriman Notifikasi (Staff -> Finance) via Update
         if ($pengajuan->status === StatusPengajuan::MENUNGGU_FINANCE) {
-            $financeUsers = \App\Models\Pengguna::where('role', 'finance')->get();
-            \Illuminate\Support\Facades\Notification::send($financeUsers, new \App\Notifications\NewRabSubmitted($pengajuan));
+            $financeUsers = Pengguna::where('role', 'finance')->get();
+            Notification::send($financeUsers, new NewRabSubmitted($pengajuan));
         }
 
         $msg = ($request->input('action') === 'draft')
