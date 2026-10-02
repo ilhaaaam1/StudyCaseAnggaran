@@ -166,8 +166,8 @@
               $extension = pathinfo($dokumen->path_file, PATHINFO_EXTENSION);
               $isImage = in_array(strtolower($extension), ['jpg', 'jpeg', 'png']);
               $isPdf = strtolower($extension) === 'pdf';
-              $previewUrl = asset('storage/' . $dokumen->path_file);
-              $downloadUrl = asset('storage/' . $dokumen->path_file);
+              $previewUrl = route('dokumen.preview', $dokumen->id_dokumen);
+              $downloadUrl = route('dokumen.download', $dokumen->id_dokumen);
             @endphp
             <div class="border border-slate-200 rounded-xl p-4 flex flex-col items-center justify-center bg-slate-50 relative group">
               @if($isImage)
