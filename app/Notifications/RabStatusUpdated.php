@@ -3,8 +3,6 @@
 namespace App\Notifications;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
 class RabStatusUpdated extends Notification
@@ -12,7 +10,9 @@ class RabStatusUpdated extends Notification
     use Queueable;
 
     public $pengajuanRab;
+
     public $messageStr;
+
     public $url;
 
     /**
@@ -46,7 +46,7 @@ class RabStatusUpdated extends Notification
             'title' => 'Update Status RAB',
             'message' => $this->messageStr,
             'url' => $this->url,
-            'id_pengajuan' => $this->pengajuanRab->id_pengajuan
+            'id_pengajuan' => $this->pengajuanRab->id_pengajuan,
         ];
     }
 }

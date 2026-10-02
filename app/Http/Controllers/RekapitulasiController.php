@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-
-use App\Models\PengajuanRab;
-use App\Models\KategoriAnggaran;
+use App\Exports\RekapitulasiExport;
 use App\Models\Divisi;
-use Carbon\Carbon;
+use App\Models\KategoriAnggaran;
+use App\Models\PengajuanRab;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
 
 class RekapitulasiController extends Controller
 {
@@ -30,7 +31,7 @@ class RekapitulasiController extends Controller
                 return $q->where('status', $status);
             })
             ->when($request->kategori, function ($q, $kategori) {
-                return $q->where('kategori_anggaran', 'like', '%' . $kategori . '%');
+                return $q->where('kategori_anggaran', 'like', '%'.$kategori.'%');
             });
 
         // Eksekusi query dengan urutan terbaru
@@ -49,7 +50,7 @@ class RekapitulasiController extends Controller
     public function exportPdf(Request $request)
     {
         // PRESENTASI: Logika Cetak PDF dengan mempertahankan parameter Filter data
-        // Query builder identik dengan method index() agar hasil cetak akurat 
+        // Query builder identik dengan method index() agar hasil cetak akurat
         // sesuai dengan data yang sedang dilihat user di layar.
         $query = PengajuanRab::with(['pengguna', 'divisi'])
             ->when($request->start_date, function ($q, $startDate) {
@@ -62,13 +63,13 @@ class RekapitulasiController extends Controller
                 return $q->where('status', $status);
             })
             ->when($request->kategori, function ($q, $kategori) {
-                return $q->where('kategori_anggaran', 'like', '%' . $kategori . '%');
+                return $q->where('kategori_anggaran', 'like', '%'.$kategori.'%');
             });
 
         $rekapList = $query->latest('tanggal_pengajuan')->get();
 
         // Load view khusus PDF dan passing data
-        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('finance.rekapitulasi.pdf', compact('rekapList'))
+        $pdf = Pdf::loadView('finance.rekapitulasi.pdf', compact('rekapList'))
             ->setPaper('A4', 'portrait');
 
         return $pdf->stream('Laporan_Rekapitulasi_SIRAB.pdf');
@@ -91,11 +92,11 @@ class RekapitulasiController extends Controller
                 return $q->where('status', $status);
             })
             ->when($request->kategori, function ($q, $kategori) {
-                return $q->where('kategori_anggaran', 'like', '%' . $kategori . '%');
+                return $q->where('kategori_anggaran', 'like', '%'.$kategori.'%');
             });
 
         $rekapList = $query->latest('tanggal_pengajuan')->get();
 
-        return \Maatwebsite\Excel\Facades\Excel::download(new \App\Exports\RekapitulasiExport($rekapList), 'Rekapitulasi_Laporan_SIRAB.xlsx');
+        return Excel::download(new RekapitulasiExport($rekapList), 'Rekapitulasi_Laporan_SIRAB.xlsx');
     }
 }

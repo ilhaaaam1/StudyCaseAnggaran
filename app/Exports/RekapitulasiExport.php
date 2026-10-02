@@ -2,14 +2,15 @@
 
 namespace App\Exports;
 
+use Illuminate\Support\Enumerable;
 use Maatwebsite\Excel\Concerns\FromCollection;
+use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
-use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithStyles;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-class RekapitulasiExport implements FromCollection, WithHeadings, WithMapping, ShouldAutoSize, WithStyles
+class RekapitulasiExport implements FromCollection, ShouldAutoSize, WithHeadings, WithMapping, WithStyles
 {
     protected $data;
 
@@ -18,7 +19,7 @@ class RekapitulasiExport implements FromCollection, WithHeadings, WithMapping, S
         $this->data = $data;
     }
 
-    public function collection(): \Illuminate\Support\Enumerable
+    public function collection(): Enumerable
     {
         return $this->data;
     }
@@ -32,7 +33,7 @@ class RekapitulasiExport implements FromCollection, WithHeadings, WithMapping, S
             'PEMOHON & BIDANG',
             'KATEGORI',
             'TOTAL ANGGARAN',
-            'STATUS'
+            'STATUS',
         ];
     }
 
@@ -40,8 +41,8 @@ class RekapitulasiExport implements FromCollection, WithHeadings, WithMapping, S
     {
         static $index = 0;
         $index++;
-        
-        $pemohonBidang = ($row->pengguna->nama_lengkap ?? '-') . ' / ' . ($row->divisi->nama_divisi ?? '-');
+
+        $pemohonBidang = ($row->pengguna->nama_lengkap ?? '-').' / '.($row->divisi->nama_divisi ?? '-');
         $status = $row->status->value ?? $row->status;
 
         return [
@@ -50,7 +51,7 @@ class RekapitulasiExport implements FromCollection, WithHeadings, WithMapping, S
             $row->no_rab,
             $pemohonBidang,
             $row->kategori_anggaran ?? '-',
-            'Rp ' . number_format((float) $row->estimasi_total, 0, ',', '.'),
+            'Rp '.number_format((float) $row->estimasi_total, 0, ',', '.'),
             $status,
         ];
     }
@@ -59,7 +60,7 @@ class RekapitulasiExport implements FromCollection, WithHeadings, WithMapping, S
     public function styles(Worksheet $sheet): array
     {
         return [
-            1    => ['font' => ['bold' => true]],
+            1 => ['font' => ['bold' => true]],
         ];
     }
 }

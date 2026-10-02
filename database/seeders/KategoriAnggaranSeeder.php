@@ -13,7 +13,7 @@ class KategoriAnggaranSeeder extends Seeder
     public function run(): void
     {
         // PRESENTASI: Dipisah menjadi seeder mandiri sesuai instruksi materi
-        
+
         $categories = [
             ['nama_kategori' => 'Belanja Barang Operasional & ATK', 'deskripsi' => 'Pengadaan barang habis pakai', 'pagu_anggaran' => 50000000],
             ['nama_kategori' => 'Pengembangan Perpustakaan & Literasi', 'deskripsi' => 'Pengadaan buku teks dan non-teks', 'pagu_anggaran' => 30000000],
