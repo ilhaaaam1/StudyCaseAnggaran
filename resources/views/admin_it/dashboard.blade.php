@@ -30,39 +30,81 @@
   </div>
 
   <!-- Stats Grid -->
-  <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-    {{-- PRESENTASI: Penyesuaian Ruang Kosong (Padding) dan Hierarki Teks --}}
-    {{-- Mengubah p-4.5 yang invalid menjadi p-5 agar memiliki ruang bernafas (whitespace) yang lega, serta memperbesar angka statistik ke text-3xl --}}
-    <div class="bg-white border border-slate-200 rounded-xl p-5 flex flex-col justify-between relative shadow-sm hover:shadow-md transition-shadow">
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 mb-8">
+    <!-- Card 1: Total Pengguna -->
+    <div class="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-5 transition-all hover:shadow-sm hover:border-slate-300 h-full flex flex-col justify-between">
       <div>
-        <div class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Total Pengguna</div>
-        <div class="text-3xl font-bold text-slate-800 mt-2 mb-1.5 font-mono">{{ $totalUsers ?? 0 }}</div>
+        <div class="flex items-start justify-between gap-2 mb-2">
+          <span class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider block">Total Pengguna</span>
+          <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-slate-100 text-slate-600 flex items-center justify-center text-sm shrink-0">
+            <i class="fa-solid fa-users text-[15px]"></i>
+          </div>
+        </div>
+        <div class="text-2xl sm:text-3xl font-bold font-mono tracking-tight text-slate-900 tabular-nums mt-1">
+          {{ number_format($totalUsers ?? 0) }}
+        </div>
       </div>
-      <div class="text-xs text-slate-500">Seluruh akun terdaftar</div>
+      <div class="text-xs text-slate-400 mt-3 pt-3 border-t border-slate-100 flex items-center gap-1.5">
+        <i class="fa-regular fa-id-badge text-slate-400 text-[11px] shrink-0"></i>
+        <span>Seluruh akun terdaftar</span>
+      </div>
     </div>
 
-    <div class="bg-white border border-slate-200 rounded-xl p-5 flex flex-col justify-between relative shadow-sm hover:shadow-md transition-shadow">
+    <!-- Card 2: Role Pimpinan -->
+    <div class="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-5 transition-all hover:shadow-sm hover:border-slate-300 h-full flex flex-col justify-between">
       <div>
-        <div class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Role Pimpinan</div>
-        <div class="text-3xl font-bold text-blue-600 mt-2 mb-1.5 font-mono">{{ $countPimpinan ?? 0 }}</div>
+        <div class="flex items-start justify-between gap-2 mb-2">
+          <span class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider block">Role Pimpinan</span>
+          <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-sm shrink-0">
+            <i class="fa-solid fa-user-tie text-[15px]"></i>
+          </div>
+        </div>
+        <div class="text-2xl sm:text-3xl font-bold font-mono tracking-tight text-slate-900 tabular-nums mt-1">
+          {{ number_format($countPimpinan ?? 0) }}
+        </div>
       </div>
-      <div class="text-xs text-slate-500">Akun reviewer final</div>
+      <div class="text-xs text-slate-400 mt-3 pt-3 border-t border-slate-100 flex items-center gap-1.5">
+        <span class="w-1.5 h-1.5 rounded-full bg-indigo-500 shrink-0"></span>
+        <span>Akun reviewer final</span>
+      </div>
     </div>
 
-    <div class="bg-white border border-slate-200 rounded-xl p-5 flex flex-col justify-between relative shadow-sm hover:shadow-md transition-shadow">
+    <!-- Card 3: Role Finance -->
+    <div class="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-5 transition-all hover:shadow-sm hover:border-slate-300 h-full flex flex-col justify-between">
       <div>
-        <div class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Role Finance</div>
-        <div class="text-3xl font-bold text-amber-600 mt-2 mb-1.5 font-mono">{{ $countFinance ?? 0 }}</div>
+        <div class="flex items-start justify-between gap-2 mb-2">
+          <span class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider block">Role Finance</span>
+          <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-sm shrink-0">
+            <i class="fa-solid fa-calculator text-[15px]"></i>
+          </div>
+        </div>
+        <div class="text-2xl sm:text-3xl font-bold font-mono tracking-tight text-slate-900 tabular-nums mt-1">
+          {{ number_format($countFinance ?? 0) }}
+        </div>
       </div>
-      <div class="text-xs text-slate-500">Akun reviewer tahap 1</div>
+      <div class="text-xs text-slate-400 mt-3 pt-3 border-t border-slate-100 flex items-center gap-1.5">
+        <span class="w-1.5 h-1.5 rounded-full bg-amber-500 shrink-0"></span>
+        <span>Akun reviewer tahap 1</span>
+      </div>
     </div>
 
-    <div class="bg-white border border-slate-200 rounded-xl p-5 flex flex-col justify-between relative shadow-sm hover:shadow-md transition-shadow">
+    <!-- Card 4: Role Staff -->
+    <div class="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-5 transition-all hover:shadow-sm hover:border-slate-300 h-full flex flex-col justify-between">
       <div>
-        <div class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Role Staff</div>
-        <div class="text-3xl font-bold text-rose-600 mt-2 mb-1.5 font-mono">{{ $countStaff ?? 0 }}</div>
+        <div class="flex items-start justify-between gap-2 mb-2">
+          <span class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider block">Role Staff</span>
+          <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-sm shrink-0">
+            <i class="fa-solid fa-user-pen text-[15px]"></i>
+          </div>
+        </div>
+        <div class="text-2xl sm:text-3xl font-bold font-mono tracking-tight text-slate-900 tabular-nums mt-1">
+          {{ number_format($countStaff ?? 0) }}
+        </div>
       </div>
-      <div class="text-xs text-slate-500">Akun pemohon RAB</div>
+      <div class="text-xs text-slate-400 mt-3 pt-3 border-t border-slate-100 flex items-center gap-1.5">
+        <span class="w-1.5 h-1.5 rounded-full bg-blue-500 shrink-0"></span>
+        <span>Akun pemohon RAB</span>
+      </div>
     </div>
   </div>
 

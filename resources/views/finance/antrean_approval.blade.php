@@ -69,10 +69,10 @@
               </td>
               <td class="px-5 py-3.5 text-center whitespace-nowrap">
                 <a href="{{ route('finance.show', $item->id_pengajuan) }}" 
-                   class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-amber-600 hover:bg-amber-700 text-white rounded-lg text-xs font-semibold shadow-xs transition-colors shrink-0"
+                   class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 shadow-2xs focus:outline-none focus:ring-2 focus:ring-indigo-500/20 active:scale-95 transition-all duration-150 shrink-0"
                    title="Buka untuk verifikasi kelayakan anggaran tahap 1">
-                  <i class="fa-solid fa-clipboard-check text-[11px]"></i>
-                  <span>Review &amp; Verifikasi</span>
+                  <i class="fa-solid fa-clipboard-check text-[12px] shrink-0"></i>
+                  <span>Review</span>
                 </a>
               </td>
             </tr>

@@ -69,9 +69,9 @@
               </td>
               <td class="px-5 py-3.5 text-center whitespace-nowrap">
                 <a href="{{ route('finance.show', $item->id_pengajuan) }}" 
-                   class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-semibold shadow-xs transition-colors shrink-0"
+                   class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 shadow-2xs focus:outline-none focus:ring-2 focus:ring-emerald-500/20 active:scale-95 transition-all duration-150 shrink-0"
                    title="Unggah bukti transfer / kuitansi pencairan">
-                  <i class="fa-solid fa-upload text-[11px]"></i>
+                  <i class="fa-solid fa-upload text-[11px] shrink-0"></i>
                   <span>Upload Bukti</span>
                 </a>
               </td>

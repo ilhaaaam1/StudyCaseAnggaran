@@ -30,43 +30,102 @@
   </div>
 
   <!-- Stats Grid -->
-  <div class="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
-    {{-- PRESENTASI: Penyesuaian Ruang Kosong (Padding) pada Card Statistik --}}
-    {{-- Mengubah class p-4.5 (yang tidak valid di Tailwind bawaan) menjadi p-5 agar konten memiliki whitespace yang memadai --}}
-    <div class="bg-white border border-slate-200 rounded-xl p-5 flex flex-col justify-between relative shadow-sm hover:shadow-md transition-shadow">
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 sm:gap-5 mb-8">
+    <!-- Card 1: Antrean Review -->
+    <div class="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-5 transition-all hover:shadow-sm hover:border-slate-300 h-full flex flex-col justify-between">
       <div>
-        <div class="text-[11px] font-bold uppercase text-slate-500 tracking-wide mb-2">Antrean Review</div>
-        <div class="text-2xl font-bold text-[#d97706] mb-1.5 font-mono">{{ $totalAntreanPending ?? 0 }}</div>
+        <div class="flex items-start justify-between gap-2 mb-2">
+          <span class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider block">Antrean Review</span>
+          <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-sm shrink-0">
+            <i class="fa-solid fa-hourglass-start text-[15px]"></i>
+          </div>
+        </div>
+        <div class="text-2xl sm:text-3xl font-bold font-mono tracking-tight text-slate-900 tabular-nums mt-1">
+          {{ number_format($totalAntreanPending ?? 0) }}
+        </div>
       </div>
-      <div class="text-xs text-slate-500">Menunggu verifikasi Tahap 1</div>
+      <div class="text-xs text-slate-400 mt-3 pt-3 border-t border-slate-100 flex items-center gap-1.5">
+        <span class="w-1.5 h-1.5 rounded-full bg-amber-500 shrink-0"></span>
+        <span>Menunggu verifikasi Tahap 1</span>
+      </div>
     </div>
-    <div class="bg-white border border-slate-200 rounded-xl p-5 flex flex-col justify-between relative shadow-sm hover:shadow-md transition-shadow">
+
+    <!-- Card 2: Menunggu Pimpinan -->
+    <div class="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-5 transition-all hover:shadow-sm hover:border-slate-300 h-full flex flex-col justify-between">
       <div>
-        <div class="text-[11px] font-bold uppercase text-slate-500 tracking-wide mb-2">Menunggu Pimpinan</div>
-        <div class="text-2xl font-bold text-blue-600 mb-1.5 font-mono">{{ $totalAccFinance ?? 0 }}</div>
+        <div class="flex items-start justify-between gap-2 mb-2">
+          <span class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider block">Menunggu Pimpinan</span>
+          <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-sm shrink-0">
+            <i class="fa-solid fa-user-check text-[15px]"></i>
+          </div>
+        </div>
+        <div class="text-2xl sm:text-3xl font-bold font-mono tracking-tight text-slate-900 tabular-nums mt-1">
+          {{ number_format($totalAccFinance ?? 0) }}
+        </div>
       </div>
-      <div class="text-xs text-slate-500">Diteruskan ke Pimpinan</div>
+      <div class="text-xs text-slate-400 mt-3 pt-3 border-t border-slate-100 flex items-center gap-1.5">
+        <span class="w-1.5 h-1.5 rounded-full bg-blue-500 shrink-0"></span>
+        <span>Diteruskan ke Kepsek</span>
+      </div>
     </div>
-    <div class="bg-white border border-slate-200 rounded-xl p-5 flex flex-col justify-between relative shadow-sm hover:shadow-md transition-shadow">
+
+    <!-- Card 3: Proses Pencairan -->
+    <div class="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-5 transition-all hover:shadow-sm hover:border-slate-300 h-full flex flex-col justify-between">
       <div>
-        <div class="text-[11px] font-bold uppercase text-slate-500 tracking-wide mb-2">Proses Pencairan</div>
-        <div class="text-2xl font-bold text-slate-800 mb-1.5 font-mono">{{ \App\Models\PengajuanRab::where('status', \App\Enums\StatusPengajuan::PROSES_PENCAIRAN)->count() }}</div>
+        <div class="flex items-start justify-between gap-2 mb-2">
+          <span class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider block">Proses Pencairan</span>
+          <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-sm shrink-0">
+            <i class="fa-solid fa-money-bill-transfer text-[15px]"></i>
+          </div>
+        </div>
+        <div class="text-2xl sm:text-3xl font-bold font-mono tracking-tight text-slate-900 tabular-nums mt-1">
+          {{ number_format(\App\Models\PengajuanRab::where('status', \App\Enums\StatusPengajuan::PROSES_PENCAIRAN)->count()) }}
+        </div>
       </div>
-      <a href="{{ route('finance.pencairan') }}" class="text-[12px] text-blue-600 font-semibold hover:underline flex items-center gap-2 mt-1">Lihat Antrean &rarr;</a>
+      <div class="text-xs text-slate-400 mt-3 pt-3 border-t border-slate-100 flex items-center gap-1.5">
+        <a href="{{ route('finance.pencairan') }}" class="text-xs text-indigo-600 font-semibold hover:underline inline-flex items-center gap-1">
+          <span>Buka antrean pencairan</span>
+          <i class="fa-solid fa-arrow-right text-[10px]"></i>
+        </a>
+      </div>
     </div>
-    <div class="bg-white border border-slate-200 rounded-xl p-5 flex flex-col justify-between relative shadow-sm hover:shadow-md transition-shadow">
+
+    <!-- Card 4: Revisi / Ditolak -->
+    <div class="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-5 transition-all hover:shadow-sm hover:border-slate-300 h-full flex flex-col justify-between">
       <div>
-        <div class="text-[11px] font-bold uppercase text-slate-500 tracking-wide mb-2">Revisi / Ditolak</div>
-        <div class="text-2xl font-bold text-red-600 mb-1.5 font-mono">{{ $totalDitolakFinance ?? 0 }}</div>
+        <div class="flex items-start justify-between gap-2 mb-2">
+          <span class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider block">Revisi / Ditolak</span>
+          <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center text-sm shrink-0">
+            <i class="fa-solid fa-triangle-exclamation text-[15px]"></i>
+          </div>
+        </div>
+        <div class="text-2xl sm:text-3xl font-bold font-mono tracking-tight text-slate-900 tabular-nums mt-1">
+          {{ number_format($totalDitolakFinance ?? 0) }}
+        </div>
       </div>
-      <div class="text-xs text-slate-500">Dikembalikan ke Staff</div>
+      <div class="text-xs text-slate-400 mt-3 pt-3 border-t border-slate-100 flex items-center gap-1.5">
+        <span class="w-1.5 h-1.5 rounded-full bg-rose-500 shrink-0"></span>
+        <span>Dikembalikan ke Staf</span>
+      </div>
     </div>
-    <div class="bg-white border border-slate-200 rounded-xl p-5 flex flex-col justify-between relative shadow-sm hover:shadow-md transition-shadow">
+
+    <!-- Card 5: Total Nominal Pending -->
+    <div class="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-5 transition-all hover:shadow-sm hover:border-slate-300 h-full flex flex-col justify-between">
       <div>
-        <div class="text-[11px] font-bold uppercase text-slate-500 tracking-wide mb-2">Total Nominal Pending</div>
-        <div class="text-lg font-bold text-slate-800 mb-1.5 font-mono">Rp {{ number_format($totalNominalPending ?? 0, 0, ',', '.') }}</div>
+        <div class="flex items-start justify-between gap-2 mb-2">
+          <span class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider block">Nominal Pending</span>
+          <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-sm shrink-0">
+            <i class="fa-solid fa-sack-dollar text-[15px]"></i>
+          </div>
+        </div>
+        <div class="text-xl sm:text-2xl xl:text-[20px] 2xl:text-2xl font-bold font-mono tracking-tight text-slate-900 tabular-nums mt-1" title="Rp {{ number_format($totalNominalPending ?? 0, 0, ',', '.') }}">
+          Rp {{ number_format($totalNominalPending ?? 0, 0, ',', '.') }}
+        </div>
       </div>
-      <div class="text-xs text-slate-500">Nilai antrean diverifikasi</div>
+      <div class="text-xs text-slate-400 mt-3 pt-3 border-t border-slate-100 flex items-center gap-1.5">
+        <i class="fa-regular fa-clock text-slate-400 text-[11px] shrink-0"></i>
+        <span>Nilai antrean diverifikasi</span>
+      </div>
     </div>
   </div>
 
@@ -83,36 +142,37 @@
     </div>
 
     <div class="overflow-x-auto">
-      <table class="w-full text-left border-collapse">
+      <table class="w-full min-w-[800px] text-left border-collapse text-xs">
         <thead>
-          <tr>
-            <th class="text-[11px] uppercase text-slate-500 font-bold px-3 py-2.5 border-b border-slate-200 tracking-wide">No. RAB</th>
-            <th class="text-[11px] uppercase text-slate-500 font-bold px-3 py-2.5 border-b border-slate-200 tracking-wide">Pemohon</th>
-            {{-- PRESENTASI: Penyesuaian Istilah Tabel (Copywriting) --}}
-            {{-- Mengubah istilah korporat 'Unit Kerja' menjadi 'Bidang / Bagian' agar lebih sesuai dengan lingkungan sekolah --}}
-            <th class="text-[11px] uppercase text-slate-500 font-bold px-3 py-2.5 border-b border-slate-200 tracking-wide">Bidang / Bagian</th>
-            <th class="text-[11px] uppercase text-slate-500 font-bold px-3 py-2.5 border-b border-slate-200 tracking-wide">Judul Pengajuan</th>
-            <th class="text-[11px] uppercase text-slate-500 font-bold px-3 py-2.5 border-b border-slate-200 tracking-wide text-right">Estimasi Biaya</th>
-            <th class="text-[11px] uppercase text-slate-500 font-bold px-3 py-2.5 border-b border-slate-200 tracking-wide text-center">Aksi Review</th>
+          <tr class="border-b border-slate-200 bg-slate-50/60">
+            <th class="text-[11px] uppercase text-slate-500 font-bold px-4 py-3 tracking-wide whitespace-nowrap">No. RAB</th>
+            <th class="text-[11px] uppercase text-slate-500 font-bold px-4 py-3 tracking-wide whitespace-nowrap">Pemohon</th>
+            <th class="text-[11px] uppercase text-slate-500 font-bold px-4 py-3 tracking-wide whitespace-nowrap">Bidang / Bagian</th>
+            <th class="text-[11px] uppercase text-slate-500 font-bold px-4 py-3 tracking-wide whitespace-nowrap">Judul Pengajuan</th>
+            <th class="text-[11px] uppercase text-slate-500 font-bold px-4 py-3 tracking-wide text-right whitespace-nowrap">Estimasi Biaya</th>
+            <th class="text-[11px] uppercase text-slate-500 font-bold px-4 py-3 tracking-wide text-center whitespace-nowrap">Aksi Review</th>
           </tr>
         </thead>
-        <tbody>
+        <tbody class="divide-y divide-slate-100">
           @forelse($antreanTerbaru ?? [] as $item)
             <tr class="hover:bg-slate-50 transition-colors">
-              <td class="text-[13px] font-medium text-slate-800 px-3 py-3.5 border-b border-slate-200 font-mono">{{ $item->no_rab }}</td>
-              <td class="text-[13px] text-slate-800 px-3 py-3.5 border-b border-slate-200">{{ $item->pengguna->nama_lengkap ?? 'Staf' }}</td>
-              <td class="text-[13px] text-slate-500 px-3 py-3.5 border-b border-slate-200">{{ $item->divisi->nama_divisi ?? '-' }}</td>
-              <td class="text-[13px] text-slate-800 px-3 py-3.5 border-b border-slate-200">{{ $item->judul_pengajuan }}</td>
-              <td class="text-[13px] text-slate-800 px-3 py-3.5 border-b border-slate-200 text-right font-semibold font-mono">Rp {{ number_format((float) $item->estimasi_total, 0, ',', '.') }}</td>
-              <td class="text-[13px] px-3 py-3.5 border-b border-slate-200 text-center">
-                <a href="{{ route('finance.show', $item->id_pengajuan) }}" class="bg-amber-500 hover:bg-amber-600 text-white px-3 py-1.5 rounded-md text-xs font-semibold shadow-sm inline-block transition-colors">
-                  Review Tahap 1
+              <td class="font-medium text-slate-800 px-4 py-3.5 font-mono whitespace-nowrap">{{ $item->no_rab }}</td>
+              <td class="text-slate-800 px-4 py-3.5 whitespace-nowrap font-medium">{{ $item->pengguna->nama_lengkap ?? 'Staf' }}</td>
+              <td class="text-slate-500 px-4 py-3.5 whitespace-nowrap">{{ $item->divisi->nama_divisi ?? '-' }}</td>
+              <td class="text-slate-800 px-4 py-3.5 max-w-xs md:max-w-sm truncate" title="{{ $item->judul_pengajuan }}">{{ $item->judul_pengajuan }}</td>
+              <td class="text-slate-800 px-4 py-3.5 text-right font-bold font-mono whitespace-nowrap tabular-nums">Rp {{ number_format((float) $item->estimasi_total, 0, ',', '.') }}</td>
+              <td class="px-4 py-3.5 text-center whitespace-nowrap">
+                <a href="{{ route('finance.show', $item->id_pengajuan) }}"
+                   class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 shadow-2xs focus:outline-none focus:ring-2 focus:ring-indigo-500/20 active:scale-95 transition-all duration-150 shrink-0"
+                   title="Review & Verifikasi Anggaran">
+                  <i class="fa-solid fa-clipboard-check text-[12px] shrink-0"></i>
+                  <span>Review</span>
                 </a>
               </td>
             </tr>
           @empty
             <tr>
-              <td colspan="6" class="text-[13px] text-slate-500 px-3 py-8 border-b border-slate-200 text-center">
+              <td colspan="6" class="text-slate-400 px-4 py-8 text-center">
                 Tidak ada antrean pending. Seluruh pengajuan telah diproses!
               </td>
             </tr>
@@ -135,29 +195,31 @@
     </div>
 
     <div class="overflow-x-auto">
-      <table class="w-full text-left border-collapse">
+      <table class="w-full min-w-[800px] text-left border-collapse text-xs">
         <thead>
-          <tr>
-            <th class="text-[11px] uppercase text-slate-500 font-bold px-3 py-2.5 border-b border-slate-200 tracking-wide">No. RAB</th>
-            <th class="text-[11px] uppercase text-slate-500 font-bold px-3 py-2.5 border-b border-slate-200 tracking-wide">Pemohon</th>
-            {{-- PRESENTASI: Penyesuaian Istilah Tabel (Copywriting) --}}
-            <th class="text-[11px] uppercase text-slate-500 font-bold px-3 py-2.5 border-b border-slate-200 tracking-wide">Bidang / Bagian</th>
-            <th class="text-[11px] uppercase text-slate-500 font-bold px-3 py-2.5 border-b border-slate-200 tracking-wide">Judul Pengajuan</th>
-            <th class="text-[11px] uppercase text-slate-500 font-bold px-3 py-2.5 border-b border-slate-200 tracking-wide text-right">Estimasi Biaya</th>
-            <th class="text-[11px] uppercase text-slate-500 font-bold px-3 py-2.5 border-b border-slate-200 tracking-wide text-center">Aksi Pencairan</th>
+          <tr class="border-b border-slate-200 bg-slate-50/60">
+            <th class="text-[11px] uppercase text-slate-500 font-bold px-4 py-3 tracking-wide whitespace-nowrap">No. RAB</th>
+            <th class="text-[11px] uppercase text-slate-500 font-bold px-4 py-3 tracking-wide whitespace-nowrap">Pemohon</th>
+            <th class="text-[11px] uppercase text-slate-500 font-bold px-4 py-3 tracking-wide whitespace-nowrap">Bidang / Bagian</th>
+            <th class="text-[11px] uppercase text-slate-500 font-bold px-4 py-3 tracking-wide whitespace-nowrap">Judul Pengajuan</th>
+            <th class="text-[11px] uppercase text-slate-500 font-bold px-4 py-3 tracking-wide text-right whitespace-nowrap">Estimasi Biaya</th>
+            <th class="text-[11px] uppercase text-slate-500 font-bold px-4 py-3 tracking-wide text-center whitespace-nowrap">Aksi Pencairan</th>
           </tr>
         </thead>
-        <tbody>
+        <tbody class="divide-y divide-slate-100">
           @forelse($antreanPencairanTerbaru ?? [] as $item)
             <tr class="hover:bg-slate-50 transition-colors">
-              <td class="text-[13px] font-medium text-slate-800 px-3 py-3.5 border-b border-slate-200 font-mono">{{ $item->no_rab }}</td>
-              <td class="text-[13px] text-slate-800 px-3 py-3.5 border-b border-slate-200">{{ $item->pengguna->nama_lengkap ?? 'Staf' }}</td>
-              <td class="text-[13px] text-slate-500 px-3 py-3.5 border-b border-slate-200">{{ $item->divisi->nama_divisi ?? '-' }}</td>
-              <td class="text-[13px] text-slate-800 px-3 py-3.5 border-b border-slate-200">{{ $item->judul_pengajuan }}</td>
-              <td class="text-[13px] text-slate-800 px-3 py-3.5 border-b border-slate-200 text-right font-semibold font-mono">Rp {{ number_format((float) $item->estimasi_total, 0, ',', '.') }}</td>
-              <td class="text-[13px] px-3 py-3.5 border-b border-slate-200 text-center">
-                <button onclick="document.getElementById('modal-pencairan-{{ $item->id_pengajuan }}').classList.remove('hidden')" class="px-3 py-1.5 bg-[#2b337c] hover:bg-[#1e255e] text-white rounded-md text-xs font-semibold shadow-sm transition-colors">
-                  Upload Bukti
+              <td class="font-medium text-slate-800 px-4 py-3.5 font-mono whitespace-nowrap">{{ $item->no_rab }}</td>
+              <td class="text-slate-800 px-4 py-3.5 whitespace-nowrap font-medium">{{ $item->pengguna->nama_lengkap ?? 'Staf' }}</td>
+              <td class="text-slate-500 px-4 py-3.5 whitespace-nowrap">{{ $item->divisi->nama_divisi ?? '-' }}</td>
+              <td class="text-slate-800 px-4 py-3.5 max-w-xs md:max-w-sm truncate" title="{{ $item->judul_pengajuan }}">{{ $item->judul_pengajuan }}</td>
+              <td class="text-slate-800 px-4 py-3.5 text-right font-bold font-mono whitespace-nowrap tabular-nums">Rp {{ number_format((float) $item->estimasi_total, 0, ',', '.') }}</td>
+              <td class="px-4 py-3.5 text-center whitespace-nowrap">
+                <button onclick="document.getElementById('modal-pencairan-{{ $item->id_pengajuan }}').classList.remove('hidden')"
+                        class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 shadow-2xs focus:outline-none focus:ring-2 focus:ring-emerald-500/20 active:scale-95 transition-all duration-150 shrink-0 cursor-pointer"
+                        title="Unggah Bukti Pencairan">
+                  <i class="fa-solid fa-upload text-[11px] shrink-0"></i>
+                  <span>Upload Bukti</span>
                 </button>
               </td>
             </tr>

@@ -27,57 +27,81 @@
     </a>
   </div>
 
-  <!-- Stats Grid (Figma Cards) -->
-  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+  <!-- Stats Grid (4 Cards) -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 mb-8">
     <!-- Card 1: Total Pengajuan -->
-    <div class="bg-white border border-indigo-100 rounded-xl p-5 shadow-sm hover:shadow transition-shadow">
-      <div class="text-xs font-bold text-slate-500 tracking-wider uppercase mb-2">
-        TOTAL PENGAJUAN
+    <div class="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-5 transition-all hover:shadow-sm hover:border-slate-300 h-full flex flex-col justify-between">
+      <div>
+        <div class="flex items-start justify-between gap-2 mb-2">
+          <span class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider block">Total Pengajuan</span>
+          <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-slate-100 text-slate-600 flex items-center justify-center text-sm shrink-0">
+            <i class="fa-solid fa-folder-open text-[15px]"></i>
+          </div>
+        </div>
+        <div class="text-xl sm:text-2xl xl:text-[22px] 2xl:text-2xl font-bold font-mono tracking-tight text-slate-900 tabular-nums mt-1" title="Rp {{ number_format($totalAnggaran ?? 0, 0, ',', '.') }}">
+          Rp {{ number_format($totalAnggaran ?? 0, 0, ',', '.') }}
+        </div>
       </div>
-      <div class="text-2xl font-bold text-slate-800 font-mono mb-1">
-        Rp {{ number_format($totalAnggaran ?? 0, 0, ',', '.') }}
-      </div>
-      <div class="text-xs text-slate-400">
-        {{ $totalPengajuan ?? 0 }} dokumen diajukan
+      <div class="text-xs text-slate-400 mt-3 pt-3 border-t border-slate-100 flex items-center gap-1.5">
+        <i class="fa-regular fa-file-lines text-slate-400 text-[11px] shrink-0"></i>
+        <span>{{ number_format($totalPengajuan ?? 0) }} dokumen diajukan</span>
       </div>
     </div>
 
     <!-- Card 2: Disetujui (ACC) -->
-    <div class="bg-emerald-50/70 border border-emerald-200 rounded-xl p-5 shadow-sm hover:shadow transition-shadow">
-      <div class="text-xs font-bold text-emerald-700 tracking-wider uppercase mb-2">
-        DISETUJUI (ACC)
+    <div class="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-5 transition-all hover:shadow-sm hover:border-slate-300 h-full flex flex-col justify-between">
+      <div>
+        <div class="flex items-start justify-between gap-2 mb-2">
+          <span class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider block">Disetujui (ACC)</span>
+          <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-sm shrink-0">
+            <i class="fa-solid fa-circle-check text-[15px]"></i>
+          </div>
+        </div>
+        <div class="text-2xl sm:text-3xl font-bold font-mono tracking-tight text-slate-900 tabular-nums mt-1">
+          {{ number_format($totalAcc ?? 0) }}
+        </div>
       </div>
-      <div class="text-2xl font-bold text-emerald-700 font-mono mb-1">
-        {{ $totalAcc ?? 0 }}
-      </div>
-      <div class="text-xs text-emerald-600">
-        Disetujui oleh Reviewer / Direktur
-      </div>
-    </div>
-
-    <!-- Card 3: Menunggu Review (Pending) -->
-    <div class="bg-amber-50/70 border border-amber-200 rounded-xl p-5 shadow-sm hover:shadow transition-shadow">
-      <div class="text-xs font-bold text-amber-700 tracking-wider uppercase mb-2">
-        MENUNGGU REVIEW
-      </div>
-      <div class="text-2xl font-bold text-amber-700 font-mono mb-1">
-        {{ $totalPending ?? 0 }}
-      </div>
-      <div class="text-xs text-amber-600">
-        Dalam antrean persetujuan
+      <div class="text-xs text-slate-400 mt-3 pt-3 border-t border-slate-100 flex items-center gap-1.5">
+        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0"></span>
+        <span>Disetujui Reviewer / Direktur</span>
       </div>
     </div>
 
-    <!-- Card 4: Ditolak -->
-    <div class="bg-rose-50/70 border border-rose-200 rounded-xl p-5 shadow-sm hover:shadow transition-shadow">
-      <div class="text-xs font-bold text-rose-700 tracking-wider uppercase mb-2">
-        DITOLAK / REVISI
+    <!-- Card 3: Menunggu Review -->
+    <div class="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-5 transition-all hover:shadow-sm hover:border-slate-300 h-full flex flex-col justify-between">
+      <div>
+        <div class="flex items-start justify-between gap-2 mb-2">
+          <span class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider block">Menunggu Review</span>
+          <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-sm shrink-0">
+            <i class="fa-solid fa-hourglass-half text-[15px]"></i>
+          </div>
+        </div>
+        <div class="text-2xl sm:text-3xl font-bold font-mono tracking-tight text-slate-900 tabular-nums mt-1">
+          {{ number_format($totalPending ?? 0) }}
+        </div>
       </div>
-      <div class="text-2xl font-bold text-rose-700 font-mono mb-1">
-        {{ $totalDitolak ?? 0 }}
+      <div class="text-xs text-slate-400 mt-3 pt-3 border-t border-slate-100 flex items-center gap-1.5">
+        <span class="w-1.5 h-1.5 rounded-full bg-amber-500 shrink-0 animate-pulse"></span>
+        <span>Dalam antrean verifikasi</span>
       </div>
-      <div class="text-xs text-rose-600">
-        Perlu evaluasi atau penyesuaian
+    </div>
+
+    <!-- Card 4: Ditolak / Revisi -->
+    <div class="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-5 transition-all hover:shadow-sm hover:border-slate-300 h-full flex flex-col justify-between">
+      <div>
+        <div class="flex items-start justify-between gap-2 mb-2">
+          <span class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider block">Ditolak / Revisi</span>
+          <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center text-sm shrink-0">
+            <i class="fa-solid fa-circle-xmark text-[15px]"></i>
+          </div>
+        </div>
+        <div class="text-2xl sm:text-3xl font-bold font-mono tracking-tight text-slate-900 tabular-nums mt-1">
+          {{ number_format($totalDitolak ?? 0) }}
+        </div>
+      </div>
+      <div class="text-xs text-slate-400 mt-3 pt-3 border-t border-slate-100 flex items-center gap-1.5">
+        <span class="w-1.5 h-1.5 rounded-full bg-rose-500 shrink-0"></span>
+        <span>Perlu evaluasi/penyesuaian</span>
       </div>
     </div>
   </div>
@@ -174,7 +198,7 @@
     </div>
 
     <div class="overflow-x-auto table-container">
-      <table class="w-full text-left text-sm whitespace-nowrap">
+      <table class="w-full text-left text-sm whitespace-nowrap min-w-[800px]">
         <thead class="text-[10px] text-slate-500 uppercase bg-slate-50 border-b border-slate-200 font-semibold">
           <tr>
             <th class="px-5 py-3.5">NO. RAB</th>
@@ -240,10 +264,12 @@
                   </span>
                 @endif
               </td>
-              <td class="px-5 py-4 text-center">
+              <td class="px-5 py-4 text-center whitespace-nowrap">
                 <a href="{{ route('user.rab.show', $item->id_pengajuan) }}" 
-                   class="inline-flex items-center gap-1 px-3 py-1 bg-slate-100 hover:bg-indigo-50 text-slate-700 hover:text-indigo-700 font-medium rounded-lg text-xs transition-colors">
-                  Detail &raquo;
+                   class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap bg-slate-100 hover:bg-indigo-50 text-slate-700 hover:text-indigo-600 border border-slate-200/80 hover:border-indigo-200 shadow-2xs focus:outline-none focus:ring-2 focus:ring-indigo-500/20 active:scale-95 transition-all duration-150 shrink-0"
+                   title="Lihat Detail Pengajuan">
+                  <i class="fa-regular fa-eye text-[12px] shrink-0"></i>
+                  <span>Detail</span>
                 </a>
               </td>
             </tr>
