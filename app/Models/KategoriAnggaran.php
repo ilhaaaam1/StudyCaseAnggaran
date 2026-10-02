@@ -11,4 +11,9 @@ class KategoriAnggaran extends Model
         'deskripsi',
         'pagu_anggaran',
     ];
+
+    public function pengajuanRabs()
+    {
+        return $this->hasMany(PengajuanRab::class, 'kategori_anggaran', 'nama_kategori');
+    }
 }

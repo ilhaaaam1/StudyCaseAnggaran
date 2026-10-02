@@ -11,7 +11,16 @@ class KategoriAnggaranController extends Controller
     
     public function index(Request $request)
     {
-        $kategoriList = KategoriAnggaran::latest()->get();
+        // PRESENTASI: Implementasi withSum Eloquent untuk menghitung realisasi anggaran secara efisien tanpa N+1 query problem
+        $kategoriList = KategoriAnggaran::withSum(['pengajuanRabs' => function($q) {
+            $q->whereIn('status', [
+                \App\Enums\StatusPengajuan::MENUNGGU_FINANCE,
+                \App\Enums\StatusPengajuan::MENUNGGU_PIMPINAN,
+                \App\Enums\StatusPengajuan::PROSES_PENCAIRAN,
+                \App\Enums\StatusPengajuan::SELESAI
+            ]);
+        }], 'estimasi_total')->latest()->get();
+
         return view('finance.kategori.index', compact('kategoriList'));
     }
     

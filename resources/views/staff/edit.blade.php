@@ -92,7 +92,7 @@
             <label class="block text-xs font-semibold text-slate-700 mb-1.5">
               Kategori Pos Anggaran (Acuan BOS & RKAS) <span class="text-rose-500">*</span>
             </label>
-            <select name="kategori_anggaran" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:border-indigo-500 text-slate-800 bg-white">
+            <select name="kategori_anggaran" id="kategori_anggaran" onchange="updateSisaPagu()" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:border-indigo-500 text-slate-800 bg-white">
               <option value="" disabled>-- Pilih Kategori Pos Anggaran --</option>
               @php
                 $posAnggaran = [
@@ -111,7 +111,10 @@
                 </option>
               @endforeach
             </select>
-            <p class="text-[11px] text-slate-400 mt-1">Klasifikasi belanja mengacu pada pos alokasi BOS & RAPBS.</p>
+            <div class="mt-1 flex justify-between items-center">
+              <p class="text-[11px] text-slate-400">Klasifikasi belanja mengacu pada pos alokasi BOS & RAPBS.</p>
+              <span id="sisa_pagu_info" class="text-xs font-bold text-indigo-600 hidden bg-indigo-50 px-2 py-1 rounded-md"></span>
+            </div>
             @error('kategori_anggaran') <p class="text-xs text-rose-600 mt-1">{{ $message }}</p> @enderror
           </div>
         </div>
@@ -515,6 +518,20 @@
     // Inisialisasi total saat halaman pertama dimuat
     document.addEventListener('DOMContentLoaded', function() {
         hitungTotalKeseluruhan();
+        updateSisaPagu();
     });
+
+    const sisaPaguList = @json($sisaPaguList);
+    function updateSisaPagu() {
+      const select = document.getElementById('kategori_anggaran');
+      const info = document.getElementById('sisa_pagu_info');
+      const kat = select.value;
+      if(sisaPaguList[kat] !== undefined) {
+          info.innerHTML = "Sisa Pagu: Rp " + new Intl.NumberFormat('id-ID').format(sisaPaguList[kat]);
+          info.classList.remove('hidden');
+      } else {
+          info.classList.add('hidden');
+      }
+    }
   </script>
 @endsection

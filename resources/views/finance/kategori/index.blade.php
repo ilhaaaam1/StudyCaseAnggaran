@@ -39,7 +39,7 @@
 
   {{-- PRESENTASI: Implementasi Alpine.js untuk Modal --}}
   {{-- Membungkus section ini dengan x-data agar kita bisa mengendalikan state modal tambah/edit di satu tempat --}}
-  <div x-data="{ openModal: false, editMode: false, currentId: '', formAction: '{{ route('finance.kategori.store') }}', formMethod: 'POST', formKategori: '', formDeskripsi: '', formPagu: '' }">
+  <div x-data="{ openModal: false, editMode: false, currentId: '', formAction: '{{ route('finance.kategori.store') }}', formMethod: 'POST', formKategori: '', formDeskripsi: '', formPagu: '', deleteModal: false, deleteUrl: '' }">
     
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
       <div>
@@ -62,16 +62,24 @@
               <th class="px-5 py-3.5">Nama Kategori</th>
               <th class="px-5 py-3.5">Deskripsi</th>
               <th class="px-5 py-3.5 text-right">Pagu Anggaran</th>
+              <th class="px-5 py-3.5 text-right">Terpakai</th>
+              <th class="px-5 py-3.5 text-right">Sisa Pagu</th>
               <th class="px-5 py-3.5 text-center w-48">Aksi</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-slate-100">
             @forelse($kategoriList as $idx => $kategori)
+              @php
+                  $terpakai = (float) $kategori->pengajuan_rabs_sum_estimasi_total;
+                  $sisaPagu = (float) $kategori->pagu_anggaran - $terpakai;
+              @endphp
               <tr class="hover:bg-slate-50">
                 <td class="px-5 py-3.5 text-center text-slate-400 font-mono">{{ $idx + 1 }}</td>
                 <td class="px-5 py-3.5 font-bold text-slate-800">{{ $kategori->nama_kategori }}</td>
                 <td class="px-5 py-3.5 text-slate-500 max-w-xs truncate" title="{{ $kategori->deskripsi }}">{{ $kategori->deskripsi ?? '-' }}</td>
-                <td class="px-5 py-3.5 text-right font-mono font-bold text-emerald-600">Rp {{ number_format($kategori->pagu_anggaran, 0, ',', '.') }}</td>
+                <td class="px-5 py-3.5 text-right font-mono font-bold text-slate-600">Rp {{ number_format($kategori->pagu_anggaran, 0, ',', '.') }}</td>
+                <td class="px-5 py-3.5 text-right font-mono text-slate-500">Rp {{ number_format($terpakai, 0, ',', '.') }}</td>
+                <td class="px-5 py-3.5 text-right font-mono font-bold {{ $sisaPagu <= 0 ? 'text-rose-600' : 'text-emerald-600' }}">Rp {{ number_format($sisaPagu, 0, ',', '.') }}</td>
                 <td class="px-5 py-3.5 text-center space-x-2">
                   <div class="inline-flex items-center justyfy-center gap-2">
                     <button type="button" 
@@ -81,22 +89,19 @@
                       <i class="fa-solid fa-pen-to-square"></i>
                       <span>Edit</span>
                     </button>
-                    <form action="{{ route('finance.kategori.destroy', $kategori->id) }}" method="POST" class="inline-block" onsubmit="return confirm('Apakah Anda yakin ingin menghapus kategori ini?');">
-                      @csrf
-                      @method('DELETE')
-                      <button type="submit" 
-                      class="bg-rose-600 hover:bg-rose-700 text-white px-3 py-1.5 rounded-xl text-xs font-semibold inline-flex items-center gap-1.2 shadow-smtransition-colors cursor-pointer" 
-                      title="Hapus Kategori">
-                        <i class="fa-solid fa-trash-can"></i>
-                        <span>Hapus</span>
-                      </button>
-                    </form>
+                    <button type="button" 
+                            @click="deleteModal = true; deleteUrl = '{{ route('finance.kategori.destroy', $kategori->id) }}'"
+                            class="bg-rose-600 hover:bg-rose-700 text-white px-3 py-1.5 rounded-xl text-xs font-semibold inline-flex items-center gap-1.2 shadow-sm transition-colors cursor-pointer" 
+                            title="Hapus Kategori">
+                      <i class="fa-solid fa-trash-can"></i>
+                      <span>Hapus</span>
+                    </button>
                   </div>
                 </td>
               </tr>
             @empty
               <tr>
-                <td colspan="5" class="px-5 py-10 text-center text-slate-400">
+                <td colspan="7" class="px-5 py-10 text-center text-slate-400">
                   Belum ada data Kategori & Pagu Anggaran.
                 </td>
               </tr>
@@ -160,6 +165,47 @@
             <button type="submit" class="px-5 py-2 text-[13px] font-semibold bg-[#2b337c] hover:bg-[#1e255e] text-white rounded-lg shadow-sm transition-colors cursor-pointer">Simpan Kategori</button>
           </div>
         </form>
+      </div>
+    </div>
+
+    <!-- Modal Konfirmasi Hapus -->
+    <div x-show="deleteModal" 
+         class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4"
+         x-transition:enter="transition ease-out duration-200"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         x-transition:leave="transition ease-in duration-150"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0"
+         style="display: none;">
+      
+      <div class="bg-white rounded-2xl w-full max-w-sm overflow-hidden shadow-xl"
+           @click.outside="deleteModal = false"
+           x-transition:enter="transition ease-out duration-200"
+           x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+           x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
+           x-transition:leave="transition ease-in duration-150"
+           x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
+           x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
+        
+        <div class="px-6 py-6 text-center">
+          <div class="mx-auto flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-full bg-rose-50 mb-4">
+            <svg class="h-6 w-6 text-rose-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+          </div>
+          <h3 class="text-lg font-bold leading-6 text-slate-900 mb-2">Hapus Kategori?</h3>
+          <p class="text-[13px] text-slate-500">Apakah Anda yakin ingin menghapus kategori ini? Tindakan ini tidak dapat dibatalkan.</p>
+        </div>
+
+        <div class="px-6 py-4 border-t border-slate-100 bg-slate-50 flex gap-3">
+          <button type="button" @click="deleteModal = false" class="flex-1 px-4 py-2.5 text-[13px] font-semibold text-slate-600 hover:text-slate-800 hover:bg-slate-100 rounded-xl transition-colors cursor-pointer border border-slate-200">Batal</button>
+          <form :action="deleteUrl" method="POST" class="flex-1 m-0">
+            @csrf
+            @method('DELETE')
+            <button type="submit" class="w-full px-4 py-2.5 text-[13px] font-semibold bg-rose-600 hover:bg-rose-700 text-white rounded-xl shadow-sm transition-colors cursor-pointer">Ya, Hapus</button>
+          </form>
+        </div>
       </div>
     </div>
   </div>

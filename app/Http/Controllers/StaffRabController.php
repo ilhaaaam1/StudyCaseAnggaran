@@ -108,7 +108,22 @@ class StaffRabController extends Controller
             'Belanja Modal / Alat Elektronik' => 'Proyektor LCD, laptop ANBK, sound system, peralatan elektronik & laboratorium sekolah',
         ];
 
-        return view('staff.create', compact('divisiList', 'user', 'autoNoRab', 'kategoriList'));
+        // Hitung sisa pagu tiap kategori untuk UI
+        $kategoriListDb = \App\Models\KategoriAnggaran::all();
+        $sisaPaguList = [];
+        foreach ($kategoriListDb as $kat) {
+            $paguTerpakai = \App\Models\PengajuanRab::where('kategori_anggaran', $kat->nama_kategori)
+                ->whereIn('status', [
+                    StatusPengajuan::MENUNGGU_FINANCE,
+                    StatusPengajuan::MENUNGGU_PIMPINAN,
+                    StatusPengajuan::PROSES_PENCAIRAN,
+                    StatusPengajuan::SELESAI
+                ])
+                ->sum('estimasi_total');
+            $sisaPaguList[$kat->nama_kategori] = max(0, $kat->pagu_anggaran - $paguTerpakai);
+        }
+
+        return view('staff.create', compact('divisiList', 'user', 'autoNoRab', 'kategoriList', 'sisaPaguList'));
     }
 
     /**
@@ -121,6 +136,35 @@ class StaffRabController extends Controller
         // ketika sistem sedang dalam mode pemeliharaan.
         if (\App\Models\Setting::getSetting('maintenance_mode', '0') == '1') {
             return redirect()->route('staff.dashboard')->with('error', 'Maaf, pembuatan pengajuan RAB sedang dinonaktifkan sementara untuk pemeliharaan sistem.');
+        }
+
+        // PRESENTASI: Validasi Business Logic - Mencegah staf mengajukan RAB melebihi Pagu Anggaran Kategori
+        if ($request->input('action') !== 'draft') {
+            $kategoriNama = $request->input('kategori_anggaran');
+            $kategori = \App\Models\KategoriAnggaran::where('nama_kategori', $kategoriNama)->first();
+
+            if ($kategori) {
+                $totalEstimasiBaru = 0;
+                foreach ($request->input('items', []) as $item) {
+                    $totalEstimasiBaru += ((float) $item['volume'] * (float) $item['harga_satuan']);
+                }
+
+                // Hitung akumulasi pagu yang sudah digunakan (RAB aktif/disetujui)
+                $paguTerpakai = \App\Models\PengajuanRab::where('kategori_anggaran', $kategoriNama)
+                    ->whereIn('status', [
+                        StatusPengajuan::MENUNGGU_FINANCE,
+                        StatusPengajuan::MENUNGGU_PIMPINAN,
+                        StatusPengajuan::PROSES_PENCAIRAN,
+                        StatusPengajuan::SELESAI
+                    ])
+                    ->sum('estimasi_total');
+
+                if (($paguTerpakai + $totalEstimasiBaru) > $kategori->pagu_anggaran) {
+                    return back()
+                        ->withErrors(['kategori_anggaran' => 'Total pengajuan beserta akumulasi RAB lain (Rp ' . number_format($paguTerpakai + $totalEstimasiBaru, 0, ',', '.') . ') melebihi Pagu Anggaran kategori ini. Maksimal sisa pagu yang bisa diajukan: Rp ' . number_format(max(0, $kategori->pagu_anggaran - $paguTerpakai), 0, ',', '.')])
+                        ->withInput();
+                }
+            }
         }
 
         $user = Auth::user();
@@ -388,7 +432,23 @@ class StaffRabController extends Controller
             'Belanja Modal / Alat Elektronik' => 'Proyektor LCD, laptop ANBK, sound system, peralatan elektronik & laboratorium sekolah',
         ];
 
-        return view('staff.edit', compact('pengajuan', 'divisiList', 'kategoriList'));
+        // Hitung sisa pagu tiap kategori untuk UI
+        $kategoriListDb = \App\Models\KategoriAnggaran::all();
+        $sisaPaguList = [];
+        foreach ($kategoriListDb as $kat) {
+            $paguTerpakai = \App\Models\PengajuanRab::where('kategori_anggaran', $kat->nama_kategori)
+                ->where('id_pengajuan', '!=', $pengajuan->id_pengajuan)
+                ->whereIn('status', [
+                    StatusPengajuan::MENUNGGU_FINANCE,
+                    StatusPengajuan::MENUNGGU_PIMPINAN,
+                    StatusPengajuan::PROSES_PENCAIRAN,
+                    StatusPengajuan::SELESAI
+                ])
+                ->sum('estimasi_total');
+            $sisaPaguList[$kat->nama_kategori] = max(0, $kat->pagu_anggaran - $paguTerpakai);
+        }
+
+        return view('staff.edit', compact('pengajuan', 'divisiList', 'kategoriList', 'sisaPaguList'));
     }
 
     /**
@@ -406,6 +466,36 @@ class StaffRabController extends Controller
         // Mencegah eksploitasi jika user memanipulasi request form secara paksa
         if (! in_array($pengajuan->status, [StatusPengajuan::MENUNGGU_FINANCE, StatusPengajuan::DRAFT, StatusPengajuan::REVISI])) {
             abort(403, 'Pengajuan sudah diproses dan tidak dapat diedit');
+        }
+
+        // PRESENTASI: Validasi Business Logic - Mencegah staf mengajukan RAB melebihi Pagu Anggaran Kategori
+        if ($request->input('action') !== 'draft') {
+            $kategoriNama = $request->input('kategori_anggaran');
+            $kategori = \App\Models\KategoriAnggaran::where('nama_kategori', $kategoriNama)->first();
+
+            if ($kategori) {
+                $totalEstimasiBaru = 0;
+                foreach ($request->input('items', []) as $item) {
+                    $totalEstimasiBaru += ((float) $item['volume'] * (float) $item['harga_satuan']);
+                }
+
+                // Hitung akumulasi pagu yang sudah digunakan (kecualikan RAB yang sedang diupdate ini)
+                $paguTerpakai = \App\Models\PengajuanRab::where('kategori_anggaran', $kategoriNama)
+                    ->where('id_pengajuan', '!=', $pengajuan->id_pengajuan)
+                    ->whereIn('status', [
+                        StatusPengajuan::MENUNGGU_FINANCE,
+                        StatusPengajuan::MENUNGGU_PIMPINAN,
+                        StatusPengajuan::PROSES_PENCAIRAN,
+                        StatusPengajuan::SELESAI
+                    ])
+                    ->sum('estimasi_total');
+
+                if (($paguTerpakai + $totalEstimasiBaru) > $kategori->pagu_anggaran) {
+                    return back()
+                        ->withErrors(['kategori_anggaran' => 'Total pengajuan beserta akumulasi RAB lain (Rp ' . number_format($paguTerpakai + $totalEstimasiBaru, 0, ',', '.') . ') melebihi Pagu Anggaran kategori ini. Maksimal sisa pagu yang bisa diajukan: Rp ' . number_format(max(0, $kategori->pagu_anggaran - $paguTerpakai), 0, ',', '.')])
+                        ->withInput();
+                }
+            }
         }
 
         DB::transaction(function () use ($request, $pengajuan) {

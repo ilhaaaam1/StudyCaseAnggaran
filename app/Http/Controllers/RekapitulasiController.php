@@ -73,4 +73,29 @@ class RekapitulasiController extends Controller
 
         return $pdf->stream('Laporan_Rekapitulasi_SIRAB.pdf');
     }
+
+    /**
+     * Export data rekapitulasi ke dalam format Excel.
+     */
+    public function exportExcel(Request $request)
+    {
+        // PRESENTASI: Logika Filtering Laporan (Backend) untuk Excel
+        $query = PengajuanRab::with(['pengguna', 'divisi'])
+            ->when($request->start_date, function ($q, $startDate) {
+                return $q->whereDate('tanggal_pengajuan', '>=', $startDate);
+            })
+            ->when($request->end_date, function ($q, $endDate) {
+                return $q->whereDate('tanggal_pengajuan', '<=', $endDate);
+            })
+            ->when($request->status, function ($q, $status) {
+                return $q->where('status', $status);
+            })
+            ->when($request->kategori, function ($q, $kategori) {
+                return $q->where('kategori_anggaran', 'like', '%' . $kategori . '%');
+            });
+
+        $rekapList = $query->latest('tanggal_pengajuan')->get();
+
+        return \Maatwebsite\Excel\Facades\Excel::download(new \App\Exports\RekapitulasiExport($rekapList), 'Rekapitulasi_Laporan_SIRAB.xlsx');
+    }
 }

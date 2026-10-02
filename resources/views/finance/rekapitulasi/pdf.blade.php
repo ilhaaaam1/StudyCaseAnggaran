@@ -5,9 +5,7 @@
     <title>Cetak Rekapitulasi Laporan</title>
     <style>
         body { font-family: Arial, sans-serif; font-size: 12px; }
-        .kop-surat { border-bottom: 3px solid #000; padding-bottom: 10px; margin-bottom: 20px; text-align: center; position: relative; }
-        .logo { width: 80px; position: absolute; left: 0; top: 0; }
-        .instansi { font-size: 18px; font-weight: bold; margin-bottom: 5px; margin-top: 10px; }
+        .instansi { font-size: 18px; font-weight: bold; margin-bottom: 5px; margin-top: 0px; }
         .alamat { font-size: 12px; }
         table { width: 100%; border-collapse: collapse; margin-top: 20px; }
         th, td { border: 1px solid #000; padding: 6px; text-align: left; }
@@ -35,17 +33,24 @@
         }
     @endphp
 
-    <div class="kop-surat">
-        {{-- PRESENTASI: Menampilkan Logo Dinamis Instansi --}}
-        @if($logoUrl)
-            <img src="{{ $logoUrl }}" alt="Logo" class="logo">
-        @endif
-        <div class="instansi">{{ strtoupper($appName) }}</div>
-        <div class="alamat">
-            Alamat: Cangkring, Sidokare, Kec. Sidoarjo, Kabupaten Sidoarjo<br>
-            Telp: (031) 8965532 | Email: {{ \App\Models\Setting::getSetting('admin_email', 'admin@sekolah.sch.id') }}
-        </div>
-    </div>
+    {{-- PRESENTASI: Menggunakan HTML Table klasik agar layout Kop Surat stabil saat dirender oleh DomPDF --}}
+    <table width="100%" style="border-collapse: collapse; border: none; margin-top: 0;">
+        <tr>
+            <td style="width: 15%; text-align: center; vertical-align: middle; border: none; padding: 0;">
+                @if($logoUrl)
+                    <img src="{{ $logoUrl }}" alt="Logo" style="width: 80px;">
+                @endif
+            </td>
+            <td style="width: 85%; text-align: center; vertical-align: middle; border: none; padding: 0;">
+                <div class="instansi">{{ strtoupper($appName) }}</div>
+                <div class="alamat">
+                    Alamat: Cangkring, Sidokare, Kec. Sidoarjo, Kabupaten Sidoarjo<br>
+                    Telp: (031) 8965532 | Email: {{ \App\Models\Setting::getSetting('admin_email', 'admin@sekolah.sch.id') }}
+                </div>
+            </td>
+        </tr>
+    </table>
+    <hr style="border: 0; border-top: 3px solid black; margin-top: 10px; margin-bottom: 20px;">
 
     <h3 style="text-align: center;">REKAPITULASI LAPORAN PENGAJUAN ANGGARAN</h3>
     

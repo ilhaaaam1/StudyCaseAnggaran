@@ -87,6 +87,7 @@ Route::middleware(['auth', 'role:finance'])->prefix('finance')->name('finance.')
     Route::delete('/kategori-pagu/{id}', [App\Http\Controllers\KategoriAnggaranController::class, 'destroy'])->name('kategori.destroy');
     Route::get('/rekapitulasi', [App\Http\Controllers\RekapitulasiController::class, 'index'])->name('rekapitulasi.index');
     Route::get('/rekapitulasi/pdf', [App\Http\Controllers\RekapitulasiController::class, 'exportPdf'])->name('rekapitulasi.pdf');
+    Route::get('/rekapitulasi/excel', [App\Http\Controllers\RekapitulasiController::class, 'exportExcel'])->name('rekapitulasi.excel');
 });
 
 // -------------------------------------------------------------------------

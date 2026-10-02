@@ -71,9 +71,10 @@
         <a href="{{ route('finance.rekapitulasi.pdf', request()->query()) }}" target="_blank" class="bg-rose-600 hover:bg-rose-700 text-white px-4 py-2 rounded-lg text-xs font-semibold flex items-center gap-2 transition-colors">
           <i class="fa-solid fa-file-pdf"></i> Cetak PDF
         </a>
-        <button type="button" onclick="alert('Fitur Export Excel sedang dikembangkan.')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg text-xs font-semibold flex items-center gap-2 transition-colors">
+        {{-- PRESENTASI: Tombol Export Excel dengan parameter request->query() agar sesuai filter --}}
+        <a href="{{ route('finance.rekapitulasi.excel', request()->query()) }}" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg text-xs font-semibold flex items-center gap-2 transition-colors">
           <i class="fa-solid fa-file-excel"></i> Export Excel
-        </button>
+        </a>
       </div>
     </div>
 
