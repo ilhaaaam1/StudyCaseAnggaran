@@ -19,27 +19,27 @@
 
   <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
     <div class="table-container overflow-x-auto">
-      <table class="w-full text-left border-collapse text-sm">
+      <table class="w-full text-left border-collapse text-sm min-w-[800px]">
         <thead>
           <tr class="bg-slate-50 border-b border-slate-200 text-[11px] font-bold uppercase tracking-wider text-slate-500">
-            <th class="py-3 px-4">No. RAB</th>
+            <th class="py-3 px-4 whitespace-nowrap">No. RAB</th>
             <th class="py-3 px-4">Judul Pengajuan</th>
-            <th class="py-3 px-4">Divisi</th>
-            <th class="py-3 px-4">Periode</th>
-            <th class="py-3 px-4 text-right">Estimasi Total</th>
-            <th class="py-3 px-4 text-center">Status</th>
-            <th class="py-3 px-4 text-center">Aksi</th>
+            <th class="py-3 px-4 whitespace-nowrap">Divisi</th>
+            <th class="py-3 px-4 whitespace-nowrap">Periode</th>
+            <th class="py-3 px-4 text-right whitespace-nowrap">Estimasi Total</th>
+            <th class="py-3 px-4 text-center whitespace-nowrap">Status</th>
+            <th class="py-3 px-4 text-center whitespace-nowrap">Aksi</th>
           </tr>
         </thead>
         <tbody class="divide-y divide-slate-100 text-slate-700">
           @forelse($historiList as $item)
             <tr class="hover:bg-slate-50/80">
-              <td class="py-3 px-4 font-mono font-bold">{{ $item->no_rab }}</td>
-              <td class="py-3 px-4">{{ $item->judul_pengajuan }}</td>
-              <td class="py-3 px-4">{{ $item->divisi->nama_divisi ?? '-' }}</td>
-              <td class="py-3 px-4">{{ $item->periode_penggunaan }}</td>
-              <td class="py-3 px-4 text-right font-mono font-semibold">Rp {{ number_format((float) $item->estimasi_total, 0, ',', '.') }}</td>
-              <td class="py-3 px-4 text-center">
+              <td class="py-3 px-4 font-mono font-bold whitespace-nowrap">{{ $item->no_rab }}</td>
+              <td class="py-3 px-4 max-w-xs truncate" title="{{ $item->judul_pengajuan }}">{{ $item->judul_pengajuan }}</td>
+              <td class="py-3 px-4 whitespace-nowrap">{{ $item->divisi->nama_divisi ?? '-' }}</td>
+              <td class="py-3 px-4 whitespace-nowrap">{{ $item->periode_penggunaan }}</td>
+              <td class="py-3 px-4 text-right font-mono font-semibold whitespace-nowrap tabular-nums">Rp {{ number_format((float) $item->estimasi_total, 0, ',', '.') }}</td>
+              <td class="py-3 px-4 text-center whitespace-nowrap">
                 @if($item->status === 'ACC')
                   <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800">ACC</span>
                 @elseif($item->status === 'Ditolak')
@@ -48,9 +48,12 @@
                   <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-800">Pending</span>
                 @endif
               </td>
-              <td class="py-3 px-4 text-center">
-                <a href="{{ route('user.rab.show', $item->id_pengajuan) }}" class="text-indigo-600 hover:text-indigo-800 font-semibold text-xs">
-                  Detail &raquo;
+              <td class="py-3 px-4 text-center whitespace-nowrap">
+                <a href="{{ route('user.rab.show', $item->id_pengajuan) }}" 
+                   class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap bg-slate-100 hover:bg-indigo-50 text-slate-700 hover:text-indigo-600 border border-slate-200/80 hover:border-indigo-200 shadow-2xs focus:outline-none focus:ring-2 focus:ring-indigo-500/20 active:scale-95 transition-all duration-150 shrink-0"
+                   title="Lihat Detail Pengajuan">
+                  <i class="fa-regular fa-eye text-[12px] shrink-0"></i>
+                  <span>Detail</span>
                 </a>
               </td>
             </tr>

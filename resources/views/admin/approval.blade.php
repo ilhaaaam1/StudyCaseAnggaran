@@ -123,10 +123,21 @@
           <div class="text-slate-400">
             Lampiran: {{ $item->dokumen_pendukung->count() }} dokumen terunggah
           </div>
-          <a href="{{ route('admin.pengajuan.show', $item->id_pengajuan) }}" 
-             class="px-4 py-1.5 {{ $item->status === 'Pending' ? 'bg-indigo-600 hover:bg-indigo-700' : ($item->status === 'ACC' ? 'bg-emerald-600 hover:bg-emerald-700' : 'bg-slate-700 hover:bg-slate-800') }} text-white font-semibold rounded-lg transition-colors shadow-sm">
-            {{ $item->status === 'Pending' ? 'Proses Persetujuan »' : 'Lihat Detail & Riwayat »' }}
-          </a>
+          @if($item->status === 'Pending')
+            <a href="{{ route('admin.pengajuan.show', $item->id_pengajuan) }}" 
+               class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 shadow-2xs focus:outline-none focus:ring-2 focus:ring-indigo-500/20 active:scale-95 transition-all duration-150 shrink-0"
+               title="Proses Persetujuan">
+              <i class="fa-solid fa-clipboard-check text-[12px] shrink-0"></i>
+              <span>Review</span>
+            </a>
+          @else
+            <a href="{{ route('admin.pengajuan.show', $item->id_pengajuan) }}" 
+               class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap bg-slate-100 hover:bg-indigo-50 text-slate-700 hover:text-indigo-600 border border-slate-200/80 hover:border-indigo-200 shadow-2xs focus:outline-none focus:ring-2 focus:ring-indigo-500/20 active:scale-95 transition-all duration-150 shrink-0"
+               title="Lihat Detail & Riwayat">
+              <i class="fa-regular fa-eye text-[12px] shrink-0"></i>
+              <span>Detail</span>
+            </a>
+          @endif
         </div>
       </div>
     @empty

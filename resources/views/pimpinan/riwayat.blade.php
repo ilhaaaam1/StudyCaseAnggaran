@@ -99,9 +99,9 @@
               </td>
               <td class="px-5 py-3.5 text-center whitespace-nowrap">
                 <a href="{{ route('pimpinan.show', $item->id_pengajuan) }}" 
-                   class="inline-flex items-center gap-1 px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-semibold transition-colors shrink-0"
+                   class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap bg-slate-100 hover:bg-indigo-50 text-slate-700 hover:text-indigo-600 border border-slate-200/80 hover:border-indigo-200 shadow-2xs focus:outline-none focus:ring-2 focus:ring-indigo-500/20 active:scale-95 transition-all duration-150 shrink-0"
                    title="Lihat Detail & Keputusan">
-                  <i class="fa-regular fa-eye text-[11px]"></i>
+                  <i class="fa-regular fa-eye text-[12px] shrink-0"></i>
                   <span>Detail</span>
                 </a>
               </td>

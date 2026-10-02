@@ -110,10 +110,12 @@
                   {{ ucfirst($item->prioritas) }}
                 </span>
               </td>
-              <td class="px-5 py-4 text-center">
+              <td class="px-5 py-4 text-center whitespace-nowrap">
                 <a href="{{ route('pengajuan.show', $item->id_pengajuan) }}"
-                   class="inline-flex items-center gap-1.5 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 px-3 py-1.5 rounded shadow-sm transition-colors">
-                  Evaluasi &rarr;
+                   class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 shadow-2xs focus:outline-none focus:ring-2 focus:ring-indigo-500/20 active:scale-95 transition-all duration-150 shrink-0"
+                   title="Evaluasi dan Review Pengajuan">
+                  <i class="fa-solid fa-clipboard-check text-[12px] shrink-0"></i>
+                  <span>Review</span>
                 </a>
               </td>
             </tr>

@@ -36,57 +36,81 @@
     </div>
   </div>
 
-  <!-- Stats Grid (Figma dashboard.html 4 Cards) -->
-  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+  <!-- Stats Grid (4 Cards) -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 mb-8">
     <!-- Card 1: TOTAL PENGAJUAN -->
-    <div class="bg-white rounded-xl p-5 shadow-md border-none hover:shadow transition-shadow">
-      <div class="text-xs font-bold text-slate-500 tracking-wider uppercase mb-2">
-        TOTAL PENGAJUAN
+    <div class="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-5 transition-all hover:shadow-sm hover:border-slate-300 h-full flex flex-col justify-between">
+      <div>
+        <div class="flex items-start justify-between gap-2 mb-2">
+          <span class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider block">Total Pengajuan</span>
+          <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-slate-100 text-slate-600 flex items-center justify-center text-sm shrink-0">
+            <i class="fa-solid fa-folder-open text-[15px]"></i>
+          </div>
+        </div>
+        <div class="text-xl sm:text-2xl xl:text-[22px] 2xl:text-2xl font-bold font-mono tracking-tight text-slate-900 tabular-nums mt-1" title="Rp {{ number_format($totalNominalPengajuan ?? 0, 0, ',', '.') }}">
+          Rp {{ number_format($totalNominalPengajuan ?? 0, 0, ',', '.') }}
+        </div>
       </div>
-      <div class="text-2xl font-bold text-[#8b8df7] font-mono mb-1">
-        Rp {{ number_format($totalNominalPengajuan ?? 0, 0, ',', '.') }}
-      </div>
-      <div class="text-xs text-slate-400">
-        {{ $totalPengajuan ?? 0 }} dokumen masuk
+      <div class="text-xs text-slate-400 mt-3 pt-3 border-t border-slate-100 flex items-center gap-1.5">
+        <i class="fa-regular fa-file-lines text-slate-400 text-[11px] shrink-0"></i>
+        <span>{{ number_format($totalPengajuan ?? 0) }} dokumen masuk</span>
       </div>
     </div>
 
     <!-- Card 2: DISETUJUI (ACC) -->
-    <div class="bg-white rounded-xl p-5 shadow-md border-none hover:shadow transition-shadow">
-      <div class="text-xs font-bold text-slate-500 tracking-wider uppercase mb-2">
-        DISETUJUI (ACC)
+    <div class="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-5 transition-all hover:shadow-sm hover:border-slate-300 h-full flex flex-col justify-between">
+      <div>
+        <div class="flex items-start justify-between gap-2 mb-2">
+          <span class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider block">Disetujui (ACC)</span>
+          <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-sm shrink-0">
+            <i class="fa-solid fa-circle-check text-[15px]"></i>
+          </div>
+        </div>
+        <div class="text-xl sm:text-2xl xl:text-[22px] 2xl:text-2xl font-bold font-mono tracking-tight text-slate-900 tabular-nums mt-1" title="Rp {{ number_format($totalAnggaranAcc ?? 0, 0, ',', '.') }}">
+          Rp {{ number_format($totalAnggaranAcc ?? 0, 0, ',', '.') }}
+        </div>
       </div>
-      <div class="text-2xl font-bold text-emerald-500 font-mono mb-1">
-        Rp {{ number_format($totalAnggaranAcc ?? 0, 0, ',', '.') }}
-      </div>
-      <div class="text-xs text-slate-400">
-        {{ $totalAcc ?? 0 }} dokumen disetujui
+      <div class="text-xs text-slate-400 mt-3 pt-3 border-t border-slate-100 flex items-center gap-1.5">
+        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0"></span>
+        <span>{{ number_format($totalAcc ?? 0) }} dokumen disetujui</span>
       </div>
     </div>
 
     <!-- Card 3: MENUNGGU REVIEW (Pending) -->
-    <div class="bg-white rounded-xl p-5 shadow-md border-none hover:shadow transition-shadow">
-      <div class="text-xs font-bold text-slate-500 tracking-wider uppercase mb-2">
-        MENUNGGU REVIEW
+    <div class="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-5 transition-all hover:shadow-sm hover:border-slate-300 h-full flex flex-col justify-between">
+      <div>
+        <div class="flex items-start justify-between gap-2 mb-2">
+          <span class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider block">Menunggu Review</span>
+          <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-sm shrink-0">
+            <i class="fa-solid fa-hourglass-half text-[15px]"></i>
+          </div>
+        </div>
+        <div class="text-2xl sm:text-3xl font-bold font-mono tracking-tight text-slate-900 tabular-nums mt-1">
+          {{ number_format($totalPending ?? 0) }}
+        </div>
       </div>
-      <div class="text-2xl font-bold text-amber-500 font-mono mb-1">
-        {{ $totalPending ?? 0 }} Dokumen
-      </div>
-      <div class="text-xs text-slate-400">
-        Antrean butuh evaluasi segera
+      <div class="text-xs text-slate-400 mt-3 pt-3 border-t border-slate-100 flex items-center gap-1.5">
+        <span class="w-1.5 h-1.5 rounded-full bg-amber-500 shrink-0"></span>
+        <span>Antrean butuh evaluasi</span>
       </div>
     </div>
 
     <!-- Card 4: DITOLAK / REVISI -->
-    <div class="bg-white rounded-xl p-5 shadow-md border-none hover:shadow transition-shadow">
-      <div class="text-xs font-bold text-slate-500 tracking-wider uppercase mb-2">
-        DITOLAK / REVISI
+    <div class="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-5 transition-all hover:shadow-sm hover:border-slate-300 h-full flex flex-col justify-between">
+      <div>
+        <div class="flex items-start justify-between gap-2 mb-2">
+          <span class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider block">Ditolak / Revisi</span>
+          <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center text-sm shrink-0">
+            <i class="fa-solid fa-circle-xmark text-[15px]"></i>
+          </div>
+        </div>
+        <div class="text-2xl sm:text-3xl font-bold font-mono tracking-tight text-slate-900 tabular-nums mt-1">
+          {{ number_format($totalDitolak ?? 0) }}
+        </div>
       </div>
-      <div class="text-2xl font-bold text-rose-500 font-mono mb-1">
-        {{ $totalDitolak ?? 0 }} Dokumen
-      </div>
-      <div class="text-xs text-slate-400">
-        Pengajuan yang tidak disetujui
+      <div class="text-xs text-slate-400 mt-3 pt-3 border-t border-slate-100 flex items-center gap-1.5">
+        <span class="w-1.5 h-1.5 rounded-full bg-rose-500 shrink-0"></span>
+        <span>Pengajuan belum disetujui</span>
       </div>
     </div>
   </div>
@@ -289,10 +313,12 @@
                   </span>
                 @endif
               </td>
-              <td class="p-4 text-center">
+              <td class="px-4 py-3.5 align-middle text-center whitespace-nowrap">
                 <a href="{{ route('admin.pengajuan.show', $item->id_pengajuan) }}" 
-                   class="inline-flex items-center gap-1 px-3 py-1.5 bg-[#2e358b] hover:bg-[#222870] text-white font-medium rounded-lg text-xs transition-colors shadow-sm cursor-pointer">
-                  Review RAB &raquo;
+                   class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap bg-slate-100 hover:bg-indigo-50 text-slate-700 hover:text-indigo-600 border border-slate-200/80 hover:border-indigo-200 shadow-2xs focus:outline-none focus:ring-2 focus:ring-indigo-500/20 active:scale-95 transition-all duration-150 shrink-0"
+                   title="Lihat Detail Pengajuan">
+                  <i class="fa-regular fa-eye text-[12px] shrink-0"></i>
+                  <span>Detail</span>
                 </a>
               </td>
             </tr>

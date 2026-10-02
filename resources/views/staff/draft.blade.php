@@ -86,19 +86,19 @@
               </td>
               <td class="px-4 py-3.5 align-middle text-center whitespace-nowrap">
                 <div class="flex items-center justify-center gap-1.5">
-                  <!-- Tombol Detail (Tema Indigo Riwayat) -->
+                  <!-- Tombol Detail -->
                   <a href="{{ route('staff.rab.show', $item->id_pengajuan) }}"
-                     class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium text-indigo-700 bg-indigo-50/80 hover:bg-indigo-100 border border-indigo-200/70 transition-colors"
+                     class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap bg-slate-100 hover:bg-indigo-50 text-slate-700 hover:text-indigo-600 border border-slate-200/80 hover:border-indigo-200 shadow-2xs focus:outline-none focus:ring-2 focus:ring-indigo-500/20 active:scale-95 transition-all duration-150 shrink-0"
                      title="Lihat Detail Draft Pengajuan">
-                    <i class="fa-regular fa-eye text-[11px]"></i>
+                    <i class="fa-regular fa-eye text-[12px] shrink-0"></i>
                     <span>Detail</span>
                   </a>
 
-                  <!-- Tombol Edit (Tema Amber Riwayat) -->
+                  <!-- Tombol Edit -->
                   <a href="{{ route('staff.rab.edit', $item->id_pengajuan) }}"
-                     class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium text-amber-700 bg-amber-50 hover:bg-amber-100 border border-amber-200 transition-colors"
+                     class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap text-amber-700 bg-amber-50 hover:bg-amber-100 border border-amber-200 shadow-2xs focus:outline-none focus:ring-2 focus:ring-amber-500/20 active:scale-95 transition-all duration-150 shrink-0"
                      title="Lanjutkan / Edit Pengajuan">
-                    <i class="fa-solid fa-pen-to-square text-[10px]"></i>
+                    <i class="fa-solid fa-pen-to-square text-[11px] shrink-0"></i>
                     <span>Edit</span>
                   </a>
 

@@ -40,102 +40,99 @@
 </div>
 
 <!-- Metric Cards Grid -->
-<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 mb-8">
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 sm:gap-5 mb-8">
     <!-- Card 1: Total Diajukan -->
-    <div class="bg-white border border-slate-200/80 rounded-2xl p-4 sm:p-5 shadow-xs flex flex-col justify-between h-full transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md group">
+    <div class="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-5 transition-all hover:shadow-sm hover:border-slate-300 h-full flex flex-col justify-between">
         <div>
-            <div class="flex items-center justify-between gap-2 mb-3">
-                <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Total Diajukan</span>
-                <div class="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 border border-indigo-100/70 flex items-center justify-center text-sm shrink-0 shadow-xs transition-colors group-hover:bg-indigo-100">
+            <div class="flex items-start justify-between gap-2 mb-2">
+                <span class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider block">Total Diajukan</span>
+                <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-slate-100 text-slate-600 flex items-center justify-center text-sm shrink-0">
                     <i class="fa-solid fa-calculator text-[15px]"></i>
                 </div>
             </div>
-            <div class="flex items-baseline flex-wrap gap-x-1" title="Rp {{ number_format($totalAnggaranDiajukan ?? 0, 0, ',', '.') }}">
-                <span class="text-xs font-bold text-slate-500 shrink-0">Rp</span>
-                <span class="text-lg sm:text-xl xl:text-[18px] 2xl:text-xl font-extrabold text-slate-900 tracking-tight tabular-nums">
-                    {{ number_format($totalAnggaranDiajukan ?? 0, 0, ',', '.') }}
-                </span>
+            <div class="text-xl sm:text-2xl xl:text-[20px] 2xl:text-2xl font-bold font-mono tracking-tight text-slate-900 tabular-nums mt-1" title="Rp {{ number_format($totalAnggaranDiajukan ?? 0, 0, ',', '.') }}">
+                Rp {{ number_format($totalAnggaranDiajukan ?? 0, 0, ',', '.') }}
             </div>
         </div>
-        <div class="mt-4 pt-3 border-t border-slate-100 flex items-center gap-1.5 text-[11px] font-medium text-slate-500">
+        <div class="text-xs text-slate-400 mt-3 pt-3 border-t border-slate-100 flex items-center gap-1.5">
             <i class="fa-regular fa-file-lines text-slate-400 text-[11px] shrink-0"></i>
-            <span class="truncate">{{ $totalPengajuan ?? 0 }} berkas diajukan</span>
+            <span>{{ number_format($totalPengajuan ?? 0) }} berkas diajukan</span>
         </div>
     </div>
 
     <!-- Card 2: Menunggu Review -->
-    <div class="bg-white border border-slate-200/80 rounded-2xl p-4 sm:p-5 shadow-xs flex flex-col justify-between h-full transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md group">
+    <div class="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-5 transition-all hover:shadow-sm hover:border-slate-300 h-full flex flex-col justify-between">
         <div>
-            <div class="flex items-center justify-between gap-2 mb-3">
-                <span class="text-[11px] font-bold text-blue-700 uppercase tracking-wider">Menunggu Review</span>
-                <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 border border-blue-100/70 flex items-center justify-center text-sm shrink-0 shadow-xs transition-colors group-hover:bg-blue-100">
+            <div class="flex items-start justify-between gap-2 mb-2">
+                <span class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider block">Menunggu Review</span>
+                <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-sm shrink-0">
                     <i class="fa-solid fa-hourglass-half text-[15px]"></i>
                 </div>
             </div>
-            <div class="text-2xl sm:text-3xl font-extrabold text-blue-700 font-mono tabular-nums tracking-tight">
+            <div class="text-2xl sm:text-3xl font-bold font-mono tracking-tight text-slate-900 tabular-nums mt-1">
                 {{ number_format(($totalPending ?? 0) + ($totalAccFinance ?? 0)) }}
             </div>
         </div>
-        <div class="mt-4 pt-3 border-t border-slate-100 flex items-center gap-1.5 text-[11px] font-medium text-slate-500">
+        <div class="text-xs text-slate-400 mt-3 pt-3 border-t border-slate-100 flex items-center gap-1.5">
             <span class="w-1.5 h-1.5 rounded-full bg-blue-500 shrink-0"></span>
-            <span class="truncate">Finance &amp; Pimpinan</span>
+            <span>Finance &amp; Pimpinan</span>
         </div>
     </div>
 
     <!-- Card 3: Disetujui (ACC Final) -->
-    <div class="bg-white border border-slate-200/80 rounded-2xl p-4 sm:p-5 shadow-xs flex flex-col justify-between h-full transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md group">
+    <div class="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-5 transition-all hover:shadow-sm hover:border-slate-300 h-full flex flex-col justify-between">
         <div>
-            <div class="flex items-center justify-between gap-2 mb-3">
-                <span class="text-[11px] font-bold text-emerald-700 uppercase tracking-wider">Disetujui (ACC Final)</span>
-                <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 border border-emerald-100/70 flex items-center justify-center text-sm shrink-0 shadow-xs transition-colors group-hover:bg-emerald-100">
+            <div class="flex items-start justify-between gap-2 mb-2">
+                <span class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider block">Disetujui (ACC Final)</span>
+                <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-sm shrink-0">
                     <i class="fa-solid fa-circle-check text-[15px]"></i>
                 </div>
             </div>
-            <div class="text-2xl sm:text-3xl font-extrabold text-emerald-700 font-mono tabular-nums tracking-tight">
+            <div class="text-2xl sm:text-3xl font-bold font-mono tracking-tight text-slate-900 tabular-nums mt-1">
                 {{ number_format($totalAccFinal ?? 0) }}
             </div>
         </div>
-        <div class="mt-4 pt-3 border-t border-slate-100 flex items-center gap-1.5 text-[11px] font-medium text-slate-500">
+        <div class="text-xs text-slate-400 mt-3 pt-3 border-t border-slate-100 flex items-center gap-1.5">
             <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0"></span>
-            <span class="truncate">Anggaran disetujui penuh</span>
+            <span>Anggaran disetujui penuh</span>
         </div>
     </div>
 
     <!-- Card 4: Perlu Revisi -->
-    <div class="bg-white border {{ ($totalRevisi ?? 0) > 0 ? 'border-amber-300 ring-1 ring-amber-200/60' : 'border-slate-200/80' }} rounded-2xl p-4 sm:p-5 shadow-xs flex flex-col justify-between h-full transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md group">
+    <div class="bg-white rounded-2xl border {{ ($totalRevisi ?? 0) > 0 ? 'border-amber-300 ring-1 ring-amber-200/60' : 'border-slate-200/80' }} shadow-xs p-5 transition-all hover:shadow-sm hover:border-slate-300 h-full flex flex-col justify-between">
         <div>
-            <div class="flex items-center justify-between gap-2 mb-3">
-                <span class="text-[11px] font-bold text-amber-700 uppercase tracking-wider">Perlu Revisi</span>
-                <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 border border-amber-200/80 flex items-center justify-center text-sm shrink-0 shadow-xs transition-colors group-hover:bg-amber-100">
+            <div class="flex items-start justify-between gap-2 mb-2">
+                <span class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider block">Perlu Revisi</span>
+                <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-sm shrink-0">
                     <i class="fa-solid fa-triangle-exclamation text-[15px]"></i>
                 </div>
             </div>
-            <div class="text-2xl sm:text-3xl font-extrabold text-amber-700 font-mono tabular-nums tracking-tight">
+            <div class="text-2xl sm:text-3xl font-bold font-mono tracking-tight {{ ($totalRevisi ?? 0) > 0 ? 'text-amber-700' : 'text-slate-900' }} tabular-nums mt-1">
                 {{ number_format($totalRevisi ?? 0) }}
             </div>
         </div>
-        <div class="mt-4 pt-3 border-t border-slate-100 flex items-center gap-1.5 text-[11px] font-medium text-slate-500">
+        <div class="text-xs text-slate-400 mt-3 pt-3 border-t border-slate-100 flex items-center gap-1.5">
             <span class="w-1.5 h-1.5 rounded-full bg-amber-500 shrink-0 {{ ($totalRevisi ?? 0) > 0 ? 'animate-pulse' : '' }}"></span>
-            <span class="truncate">Perlu perbaikan berkas</span>
+            <span>Perlu perbaikan berkas</span>
         </div>
     </div>
 
     <!-- Card 5: Ditolak Permanen -->
-    <div class="bg-white border border-slate-200/80 rounded-2xl p-4 sm:p-5 shadow-xs flex flex-col justify-between h-full transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md group">
+    <div class="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-5 transition-all hover:shadow-sm hover:border-slate-300 h-full flex flex-col justify-between">
         <div>
-            <div class="flex items-center justify-between gap-2 mb-3">
-                <span class="text-[11px] font-bold text-rose-700 uppercase tracking-wider">Ditolak Permanen</span>
-                <div class="w-10 h-10 rounded-xl bg-rose-50 text-rose-600 border border-rose-100/70 flex items-center justify-center text-sm shrink-0 shadow-xs transition-colors group-hover:bg-rose-100">
+            <div class="flex items-start justify-between gap-2 mb-2">
+                <span class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider block">Ditolak Permanen</span>
+                <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center text-sm shrink-0">
                     <i class="fa-solid fa-circle-xmark text-[15px]"></i>
                 </div>
             </div>
-            <div class="text-2xl sm:text-3xl font-extrabold text-rose-700 font-mono tabular-nums tracking-tight">
+            <div class="text-2xl sm:text-3xl font-bold font-mono tracking-tight text-slate-900 tabular-nums mt-1">
                 {{ number_format($totalDitolak ?? 0) }}
             </div>
         </div>
-        <div class="mt-4 pt-3 border-t border-slate-100 flex items-center gap-1.5 text-[11px] font-medium text-slate-500">
+        <div class="text-xs text-slate-400 mt-3 pt-3 border-t border-slate-100 flex items-center gap-1.5">
             <span class="w-1.5 h-1.5 rounded-full bg-rose-500 shrink-0"></span>
-            <span class="truncate">Tidak dapat direvisi</span>
+            <span>Tidak dapat direvisi</span>
         </div>
     </div>
 </div>
@@ -254,18 +251,18 @@
                         <div class="inline-flex items-center justify-center gap-1.5 shrink-0">
                             <!-- Detail & Track -->
                             <a href="{{ route('staff.rab.show', $item->id_pengajuan) }}"
-                               class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200/80 transition-colors shrink-0"
+                               class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap bg-slate-100 hover:bg-indigo-50 text-slate-700 hover:text-indigo-600 border border-slate-200/80 hover:border-indigo-200 shadow-2xs focus:outline-none focus:ring-2 focus:ring-indigo-500/20 active:scale-95 transition-all duration-150 shrink-0"
                                title="Lihat Detail & Lacak Progres">
-                                <i class="fa-regular fa-eye text-[11px]"></i>
+                                <i class="fa-regular fa-eye text-[12px] shrink-0"></i>
                                 <span>Detail</span>
                             </a>
 
                             <!-- Edit (Jika Status Revisi atau Draft) -->
                             @if(in_array($item->status, [\App\Enums\StatusPengajuan::REVISI, \App\Enums\StatusPengajuan::DRAFT]))
                                 <a href="{{ route('staff.rab.edit', $item->id_pengajuan) }}"
-                                   class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium text-amber-700 bg-amber-50 hover:bg-amber-100 border border-amber-200 transition-colors shrink-0"
+                                   class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap text-amber-700 bg-amber-50 hover:bg-amber-100 border border-amber-200 shadow-2xs focus:outline-none focus:ring-2 focus:ring-amber-500/20 active:scale-95 transition-all duration-150 shrink-0"
                                    title="Edit / Perbaiki Pengajuan">
-                                    <i class="fa-solid fa-pen-to-square text-[10px]"></i>
+                                    <i class="fa-solid fa-pen-to-square text-[11px] shrink-0"></i>
                                     <span>Edit</span>
                                 </a>
                             @endif
