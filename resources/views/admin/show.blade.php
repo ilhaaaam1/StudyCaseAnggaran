@@ -6,9 +6,11 @@
 <div class="max-w-5xl mx-auto space-y-6">
   <!-- Top Bar -->
   <div class="flex items-center justify-between">
-    <a href="{{ route('admin.dashboard') }}" 
-       class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900 bg-white border border-slate-200 hover:bg-slate-50 transition-colors shadow-sm">
-      &larr; Kembali ke Daftar Antrean
+    <a href="{{ url()->previous() != url()->current() ? url()->previous() : route('admin.dashboard') }}" 
+       class="inline-flex items-center gap-2 px-3.5 py-2 bg-white hover:bg-slate-50 text-slate-700 hover:text-slate-900 border border-slate-200/80 rounded-xl text-xs font-semibold shadow-xs transition-colors shrink-0"
+       title="Kembali ke Halaman Sebelumnya">
+      <i class="fa-solid fa-arrow-left text-[11px]"></i>
+      <span>Kembali ke Antrean</span>
     </a>
 
     <!-- Current Status Badge -->

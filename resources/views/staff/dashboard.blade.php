@@ -40,37 +40,103 @@
 </div>
 
 <!-- Metric Cards Grid -->
-<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
-    <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
-        <div class="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">TOTAL DIAJUKAN</div>
-        <div class="text-xl font-bold text-slate-800 font-mono">Rp {{ number_format($totalAnggaranDiajukan ?? 0, 0, ',', '.') }}</div>
-        <div class="text-[10px] text-slate-400 mt-1">{{ $totalPengajuan ?? 0 }} berkas</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 mb-8">
+    <!-- Card 1: Total Diajukan -->
+    <div class="bg-white border border-slate-200/80 rounded-2xl p-4 sm:p-5 shadow-xs flex flex-col justify-between h-full transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md group">
+        <div>
+            <div class="flex items-center justify-between gap-2 mb-3">
+                <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Total Diajukan</span>
+                <div class="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 border border-indigo-100/70 flex items-center justify-center text-sm shrink-0 shadow-xs transition-colors group-hover:bg-indigo-100">
+                    <i class="fa-solid fa-calculator text-[15px]"></i>
+                </div>
+            </div>
+            <div class="flex items-baseline flex-wrap gap-x-1" title="Rp {{ number_format($totalAnggaranDiajukan ?? 0, 0, ',', '.') }}">
+                <span class="text-xs font-bold text-slate-500 shrink-0">Rp</span>
+                <span class="text-lg sm:text-xl xl:text-[18px] 2xl:text-xl font-extrabold text-slate-900 tracking-tight tabular-nums">
+                    {{ number_format($totalAnggaranDiajukan ?? 0, 0, ',', '.') }}
+                </span>
+            </div>
+        </div>
+        <div class="mt-4 pt-3 border-t border-slate-100 flex items-center gap-1.5 text-[11px] font-medium text-slate-500">
+            <i class="fa-regular fa-file-lines text-slate-400 text-[11px] shrink-0"></i>
+            <span class="truncate">{{ $totalPengajuan ?? 0 }} berkas diajukan</span>
+        </div>
     </div>
 
-    <div class="bg-blue-50/70 border border-blue-200 rounded-xl p-5 shadow-sm">
-        <div class="text-[11px] font-bold text-blue-800 uppercase tracking-wider mb-1">MENUNGGU REVIEW</div>
-        <div class="text-2xl font-bold text-blue-700 font-mono">{{ ($totalPending ?? 0) + ($totalAccFinance ?? 0) }}</div>
-        <div class="text-[10px] text-blue-600 mt-1">Finance &amp; Pimpinan</div>
+    <!-- Card 2: Menunggu Review -->
+    <div class="bg-white border border-slate-200/80 rounded-2xl p-4 sm:p-5 shadow-xs flex flex-col justify-between h-full transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md group">
+        <div>
+            <div class="flex items-center justify-between gap-2 mb-3">
+                <span class="text-[11px] font-bold text-blue-700 uppercase tracking-wider">Menunggu Review</span>
+                <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 border border-blue-100/70 flex items-center justify-center text-sm shrink-0 shadow-xs transition-colors group-hover:bg-blue-100">
+                    <i class="fa-solid fa-hourglass-half text-[15px]"></i>
+                </div>
+            </div>
+            <div class="text-2xl sm:text-3xl font-extrabold text-blue-700 font-mono tabular-nums tracking-tight">
+                {{ number_format(($totalPending ?? 0) + ($totalAccFinance ?? 0)) }}
+            </div>
+        </div>
+        <div class="mt-4 pt-3 border-t border-slate-100 flex items-center gap-1.5 text-[11px] font-medium text-slate-500">
+            <span class="w-1.5 h-1.5 rounded-full bg-blue-500 shrink-0"></span>
+            <span class="truncate">Finance &amp; Pimpinan</span>
+        </div>
     </div>
 
-    <div class="bg-emerald-50/70 border border-emerald-200 rounded-xl p-5 shadow-sm">
-        <div class="text-[11px] font-bold text-emerald-800 uppercase tracking-wider mb-1">DISETUJUI (ACC FINAL)</div>
-        <div class="text-2xl font-bold text-emerald-700 font-mono">{{ $totalAccFinal ?? 0 }}</div>
-        <div class="text-[10px] text-emerald-600 mt-1">Anggaran disetujui penuh</div>
+    <!-- Card 3: Disetujui (ACC Final) -->
+    <div class="bg-white border border-slate-200/80 rounded-2xl p-4 sm:p-5 shadow-xs flex flex-col justify-between h-full transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md group">
+        <div>
+            <div class="flex items-center justify-between gap-2 mb-3">
+                <span class="text-[11px] font-bold text-emerald-700 uppercase tracking-wider">Disetujui (ACC Final)</span>
+                <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 border border-emerald-100/70 flex items-center justify-center text-sm shrink-0 shadow-xs transition-colors group-hover:bg-emerald-100">
+                    <i class="fa-solid fa-circle-check text-[15px]"></i>
+                </div>
+            </div>
+            <div class="text-2xl sm:text-3xl font-extrabold text-emerald-700 font-mono tabular-nums tracking-tight">
+                {{ number_format($totalAccFinal ?? 0) }}
+            </div>
+        </div>
+        <div class="mt-4 pt-3 border-t border-slate-100 flex items-center gap-1.5 text-[11px] font-medium text-slate-500">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0"></span>
+            <span class="truncate">Anggaran disetujui penuh</span>
+        </div>
     </div>
 
-    {{-- PRESENTASI: Memisahkan card untuk Revisi --}}
-    <div class="bg-amber-50/70 border border-amber-200 rounded-xl p-5 shadow-sm">
-        <div class="text-[11px] font-bold text-amber-800 uppercase tracking-wider mb-1">REVISI (PERLU PERBAIKAN)</div>
-        <div class="text-2xl font-bold text-amber-700 font-mono">{{ $totalRevisi ?? 0 }}</div>
-        <div class="text-[10px] text-amber-600 mt-1">Dikembalikan untuk diperbaiki</div>
+    <!-- Card 4: Perlu Revisi -->
+    <div class="bg-white border {{ ($totalRevisi ?? 0) > 0 ? 'border-amber-300 ring-1 ring-amber-200/60' : 'border-slate-200/80' }} rounded-2xl p-4 sm:p-5 shadow-xs flex flex-col justify-between h-full transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md group">
+        <div>
+            <div class="flex items-center justify-between gap-2 mb-3">
+                <span class="text-[11px] font-bold text-amber-700 uppercase tracking-wider">Perlu Revisi</span>
+                <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 border border-amber-200/80 flex items-center justify-center text-sm shrink-0 shadow-xs transition-colors group-hover:bg-amber-100">
+                    <i class="fa-solid fa-triangle-exclamation text-[15px]"></i>
+                </div>
+            </div>
+            <div class="text-2xl sm:text-3xl font-extrabold text-amber-700 font-mono tabular-nums tracking-tight">
+                {{ number_format($totalRevisi ?? 0) }}
+            </div>
+        </div>
+        <div class="mt-4 pt-3 border-t border-slate-100 flex items-center gap-1.5 text-[11px] font-medium text-slate-500">
+            <span class="w-1.5 h-1.5 rounded-full bg-amber-500 shrink-0 {{ ($totalRevisi ?? 0) > 0 ? 'animate-pulse' : '' }}"></span>
+            <span class="truncate">Perlu perbaikan berkas</span>
+        </div>
     </div>
 
-    {{-- PRESENTASI: Memisahkan card untuk Ditolak --}}
-    <div class="bg-rose-50/70 border border-rose-200 rounded-xl p-5 shadow-sm">
-        <div class="text-[11px] font-bold text-rose-800 uppercase tracking-wider mb-1">DITOLAK PERMANEN</div>
-        <div class="text-2xl font-bold text-rose-700 font-mono">{{ $totalDitolak ?? 0 }}</div>
-        <div class="text-[10px] text-rose-600 mt-1">Ditolak dan tidak bisa direvisi</div>
+    <!-- Card 5: Ditolak Permanen -->
+    <div class="bg-white border border-slate-200/80 rounded-2xl p-4 sm:p-5 shadow-xs flex flex-col justify-between h-full transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md group">
+        <div>
+            <div class="flex items-center justify-between gap-2 mb-3">
+                <span class="text-[11px] font-bold text-rose-700 uppercase tracking-wider">Ditolak Permanen</span>
+                <div class="w-10 h-10 rounded-xl bg-rose-50 text-rose-600 border border-rose-100/70 flex items-center justify-center text-sm shrink-0 shadow-xs transition-colors group-hover:bg-rose-100">
+                    <i class="fa-solid fa-circle-xmark text-[15px]"></i>
+                </div>
+            </div>
+            <div class="text-2xl sm:text-3xl font-extrabold text-rose-700 font-mono tabular-nums tracking-tight">
+                {{ number_format($totalDitolak ?? 0) }}
+            </div>
+        </div>
+        <div class="mt-4 pt-3 border-t border-slate-100 flex items-center gap-1.5 text-[11px] font-medium text-slate-500">
+            <span class="w-1.5 h-1.5 rounded-full bg-rose-500 shrink-0"></span>
+            <span class="truncate">Tidak dapat direvisi</span>
+        </div>
     </div>
 </div>
 
@@ -116,52 +182,131 @@
 </div>
 
 <!-- Pengajuan Terbaru Table -->
-<div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden mb-8">
-    <div class="p-6 border-b border-slate-100 flex items-center justify-between">
+<div class="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden mb-8">
+    <div class="p-5 sm:p-6 border-b border-slate-100 flex items-center justify-between gap-4">
         <div>
-            <h2 class="text-lg font-bold text-slate-900">Pengajuan Terbaru Anda</h2>
-            <p class="text-xs text-slate-500">Daftar pengajuan terkini yang diajukan oleh akun Anda</p>
+            <h2 class="text-base sm:text-lg font-bold text-slate-900">Pengajuan Terbaru Anda</h2>
+            <p class="text-xs text-slate-500 mt-0.5">Daftar pengajuan terkini yang diajukan oleh akun Anda</p>
         </div>
-        <a href="{{ route('staff.riwayat') }}" class="text-xs font-semibold text-indigo-600 hover:text-indigo-800">
-            Lihat Semua &rarr;
+        <a href="{{ route('staff.riwayat') }}" class="inline-flex items-center gap-1 text-xs font-semibold text-indigo-600 hover:text-indigo-800 transition-colors shrink-0">
+            <span>Lihat Semua</span>
+            <span aria-hidden="true">&rarr;</span>
         </a>
     </div>
 
+    <!-- Container Responsif dengan Scroll Horizontal -->
     <div class="overflow-x-auto">
-        <table class="w-full text-left border-collapse text-xs">
-            <thead class="bg-slate-50 text-slate-600 uppercase font-semibold border-b border-slate-200">
+        <table class="w-full min-w-[800px] text-left border-collapse text-xs">
+            <thead class="bg-slate-50/80 text-slate-500 uppercase font-semibold text-[11px] tracking-wider border-b border-slate-200/80">
                 <tr>
-                    <th class="px-5 py-3">No. RAB</th>
-                    <th class="px-5 py-3">Judul Pengajuan</th>
-                    <th class="px-5 py-3">Estimasi Total</th>
-                    <th class="px-5 py-3 text-center">Status Alur</th>
-                    <th class="px-5 py-3 text-center">Tanggal</th>
-                    <th class="px-5 py-3 text-center">Aksi</th>
+                    <th scope="col" class="px-4 py-3.5 sm:px-5 sm:py-3.5 whitespace-nowrap">No. RAB</th>
+                    <th scope="col" class="px-4 py-3.5 sm:px-5 sm:py-3.5">Judul Pengajuan</th>
+                    <th scope="col" class="px-4 py-3.5 sm:px-5 sm:py-3.5 text-right whitespace-nowrap">Estimasi Total</th>
+                    <th scope="col" class="px-4 py-3.5 sm:px-5 sm:py-3.5 text-center whitespace-nowrap">Status Alur</th>
+                    <th scope="col" class="px-4 py-3.5 sm:px-5 sm:py-3.5 text-center whitespace-nowrap">Tanggal</th>
+                    <th scope="col" class="px-4 py-3.5 sm:px-5 sm:py-3.5 text-center whitespace-nowrap">Aksi</th>
                 </tr>
             </thead>
             <tbody class="divide-y divide-slate-100">
                 @forelse($pengajuanTerbaru ?? [] as $item)
                 <tr class="hover:bg-slate-50/70 transition-colors">
-                    <td class="px-5 py-3.5 font-mono font-semibold text-indigo-700">{{ $item->no_rab }}</td>
-                    <td class="px-5 py-3.5 text-slate-900 font-medium">{{ $item->judul_pengajuan }}</td>
-                    <td class="px-5 py-3.5 font-mono font-semibold text-slate-800">Rp {{ number_format((float) $item->estimasi_total, 0, ',', '.') }}</td>
-                    <td class="px-5 py-3.5 text-center">
-                        <span class="inline-block whitespace-nowrap px-2.5 py-1 rounded-full text-[10px] font-bold {{ $item->status->badge() }}">
+                    <!-- No. RAB -->
+                    <td class="px-4 py-3.5 sm:px-5 sm:py-4 align-middle whitespace-nowrap">
+                        <span class="font-mono font-bold text-indigo-700 text-xs">{{ $item->no_rab }}</span>
+                        @if($item->divisi)
+                            <div class="text-[11px] text-slate-400 mt-0.5 truncate max-w-[140px]">
+                                {{ $item->divisi->nama_divisi }}
+                            </div>
+                        @endif
+                    </td>
+
+                    <!-- Judul Pengajuan -->
+                    <td class="px-4 py-3.5 sm:px-5 sm:py-4 align-middle max-w-xs md:max-w-md">
+                        <div class="font-semibold text-slate-900 text-xs truncate" title="{{ $item->judul_pengajuan }}">
+                            {{ $item->judul_pengajuan }}
+                        </div>
+                        @if($item->kategori_anggaran)
+                            <div class="text-[11px] text-slate-400 mt-0.5 truncate" title="{{ $item->kategori_anggaran }}">
+                                {{ $item->kategori_anggaran }}
+                            </div>
+                        @endif
+                    </td>
+
+                    <!-- Estimasi Total (Rata Kanan & Tabular Nums) -->
+                    <td class="px-4 py-3.5 sm:px-5 sm:py-4 align-middle text-right whitespace-nowrap font-mono font-semibold text-slate-800 tabular-nums">
+                        Rp {{ number_format((float) $item->estimasi_total, 0, ',', '.') }}
+                    </td>
+
+                    <!-- Status Alur (Badge Kapsul) -->
+                    <td class="px-4 py-3.5 sm:px-5 sm:py-4 align-middle text-center whitespace-nowrap">
+                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold shrink-0 whitespace-nowrap {{ $item->status->badge() }}">
                             {{ $item->status->label() }}
                         </span>
                     </td>
-                    <td class="px-5 py-3.5 text-center text-slate-500 font-mono">{{ $item->tanggal_pengajuan ? $item->tanggal_pengajuan->format('d/m/Y') : '-' }}</td>
-                    <td class="px-5 py-3.5 text-center">
-                        <a href="{{ route('staff.rab.show', $item->id_pengajuan) }}"
-                            class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-semibold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200">
-                            Detail & Track
-                        </a>
+
+                    <!-- Tanggal Pengajuan -->
+                    <td class="px-4 py-3.5 sm:px-5 sm:py-4 align-middle text-center whitespace-nowrap text-slate-500 font-mono text-xs">
+                        {{ $item->tanggal_pengajuan ? $item->tanggal_pengajuan->format('d/m/Y') : '-' }}
+                    </td>
+
+                    <!-- Tombol Aksi -->
+                    <td class="px-4 py-3.5 sm:px-5 sm:py-4 align-middle text-center whitespace-nowrap">
+                        <div class="inline-flex items-center justify-center gap-1.5 shrink-0">
+                            <!-- Detail & Track -->
+                            <a href="{{ route('staff.rab.show', $item->id_pengajuan) }}"
+                               class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200/80 transition-colors shrink-0"
+                               title="Lihat Detail & Lacak Progres">
+                                <i class="fa-regular fa-eye text-[11px]"></i>
+                                <span>Detail</span>
+                            </a>
+
+                            <!-- Edit (Jika Status Revisi atau Draft) -->
+                            @if(in_array($item->status, [\App\Enums\StatusPengajuan::REVISI, \App\Enums\StatusPengajuan::DRAFT]))
+                                <a href="{{ route('staff.rab.edit', $item->id_pengajuan) }}"
+                                   class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium text-amber-700 bg-amber-50 hover:bg-amber-100 border border-amber-200 transition-colors shrink-0"
+                                   title="Edit / Perbaiki Pengajuan">
+                                    <i class="fa-solid fa-pen-to-square text-[10px]"></i>
+                                    <span>Edit</span>
+                                </a>
+                            @endif
+
+                            <!-- Hapus (Khusus Status Draft) -->
+                            @if($item->status === \App\Enums\StatusPengajuan::DRAFT)
+                                <form action="{{ route('staff.rab.destroy', $item->id_pengajuan) }}"
+                                      method="POST"
+                                      class="inline-block"
+                                      onsubmit="return confirm('Apakah Anda yakin ingin menghapus draft pengajuan ini?')">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit"
+                                            class="w-7 h-7 rounded-lg inline-flex items-center justify-center text-rose-600 hover:text-rose-700 hover:bg-rose-50 border border-rose-200 transition-colors shrink-0"
+                                            title="Hapus Draft">
+                                        <i class="fa-regular fa-trash-can text-[11px]"></i>
+                                    </button>
+                                </form>
+                            @endif
+                        </div>
                     </td>
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="6" class="px-5 py-8 text-center text-slate-400">
-                        Belum ada pengajuan RAB. Klik tombol "Buat Pengajuan RAB" di atas untuk memulai.
+                    <td colspan="6" class="px-5 py-12 text-center">
+                        <div class="w-12 h-12 bg-slate-100 text-slate-400 rounded-2xl flex items-center justify-center mx-auto text-xl mb-3 shadow-xs">
+                            <i class="fa-solid fa-file-circle-plus"></i>
+                        </div>
+                        <p class="text-sm font-semibold text-slate-700">Belum Ada Pengajuan RAB</p>
+                        <p class="text-xs text-slate-400 mt-1 max-w-sm mx-auto">
+                            Anda belum membuat berkas pengajuan anggaran. Klik tombol di bawah untuk membuat RAB baru.
+                        </p>
+                        @if(\App\Models\Setting::getSetting('maintenance_mode', '0') != '1')
+                            <div class="mt-4">
+                                <a href="{{ route('staff.rab.create') }}"
+                                   class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 shadow-xs transition-colors">
+                                    <i class="fa-solid fa-plus text-[11px]"></i>
+                                    Buat Pengajuan Baru
+                                </a>
+                            </div>
+                        @endif
                     </td>
                 </tr>
                 @endforelse

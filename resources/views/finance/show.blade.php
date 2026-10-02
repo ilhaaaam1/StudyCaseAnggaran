@@ -3,12 +3,24 @@
 @section('title', 'Verifikasi Anggaran Tahap 1 - SIRAB Kelompok-3')
 
 @section('content')
-  <div class="text-xs text-slate-500 mb-6 flex items-center gap-1.5">
-    <span>SIRAB</span>
-    <span>/</span>
-    <a href="{{ route('finance.antrean') }}" class="hover:text-slate-800">Antrean Tahap 1</a>
-    <span>/</span>
-    <span class="text-slate-800 font-medium">Verifikasi: {{ $pengajuan->no_rab }}</span>
+  <!-- Top Navigation & Breadcrumb -->
+  <div class="max-w-4xl mx-auto mb-6 flex flex-wrap items-center justify-between gap-3">
+    <!-- Breadcrumb -->
+    <div class="text-xs text-slate-500 flex items-center gap-1.5">
+      <span>SIRAB</span>
+      <span>/</span>
+      <a href="{{ route('finance.antrean') }}" class="hover:text-slate-800 transition-colors">Antrean Tahap 1</a>
+      <span>/</span>
+      <span class="text-slate-800 font-semibold">Verifikasi: {{ $pengajuan->no_rab }}</span>
+    </div>
+
+    <!-- Tombol Kembali -->
+    <a href="{{ url()->previous() != url()->current() ? url()->previous() : route('finance.antrean') }}" 
+       class="inline-flex items-center gap-2 px-3.5 py-2 bg-white hover:bg-slate-50 text-slate-700 hover:text-slate-900 border border-slate-200/80 rounded-xl text-xs font-semibold shadow-xs transition-colors shrink-0"
+       title="Kembali ke Halaman Sebelumnya">
+      <i class="fa-solid fa-arrow-left text-[11px]"></i>
+      <span>Kembali</span>
+    </a>
   </div>
 
   <div class="max-w-4xl mx-auto space-y-6 mb-10">

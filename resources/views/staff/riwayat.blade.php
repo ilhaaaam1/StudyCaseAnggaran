@@ -270,15 +270,15 @@
 
     <!-- 3. TABEL DATA RINGKAS, LAPANG & MUDAH DIPINDAI -->
     <div class="overflow-x-auto">
-      <table class="w-full text-left text-xs border-collapse">
+      <table class="w-full min-w-[900px] text-left text-xs border-collapse">
         <thead class="bg-slate-50/70 text-slate-400 uppercase font-semibold text-[11px] tracking-wider border-b border-slate-200/80">
           <tr>
-            <th class="px-5 py-3.5">No. RAB</th>
-            <th class="px-5 py-3.5">Kegiatan &amp; Unit</th>
-            <th class="px-5 py-3.5">Kategori Anggaran</th>
-            <th class="px-5 py-3.5">Jadwal &amp; Tahap</th>
-            <th class="px-5 py-3.5 text-right">Estimasi Biaya</th>
-            <th class="px-5 py-3.5 text-center">Status</th>
+            <th class="px-5 py-3.5 whitespace-nowrap">No. RAB</th>
+            <th class="px-5 py-3.5 whitespace-nowrap">Kegiatan &amp; Unit</th>
+            <th class="px-5 py-3.5 whitespace-nowrap">Kategori Anggaran</th>
+            <th class="px-5 py-3.5 whitespace-nowrap">Jadwal &amp; Tahap</th>
+            <th class="px-5 py-3.5 text-right whitespace-nowrap">Estimasi Biaya</th>
+            <th class="px-5 py-3.5 text-center whitespace-nowrap">Status</th>
             <th class="px-4 py-3.5 text-center whitespace-nowrap">Lihat Detail</th>
             <th class="px-4 py-3.5 text-center whitespace-nowrap">Aksi CRUD</th>
           </tr>
@@ -430,7 +430,10 @@
                     @endif
                   </div>
                 @else
-                  <span class="text-slate-300 text-xs select-none" title="Terkunci dalam proses alur persetujuan">&ndash;</span>
+                  <span class="inline-flex items-center gap-1 text-[11px] font-medium text-slate-400 select-none bg-slate-50 px-2 py-0.5 rounded border border-slate-200/60" title="Dokumen sedang terkunci dalam proses alur persetujuan">
+                    <i class="fa-solid fa-lock text-[9px] text-slate-400"></i>
+                    <span>Terkunci</span>
+                  </span>
                 @endif
               </td>
             </tr>
