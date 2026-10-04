@@ -7,8 +7,10 @@ use App\Http\Controllers\AdminRabController;
 use App\Http\Controllers\AdminUserController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\FinanceController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PengajuanRABController;
 use App\Http\Controllers\PimpinanController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\StaffRabController;
 use App\Http\Controllers\UserRabController;
 use Illuminate\Support\Facades\Auth;
@@ -182,8 +184,6 @@ Route::middleware(['auth', 'role:staff,user'])->prefix('user')->name('user.')->g
 // CONTOH TUGAS: Eloquent ORM & Query Builder
 // -------------------------------------------------------------------------
 use App\Http\Controllers\KategoriAnggaranController;
-use App\Http\Controllers\NotificationController;
-use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RekapitulasiController;
 use App\Models\Pengguna;
 use Illuminate\Http\Request;
