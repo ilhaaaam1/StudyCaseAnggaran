@@ -103,20 +103,12 @@ class StaffRabController extends Controller
         $countThisYear = PengajuanRab::whereYear('tanggal_pengajuan', $year)->count() + 1;
         $autoNoRab = sprintf('RAB-%s-%03d', $year, $countThisYear);
 
-        $kategoriList = [
-            'Belanja Barang Operasional & ATK' => 'Kertas HVS, spidol, tinta printer, map rapor, perlengkapan administrasi & kelas',
-            'Kegiatan Kesiswaan & Lomba' => 'Pramuka, tari, drum band, PHBN/PHBI, transport kontingen, pendaftaran lomba O2SN/FLS2N',
-            'Pemeliharaan Sarana & Prasarana' => 'Perbaikan ruang kelas, sanitasi/toilet, meja-kursi, cat, lampu, pompa air, kebersihan',
-            'Pengembangan Perpustakaan & Literasi' => 'Pengadaan buku ajar/literasi, inventarisasi buku, pojok baca, sarana perpustakaan',
-            'Peningkatan Kompetensi Guru (SDM)' => 'Pelatihan guru, workshop kurikulum, KKG, seminar pengembangan kompetensi pendidik',
-            'Langganan Daya & Jasa' => 'Tagihan listrik PLN, internet sekolah, langganan air bersih, dan jasa operasional',
-            'Belanja Modal / Alat Elektronik' => 'Proyektor LCD, laptop ANBK, sound system, peralatan elektronik & laboratorium sekolah',
-        ];
-
-        // Hitung sisa pagu tiap kategori untuk UI
         $kategoriListDb = KategoriAnggaran::all();
+        $kategoriList = [];
         $sisaPaguList = [];
+        
         foreach ($kategoriListDb as $kat) {
+            $kategoriList[$kat->nama_kategori] = $kat->deskripsi;
             $paguTerpakai = PengajuanRab::where('kategori_anggaran', $kat->nama_kategori)
                 ->whereIn('status', [
                     StatusPengajuan::MENUNGGU_FINANCE,
@@ -427,20 +419,11 @@ class StaffRabController extends Controller
 
         $divisiList = Divisi::orderBy('id_divisi')->get();
 
-        $kategoriList = [
-            'Belanja Barang Operasional & ATK' => 'Kertas HVS, spidol, tinta printer, map rapor, perlengkapan administrasi & kelas',
-            'Kegiatan Kesiswaan & Lomba' => 'Pramuka, tari, drum band, PHBN/PHBI, transport kontingen, pendaftaran lomba O2SN/FLS2N',
-            'Pemeliharaan Sarana & Prasarana' => 'Perbaikan ruang kelas, sanitasi/toilet, meja-kursi, cat, lampu, pompa air, kebersihan',
-            'Pengembangan Perpustakaan & Literasi' => 'Pengadaan buku ajar/literasi, inventarisasi buku, pojok baca, sarana perpustakaan',
-            'Peningkatan Kompetensi Guru (SDM)' => 'Pelatihan guru, workshop kurikulum, KKG, seminar pengembangan kompetensi pendidik',
-            'Langganan Daya & Jasa' => 'Tagihan listrik PLN, internet sekolah, langganan air bersih, dan jasa operasional',
-            'Belanja Modal / Alat Elektronik' => 'Proyektor LCD, laptop ANBK, sound system, peralatan elektronik & laboratorium sekolah',
-        ];
-
-        // Hitung sisa pagu tiap kategori untuk UI
         $kategoriListDb = KategoriAnggaran::all();
+        $kategoriList = [];
         $sisaPaguList = [];
         foreach ($kategoriListDb as $kat) {
+            $kategoriList[$kat->nama_kategori] = $kat->deskripsi;
             $paguTerpakai = PengajuanRab::where('kategori_anggaran', $kat->nama_kategori)
                 ->where('id_pengajuan', '!=', $pengajuan->id_pengajuan)
                 ->whereIn('status', [

@@ -4,17 +4,6 @@
 @section('breadcrumb', 'Dashboard Finance (Tahap 1)')
 
 @section('content')
-  <!-- Alert Banner -->
-  <div class="bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded-lg flex items-center justify-between mb-5 text-[13px] font-medium">
-    <div class="flex items-center gap-2.5">
-      <i class="fa-solid fa-circle-check text-[15px] text-green-500"></i>
-      <span>Selamat datang kembali, {{ Auth::user()->nama_lengkap }}!</span>
-    </div>
-    <button type="button" onclick="this.parentElement.remove()" class="text-green-800 hover:text-green-900 cursor-pointer text-sm">
-      <i class="fa-solid fa-xmark"></i>
-    </button>
-  </div>
-
   <!-- Page Header -->
   <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-6 gap-4">
     <div>

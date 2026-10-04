@@ -9,249 +9,74 @@ use Illuminate\Support\Facades\Hash;
 
 class PenggunaSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
-        // PRESENTASI: Dipisah menjadi seeder mandiri sesuai instruksi materi
-        $unitTU = Divisi::where('nama_divisi', 'Tata Usaha & Operasional (TU)')->first();
-        $unitKurikulum = Divisi::where('nama_divisi', 'Kurikulum & Pembelajaran')->first();
-        $unitSarpras = Divisi::where('nama_divisi', 'Sarana & Prasarana (Sarpras)')->first();
-        $unitKesiswaan = Divisi::where('nama_divisi', 'Kesiswaan & Ekstrakurikuler')->first();
+        // 1. Ambil ID Divisi yang relevan
+        $unitTU = Divisi::where('nama_divisi', 'like', '%Tata Usaha%')->first();
+        $unitPerpustakaan = Divisi::where('nama_divisi', 'like', '%Perpustakaan%')->first();
 
-        // 2. Seed Default Essential Accounts (Tabel Pengguna - Authenticatable)
-        // Password default: 'password'
-        $defaultPassword = Hash::make('password');
-
-        if (! $unitTU || ! $unitKurikulum || ! $unitSarpras || ! $unitKesiswaan) {
-            return; // Kembalikan jika divisi tidak lengkap
+        if (! $unitTU || ! $unitPerpustakaan) {
+            return;
         }
 
-        // Admin / Kepala TU
+        $defaultPassword = Hash::make('11223344');
+
+        // 1. Pimpinan
         Pengguna::updateOrCreate(
-            ['email' => 'arif@sirab.local'],
+            ['email' => 'pimpinan@sirab'],
             [
                 'id_divisi' => $unitTU->id_divisi,
-                'nama_lengkap' => 'Drs. Arif Rachman',
-                'jabatan' => 'Kepala Tata Usaha',
-                'password' => $defaultPassword,
-                'role' => 'admin',
+                'nama_lengkap' => 'pak arif rahman',
+                'jabatan' => 'KEPALA SEKOLAH',
+                'password' => Hash::make('12345678'),
+                'role' => 'pimpinan',
             ]
         );
 
-        // Staf Kurikulum
+        // 2. Staff
         Pengguna::updateOrCreate(
-            ['email' => 'sari@sirab.local'],
+            ['email' => 'staff@sirab'],
             [
-                'id_divisi' => $unitKurikulum->id_divisi,
-                'nama_lengkap' => 'Sari Dewi',
-                'jabatan' => 'Koordinator Kurikulum',
-                'password' => $defaultPassword,
-                'role' => 'user',
+                'id_divisi' => $unitPerpustakaan->id_divisi,
+                'nama_lengkap' => 'staff',
+                'nip' => '3431231231241',
+                'jabatan' => 'Kepala Perpustakaan',
+                'password' => Hash::make('12345678'),
+                'role' => 'staff',
             ]
         );
 
-        // Staf Sarpras
+        // 3. Admin IT
         Pengguna::updateOrCreate(
-            ['email' => 'admin@sirab.local'],
+            ['email' => 'adminit@sirab'],
             [
-                'id_divisi' => $unitSarpras->id_divisi,
-                'nama_lengkap' => 'admin',
-                'jabatan' => 'Staf Sarana & Prasarana',
-                'password' => $defaultPassword,
-                'role' => 'admin',
+                'id_divisi' => $unitTU->id_divisi,
+                'nama_lengkap' => 'Admin IT',
+                'jabatan' => 'Kepala IT',
+                'password' => Hash::make('12345678'),
+                'role' => 'admin_it',
             ]
         );
 
-        // Staf Kesiswaan
+        // 4. Finance
         Pengguna::updateOrCreate(
-            ['email' => 'nanda@sirab.local'],
+            ['email' => 'finance@sirab'],
             [
-                'id_divisi' => $unitKesiswaan->id_divisi,
-                'nama_lengkap' => 'Nanda',
-                'jabatan' => 'Pembina Kesiswaan & Ekskul',
-                'password' => $defaultPassword,
+                'id_divisi' => $unitTU->id_divisi,
+                'nama_lengkap' => 'Finance',
+                'jabatan' => 'Bendahara Sekolah',
+                'password' => Hash::make('12345678'),
                 'role' => 'finance',
             ]
         );
-
-        // Finance / Bendahara BOS
         Pengguna::updateOrCreate(
-            ['email' => 'finance@sirab.local'],
+            ['email' => 'radhit@sirab'],
             [
                 'id_divisi' => $unitTU->id_divisi,
-                'nama_lengkap' => 'Akun Finance',
-                'jabatan' => 'Bendahara BOS',
-                'password' => $defaultPassword,
+                'nama_lengkap' => 'radhit',
+                'jabatan' => 'Bendahara 2',
+                'password' => Hash::make('12345678'),
                 'role' => 'finance',
-            ]
-        );
-
-        // Pimpinan / Kepala Sekolah
-        Pengguna::updateOrCreate(
-            ['email' => 'pimpinan@sirab.local'],
-            [
-                'id_divisi' => $unitTU->id_divisi,
-                'nama_lengkap' => 'Akun Pimpinan',
-                'jabatan' => 'Kepala Sekolah',
-                'password' => $defaultPassword,
-                'role' => 'pimpinan',
-            ]
-        );
-
-        // Pimpinan / Wakil Kepala sekolah
-        Pengguna::updateOrCreate(
-            ['email' => 'wakakepsek@sirab.local'],
-            [
-                'id_divisi' => $unitTU->id_divisi,
-                'nama_lengkap' => 'Radhit',
-                'jabatan' => 'Koordinator Kurikulum',
-                'password' => $defaultPassword,
-                'role' => 'pimpinan',
-            ]
-        );
-
-        // Pimpinan / Wakil Kepala sekolah
-        Pengguna::updateOrCreate(
-            ['email' => 'wina@sirab.local'],
-            [
-                'id_divisi' => $unitTU->id_divisi,
-                'nama_lengkap' => 'Wina',
-                'jabatan' => 'Koordinator Kurikulum',
-                'password' => $defaultPassword,
-                'role' => 'finance',
-            ]
-        );
-        // Pimpinan / Wakil Kepala sekolah
-        Pengguna::updateOrCreate(
-            ['email' => 'nabila@sirab.local'],
-            [
-                'id_divisi' => $unitTU->id_divisi,
-                'nama_lengkap' => 'nabila',
-                'jabatan' => 'Koordinator kesiswaan',
-                'password' => $defaultPassword,
-                'role' => 'pimpinan',
-            ]
-        );
-        // Pimpinan / Wakil Kepala sekolah
-        Pengguna::updateOrCreate(
-            ['email' => 'fajar@sirab.local'],
-            [
-                'id_divisi' => $unitTU->id_divisi,
-                'nama_lengkap' => 'fajar',
-                'jabatan' => 'Koordinator laboratorium',
-                'password' => $defaultPassword,
-                'role' => 'user',
-            ]
-        );
-        Pengguna::updateOrCreate(
-            ['email' => 'afid@sirab.local'],
-            [
-                'id_divisi' => $unitTU->id_divisi,
-                'nama_lengkap' => 'Afid',
-                'jabatan' => 'Koordinator laboratorium',
-                'password' => $defaultPassword,
-                'role' => 'admin',
-            ]
-        );
-
-        Pengguna::updateOrCreate(
-            ['email' => 'mey@sirab.local'],
-            [
-                'id_divisi' => $unitTU->id_divisi,
-                'nama_lengkap' => 'Mey',
-                'jabatan' => 'Koordinator laboratorium',
-                'password' => $defaultPassword,
-                'role' => 'finance',
-            ]
-        );
-
-        Pengguna::updateOrCreate(
-            ['email' => 'ilham@sirab.local'],
-            [
-                'id_divisi' => $unitTU->id_divisi,
-                'nama_lengkap' => 'Ilham',
-                'jabatan' => 'Koordinator laboratorium',
-                'password' => $defaultPassword,
-                'role' => 'pimpinan',
-            ]
-        );
-
-        Pengguna::updateOrCreate(
-            ['email' => 'budi@sirab.local'],
-            [
-                'id_divisi' => $unitTU->id_divisi,
-                'nama_lengkap' => 'Budi',
-                'jabatan' => 'Koordinator laboratorium',
-                'password' => $defaultPassword,
-                'role' => 'user',
-            ]
-        );
-
-        Pengguna::updateOrCreate(
-            ['email' => 'citra@sirab.local'],
-            [
-                'id_divisi' => $unitTU->id_divisi,
-                'nama_lengkap' => 'Citra',
-                'jabatan' => 'Koordinator laboratorium',
-                'password' => $defaultPassword,
-                'role' => 'finance',
-            ]
-        );
-
-        Pengguna::updateOrCreate(
-            ['email' => 'dian@sirab.local'],
-            [
-                'id_divisi' => $unitTU->id_divisi,
-                'nama_lengkap' => 'Dian',
-                'jabatan' => 'Koordinator laboratorium',
-                'password' => $defaultPassword,
-                'role' => 'pimpinan',
-            ]
-        );
-
-        Pengguna::updateOrCreate(
-            ['email' => 'eko@sirab.local'],
-            [
-                'id_divisi' => $unitTU->id_divisi,
-                'nama_lengkap' => 'Eko',
-                'jabatan' => 'Koordinator laboratorium',
-                'password' => $defaultPassword,
-                'role' => 'user',
-            ]
-        );
-
-        Pengguna::updateOrCreate(
-            ['email' => 'fitri@sirab.local'],
-            [
-                'id_divisi' => $unitTU->id_divisi,
-                'nama_lengkap' => 'Fitri',
-                'jabatan' => 'Koordinator laboratorium',
-                'password' => $defaultPassword,
-                'role' => 'admin',
-            ]
-        );
-
-        Pengguna::updateOrCreate(
-            ['email' => 'gilang@sirab.local'],
-            [
-                'id_divisi' => $unitTU->id_divisi,
-                'nama_lengkap' => 'Gilang',
-                'jabatan' => 'Koordinator laboratorium',
-                'password' => $defaultPassword,
-                'role' => 'user',
-            ]
-        );
-
-        Pengguna::updateOrCreate(
-            ['email' => 'hendra@sirab.local'],
-            [
-                'id_divisi' => $unitTU->id_divisi,
-                'nama_lengkap' => 'Hendra',
-                'jabatan' => 'Koordinator laboratorium',
-                'password' => $defaultPassword,
-                'role' => 'pimpinan',
             ]
         );
     }

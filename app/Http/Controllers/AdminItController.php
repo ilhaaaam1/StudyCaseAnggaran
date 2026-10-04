@@ -100,6 +100,13 @@ class AdminItController extends Controller
             'jabatan' => ['nullable', 'string', 'max:100'],
         ]);
 
+        if (in_array($validated['role'], ['admin_it', 'admin', 'finance', 'pimpinan'])) {
+            $tu = Divisi::where('nama_divisi', 'like', '%Tata Usaha%')->first();
+            if ($tu && $validated['id_divisi'] != $tu->id_divisi) {
+                return back()->withErrors(['id_divisi' => 'Role pusat (Admin IT, Finance, Pimpinan) wajib berada di divisi Tata Usaha.'])->withInput();
+            }
+        }
+
         $divisiObj = Divisi::find($validated['id_divisi']);
         $jabatan = ! empty($validated['jabatan'])
             ? trim((string) $validated['jabatan'])
@@ -146,6 +153,13 @@ class AdminItController extends Controller
             'password' => ['nullable', 'string', 'min:6'],
             'jabatan' => ['nullable', 'string', 'max:100'],
         ]);
+
+        if (in_array($validated['role'], ['admin_it', 'admin', 'finance', 'pimpinan'])) {
+            $tu = Divisi::where('nama_divisi', 'like', '%Tata Usaha%')->first();
+            if ($tu && $validated['id_divisi'] != $tu->id_divisi) {
+                return back()->withErrors(['id_divisi' => 'Role pusat (Admin IT, Finance, Pimpinan) wajib berada di divisi Tata Usaha.'])->withInput();
+            }
+        }
 
         $divisiObj = Divisi::find($validated['id_divisi']);
         $jabatan = ! empty($validated['jabatan'])

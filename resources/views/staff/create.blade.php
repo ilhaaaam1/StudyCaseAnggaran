@@ -93,18 +93,7 @@
             </label>
             <select name="kategori_anggaran" id="kategori_anggaran" onchange="updateSisaPagu()" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:border-indigo-500 text-slate-800 bg-white">
               <option value="" disabled selected>-- Pilih Kategori Pos Anggaran --</option>
-              @php
-                $posAnggaran = [
-                  'Belanja Barang Operasional & ATK' => 'Kertas HVS, spidol, tinta printer, map rapor, perlengkapan kelas & kantor',
-                  'Kegiatan Kesiswaan & Lomba' => 'Pramuka, tari, drum band, PHBN/PHBI, lomba O2SN/FLS2N, konsumsi & transport',
-                  'Pemeliharaan Sarana & Prasarana' => 'Perbaikan ruang kelas, sanitasi/toilet, meja-kursi, pengecatan, listrik & air',
-                  'Pengembangan Perpustakaan & Literasi' => 'Pengadaan buku ajar/bacaan, inventarisasi literasi, sarana perpustakaan',
-                  'Peningkatan Kompetensi Guru (SDM)' => 'Pelatihan guru, workshop kurikulum merdeka, KKG, seminar kompetensi',
-                  'Langganan Daya & Jasa' => 'Tagihan listrik PLN, internet/WiFi sekolah, air bersih PDAM, jasa kebersihan',
-                  'Belanja Modal / Alat Elektronik' => 'Proyektor LCD, laptop ANBK, sound system, komputer dan peralatan TIK',
-                ];
-              @endphp
-              @foreach($posAnggaran as $kat => $deskripsi)
+              @foreach($kategoriList as $kat => $deskripsi)
                 <option value="{{ $kat }}" {{ old('kategori_anggaran') === $kat ? 'selected' : '' }}>
                   {{ $kat }}
                 </option>

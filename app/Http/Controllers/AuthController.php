@@ -35,6 +35,7 @@ class AuthController extends Controller
         $credentials = $request->only('email', 'password');
         $remember = $request->boolean('remember');
 
+        // PRESENTASI: Implementasi fitur Remember Me menggunakan parameter kedua pada Auth::attempt
         if (Auth::attempt($credentials, $remember)) {
             $request->session()->regenerate();
 

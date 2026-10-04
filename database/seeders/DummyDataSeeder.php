@@ -14,60 +14,49 @@ use Illuminate\Database\Seeder;
 
 class DummyDataSeeder extends Seeder
 {
-    /**
-     * Seed sample / dummy school RAB submissions for local testing and development.
-     * Idempotent: Can be run multiple times safely without duplicating records.
-     */
     public function run(): void
     {
-        // Ambil referensi master unit kerja dan pengguna yang sudah dibuat oleh DatabaseSeeder
-        $unitKurikulum = Divisi::where('nama_divisi', 'Kurikulum & Pembelajaran')->first();
-        $unitSarpras = Divisi::where('nama_divisi', 'Sarana & Prasarana (Sarpras)')->first();
-        $unitKesiswaan = Divisi::where('nama_divisi', 'Kesiswaan & Ekstrakurikuler')->first();
-        $unitTU = Divisi::where('nama_divisi', 'Tata Usaha & Operasional (TU)')->first();
+        $unitKurikulum = Divisi::where('nama_divisi', 'like', '%Kurikulum%')->first();
+        $unitSarpras = Divisi::where('nama_divisi', 'like', '%Sarana%')->first();
+        $unitKesiswaan = Divisi::where('nama_divisi', 'like', '%Kesiswaan%')->first();
+        $unitTU = Divisi::where('nama_divisi', 'like', '%Tata Usaha%')->first();
 
-        $admin = Pengguna::where('email', 'arif@sirab.local')->first();
-        $sari = Pengguna::where('email', 'sari@sirab.local')->first();
+        $admin = Pengguna::where('email', 'pimpinan@sirab')->first();
+        $finance = Pengguna::where('email', 'finance@sirab')->first();
+        $sari = Pengguna::where('email', 'staff@sirab')->first();
+        $budi = Pengguna::where('email', 'staff@sirab')->first();
+        $dina = Pengguna::where('email', 'staff@sirab')->first();
 
-        $budi = Pengguna::where('email', 'admin@sirab.local')->first()
-            ?? Pengguna::where('email', 'aufa@sirab.local')->first()
-            ?? Pengguna::where('email', 'budi@sirab.local')->first()
-            ?? $sari;
-
-        $dina = Pengguna::where('email', 'nanda@sirab.local')->first()
-            ?? Pengguna::where('email', 'dina@sirab.local')->first()
-            ?? $sari;
-
-        if (! $admin || ! $sari || ! $budi || ! $dina || ! $unitKurikulum || ! $unitSarpras || ! $unitKesiswaan) {
-            $this->command->warn('Master data pengguna/divisi belum siap. Pastikan Anda menjalankan db:seed dari DatabaseSeeder utama.');
-
+        if (! $sari || ! $budi || ! $dina || ! $admin) {
             return;
         }
 
-        // 1. RAB 1: Selesai / Disetujui (Kurikulum)
+        PengajuanRab::whereIn('no_rab', ['RAB-2026-001', 'RAB-2026-002', 'RAB-2026-003', 'RAB-2026-004'])->delete();
+
         $rab1 = PengajuanRab::firstOrCreate(
             ['no_rab' => 'RAB-2026-001'],
             [
                 'id_pengguna' => $sari->id_pengguna,
-                'id_divisi' => $unitKurikulum->id_divisi,
-                'judul_pengajuan' => 'Pengadaan Modul Pembelajaran & Buku Kurikulum Merdeka',
+                'id_divisi' => $unitTU ? $unitTU->id_divisi : 1,
+                'judul_pengajuan' => 'Pengadaan Modul Literasi Digital & Buku Perpustakaan',
                 'tahun_ajaran' => '2026/2027',
                 'semester' => 'Ganjil',
                 'tahun_ajaran_semester' => '2026/2027 - Semester Ganjil',
-                'tahap_bos' => 'BOS Reguler Tahap 1 (Januari – Juni)',
-                'tanggal_mulai' => now()->subDays(10)->format('Y-m-d'),
-                'tanggal_selesai' => now()->subDays(5)->format('Y-m-d'),
+                'tahap_bos' => 'BOS Reguler Tahap 1 (Januari - Juni)',
+                'tanggal_mulai' => now()->addDays(10)->format('Y-m-d'),
+                'tanggal_selesai' => now()->addDays(20)->format('Y-m-d'),
                 'periode_penggunaan' => 'BOS Reguler Tahap 1 (2026/2027 - Semester Ganjil)',
-                'kategori_anggaran' => 'Pengembangan Perpustakaan & Literasi',
-                'latar_belakang' => 'Peningkatan kapasitas literasi dan buku teks ajar Kurikulum Merdeka untuk siswa fase B dan C.',
+                'kategori_anggaran' => 'Pengembangan Perpustakaan',
+                'latar_belakang' => 'Memenuhi standar minimal literasi perpustakaan sekolah sesuai panduan BOS terbaru.',
                 'estimasi_total' => 14850000.00,
                 'status' => 'Selesai',
-                'tanggal_pengajuan' => now()->subDays(5),
+                'tanggal_pengajuan' => now()->subDays(7),
+                'bukti_pencairan' => 'bukti_pencairan/mock_bukti_transfer.jpg',
             ]
         );
 
         RincianItem::firstOrCreate(
-            ['id_pengajuan' => $rab1->id_pengajuan, 'uraian_barang' => 'Buku Siswa Kurikulum Merdeka Kelas 4 & 5'],
+            ['id_pengajuan' => $rab1->id_pengajuan, 'uraian_barang' => 'Buku Fiksi & Non-Fiksi Siswa SD'],
             [
                 'satuan' => 'Eksemplar',
                 'volume' => 100,
@@ -105,29 +94,40 @@ class DummyDataSeeder extends Seeder
             ]
         );
 
-        if ($admin) {
+        if ($finance) {
             AlurPersetujuan::firstOrCreate(
                 ['id_pengajuan' => $rab1->id_pengajuan, 'level_persetujuan' => 1],
                 [
+                    'id_reviewer' => $finance->id_pengguna,
+                    'status_persetujuan' => 'ACC',
+                    'catatan' => 'Disetujui, sesuai pagu perpustakaan.',
+                    'tanggal_proses' => now()->subDays(5),
+                ]
+            );
+        }
+
+        if ($admin) {
+            AlurPersetujuan::firstOrCreate(
+                ['id_pengajuan' => $rab1->id_pengajuan, 'level_persetujuan' => 2],
+                [
                     'id_reviewer' => $admin->id_pengguna,
                     'status_persetujuan' => 'ACC',
-                    'catatan' => 'Disetujui sesuai spesifikasi acuan BOS dan pagu anggaran literasi.',
+                    'catatan' => 'Disetujui Kepala Sekolah.',
                     'tanggal_proses' => now()->subDays(3),
                 ]
             );
         }
 
-        // 2. RAB 2: Menunggu Verifikasi Finance (Kurikulum)
         $rab2 = PengajuanRab::firstOrCreate(
             ['no_rab' => 'RAB-2026-002'],
             [
                 'id_pengguna' => $sari->id_pengguna,
-                'id_divisi' => $unitKurikulum->id_divisi,
+                'id_divisi' => $unitKurikulum ? $unitKurikulum->id_divisi : 1,
                 'judul_pengajuan' => 'Workshop & Pelatihan Penguatan Implementasi Kurikulum Merdeka Guru',
                 'tahun_ajaran' => '2026/2027',
                 'semester' => 'Ganjil',
                 'tahun_ajaran_semester' => '2026/2027 - Semester Ganjil',
-                'tahap_bos' => 'BOS Reguler Tahap 1 (Januari – Juni)',
+                'tahap_bos' => 'BOS Reguler Tahap 1 (Januari - Juni)',
                 'tanggal_mulai' => now()->addDays(5)->format('Y-m-d'),
                 'tanggal_selesai' => now()->addDays(7)->format('Y-m-d'),
                 'periode_penggunaan' => 'BOS Reguler Tahap 1 (2026/2027 - Semester Ganjil)',
@@ -159,17 +159,16 @@ class DummyDataSeeder extends Seeder
             ]
         );
 
-        // 3. RAB 3: Ditolak (Sarpras)
         $rab3 = PengajuanRab::firstOrCreate(
             ['no_rab' => 'RAB-2026-003'],
             [
                 'id_pengguna' => $budi->id_pengguna,
-                'id_divisi' => $unitSarpras->id_divisi,
+                'id_divisi' => $unitSarpras ? $unitSarpras->id_divisi : 1,
                 'judul_pengajuan' => 'Perbaikan Pintu & Pengecatan Ruang Kelas 4',
                 'tahun_ajaran' => '2026/2027',
                 'semester' => 'Ganjil',
                 'tahun_ajaran_semester' => '2026/2027 - Semester Ganjil',
-                'tahap_bos' => 'BOS Reguler Tahap 1 (Januari – Juni)',
+                'tahap_bos' => 'BOS Reguler Tahap 1 (Januari - Juni)',
                 'tanggal_mulai' => now()->subDays(15)->format('Y-m-d'),
                 'tanggal_selesai' => now()->subDays(12)->format('Y-m-d'),
                 'periode_penggunaan' => 'BOS Reguler Tahap 1 (2026/2027 - Semester Ganjil)',
@@ -201,11 +200,11 @@ class DummyDataSeeder extends Seeder
             ]
         );
 
-        if ($admin) {
+        if ($finance) {
             AlurPersetujuan::firstOrCreate(
                 ['id_pengajuan' => $rab3->id_pengajuan, 'level_persetujuan' => 1],
                 [
-                    'id_reviewer' => $admin->id_pengguna,
+                    'id_reviewer' => $finance->id_pengguna,
                     'status_persetujuan' => 'Ditolak',
                     'catatan' => 'Alokasi pemeliharaan sarpras periode ini dialihkan untuk perbaikan instalasi sanitasi/toilet.',
                     'tanggal_proses' => now()->subDays(8),
@@ -213,17 +212,16 @@ class DummyDataSeeder extends Seeder
             );
         }
 
-        // 4. RAB 4: Menunggu Verifikasi Finance (Kesiswaan)
         $rab4 = PengajuanRab::firstOrCreate(
             ['no_rab' => 'RAB-2026-004'],
             [
                 'id_pengguna' => $dina->id_pengguna,
-                'id_divisi' => $unitKesiswaan->id_divisi,
+                'id_divisi' => $unitKesiswaan ? $unitKesiswaan->id_divisi : 1,
                 'judul_pengajuan' => 'Pemberangkatan Kontingen Lomba O2SN & FLS2N Tingkat Kecamatan',
                 'tahun_ajaran' => '2026/2027',
                 'semester' => 'Ganjil',
                 'tahun_ajaran_semester' => '2026/2027 - Semester Ganjil',
-                'tahap_bos' => 'BOS Reguler Tahap 1 (Januari – Juni)',
+                'tahap_bos' => 'BOS Reguler Tahap 1 (Januari - Juni)',
                 'tanggal_mulai' => now()->addDays(10)->format('Y-m-d'),
                 'tanggal_selesai' => now()->addDays(12)->format('Y-m-d'),
                 'periode_penggunaan' => 'BOS Reguler Tahap 1 (2026/2027 - Semester Ganjil)',
