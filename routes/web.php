@@ -13,6 +13,11 @@ use App\Http\Controllers\PimpinanController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\StaffRabController;
 use App\Http\Controllers\UserRabController;
+use App\Http\Controllers\KategoriAnggaranController;
+use App\Http\Controllers\RekapitulasiController;
+use App\Models\Pengguna;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -183,11 +188,8 @@ Route::middleware(['auth', 'role:staff,user'])->prefix('user')->name('user.')->g
 // -------------------------------------------------------------------------
 // CONTOH TUGAS: Eloquent ORM & Query Builder
 // -------------------------------------------------------------------------
-use App\Http\Controllers\KategoriAnggaranController;
-use App\Http\Controllers\RekapitulasiController;
-use App\Models\Pengguna;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+
+
 
 // 2. Contoh Penerapan Eloquent ORM
 Route::get('/tugas/eloquent', function () {

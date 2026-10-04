@@ -1,5 +1,6 @@
 <!-- Alert / Flash Messages Component -->
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4">
+  {{-- PRESENTASI: Sentralisasi Flash Message di layout utama untuk mencegah bug double-rendering notifikasi --}}
   @if(session('success'))
     <div class="mb-4 flex items-center justify-between gap-3 bg-emerald-50 border border-emerald-200 text-emerald-800 px-4 py-3 rounded-xl shadow-sm">
       <div class="flex items-center gap-2.5">

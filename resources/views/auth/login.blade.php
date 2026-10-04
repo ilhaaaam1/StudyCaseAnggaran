@@ -278,29 +278,7 @@
 
 <body x-data="{ 
     overlayOpen: false, 
-    loginModalOpen: {{ $errors->any() ? 'true' : 'false' }},
-    selectedRole: '',
-    email: '',
-    password: '',
-    setRolePreset(role) {
-        this.selectedRole = role;
-        if (role === 'pimpinan') {
-            this.email = 'pimpinan@sirab.local';
-            this.password = 'password';
-        } else if (role === 'finance') {
-            this.email = 'finance@sirab.local';
-            this.password = 'password';
-        } else if (role === 'admin') {
-            this.email = 'arif@sirab.local';
-            this.password = 'password';
-        } else if (role === 'user') {
-            this.email = 'sari@sirab.local';
-            this.password = 'password';
-        } else {
-            this.email = '';
-            this.password = '';
-        }
-    }
+    loginModalOpen: {{ $errors->any() ? 'true' : 'false' }}
 }">
 
     @php
@@ -383,56 +361,11 @@
                         layanan terpadu.
                     </p>
 
-                    <!-- Tombol Login Dropdown -->
-                    <div x-data="{ dropdownOpen: false }" class="relative inline-block text-left mt-2">
-                        <button @click="dropdownOpen = !dropdownOpen" @click.outside="dropdownOpen = false" class="btn-login">
-                            Login / Masuk <i class="fa-solid fa-chevron-down ml-1 text-sm"></i>
+                    <!-- Tombol Login -->
+                    <div class="relative inline-block text-left mt-2">
+                        <button @click="loginModalOpen = true" class="btn-login">
+                            Login / Masuk <i class="fa-solid fa-sign-in-alt ml-1 text-sm"></i>
                         </button>
-
-                        <div x-show="dropdownOpen"
-                             x-transition:enter="transition ease-out duration-100"
-                             x-transition:enter-start="transform opacity-0 scale-95"
-                             x-transition:enter-end="transform opacity-100 scale-100"
-                             x-transition:leave="transition ease-in duration-75"
-                             x-transition:leave-start="transform opacity-100 scale-100"
-                             x-transition:leave-end="transform opacity-0 scale-95"
-                             class="absolute left-0 mt-3 w-64 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-[60]"
-                             style="display: none;">
-                            <div class="py-1">
-                                <form method="POST" action="{{ route('login.post') }}" class="m-0">
-                                    @csrf
-                                    <input type="hidden" name="password" value="password">
-                                    <input type="hidden" name="email" value="arif@sirab.local">
-                                    <button type="submit" class="w-full text-left block px-5 py-3.5 text-sm font-medium text-gray-700 hover:bg-[#6b7280] hover:text-white border-b border-gray-100 transition-colors border-none cursor-pointer bg-white">
-                                        Login sebagai Administrator
-                                    </button>
-                                </form>
-                                <form method="POST" action="{{ route('login.post') }}" class="m-0">
-                                    @csrf
-                                    <input type="hidden" name="password" value="password">
-                                    <input type="hidden" name="email" value="sari@sirab.local">
-                                    <button type="submit" class="w-full text-left block px-5 py-3.5 text-sm font-medium text-gray-700 hover:bg-[#6b7280] hover:text-white border-b border-gray-100 transition-colors border-none cursor-pointer bg-white">
-                                        Login sebagai Staff Pemohon
-                                    </button>
-                                </form>
-                                <form method="POST" action="{{ route('login.post') }}" class="m-0">
-                                    @csrf
-                                    <input type="hidden" name="password" value="password">
-                                    <input type="hidden" name="email" value="finance@sirab.local">
-                                    <button type="submit" class="w-full text-left block px-5 py-3.5 text-sm font-medium text-gray-700 hover:bg-[#6b7280] hover:text-white border-b border-gray-100 transition-colors border-none cursor-pointer bg-white">
-                                        Login sebagai Finance
-                                    </button>
-                                </form>
-                                <form method="POST" action="{{ route('login.post') }}" class="m-0">
-                                    @csrf
-                                    <input type="hidden" name="password" value="password">
-                                    <input type="hidden" name="email" value="pimpinan@sirab.local">
-                                    <button type="submit" class="w-full text-left block px-5 py-3.5 text-sm font-medium text-gray-700 hover:bg-[#6b7280] hover:text-white transition-colors border-none cursor-pointer bg-white rounded-b-md">
-                                        Login sebagai Pimpinan
-                                    </button>
-                                </form>
-                            </div>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -468,7 +401,7 @@
             <!-- Title -->
             <div class="text-center mb-6">
                 <h3 class="text-2xl font-bold text-gray-800">Login Sistem RAB</h3>
-                <p class="text-xs text-gray-500 mt-1">Pilih Jabatan / Role atau Masukkan Akun Anda</p>
+                <p class="text-xs text-gray-500 mt-1">Masukkan Email dan Password Anda</p>
             </div>
 
             <!-- Pesan Error -->
@@ -484,28 +417,29 @@
             <form action="{{ route('login.post') }}" method="POST" class="space-y-4">
                 @csrf
 
-                <!-- Dropdown Pilih Role -->
-                <div>
-                    <label class="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1">Pilih Jabatan / Role (Opsional)</label>
-                    <select x-model="selectedRole" @change="setRolePreset($event.target.value)" class="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#8b8df7]">
-                        <option value="">-- Masukkan Manual --</option>
-                        <option value="pimpinan">Pimpinan</option>
-                        <option value="finance">Finance</option>
-                        <option value="admin">Admin IT</option>
-                        <option value="user">User</option>
-                    </select>
-                </div>
-
                 <!-- Input Email -->
                 <div>
                     <label class="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1">Email</label>
-                    <input type="email" name="email" x-model="email" required placeholder="nama@domain.com" class="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#8b8df7]">
+                    <input type="email" name="email" required placeholder="nama@domain.com" class="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#8b8df7]" value="{{ old('email') }}">
                 </div>
 
                 <!-- Input Password -->
-                <div>
+                {{-- PRESENTASI: Interaksi JavaScript untuk toggle visibilitas password --}}
+                <div x-data="{ showPassword: false }">
                     <label class="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1">Password</label>
-                    <input type="password" name="password" x-model="password" required placeholder="••••••••" class="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#8b8df7]">
+                    <div class="relative">
+                        <input :type="showPassword ? 'text' : 'password'" name="password" required placeholder="••••••••" class="w-full px-3 py-2.5 pr-10 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#8b8df7]">
+                        <button type="button" @click="showPassword = !showPassword" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-gray-700 focus:outline-none bg-transparent border-none cursor-pointer">
+                            <i class="fa-solid" :class="showPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="mt-1 mb-2">
+                    <label class="inline-flex items-center text-xs text-gray-600 cursor-pointer">
+                        <input type="checkbox" name="remember" class="mr-1.5 border-gray-300 rounded text-[#8b8df7] focus:ring-[#8b8df7]">
+                        Ingat Saya
+                    </label>
                 </div>
 
                 <!-- Submit Button -->

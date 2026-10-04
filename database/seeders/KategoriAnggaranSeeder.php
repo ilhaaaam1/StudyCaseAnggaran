@@ -20,6 +20,7 @@ class KategoriAnggaranSeeder extends Seeder
             ['nama_kategori' => 'Peningkatan Kompetensi Guru (SDM)', 'deskripsi' => 'Pelatihan dan workshop guru', 'pagu_anggaran' => 45000000],
             ['nama_kategori' => 'Pemeliharaan Sarana & Prasarana', 'deskripsi' => 'Perbaikan ringan dan rutin bangunan/aset', 'pagu_anggaran' => 80000000],
             ['nama_kategori' => 'Kegiatan Kesiswaan & Lomba', 'deskripsi' => 'O2SN, FLS2N, Porseni', 'pagu_anggaran' => 25000000],
+            ['nama_kategori' => 'Kegiatan Luar Sekolah', 'deskripsi' => 'Study Tour', 'pagu_anggaran' => 35000000],
         ];
 
         foreach ($categories as $cat) {

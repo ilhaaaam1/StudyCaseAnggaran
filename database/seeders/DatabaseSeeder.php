@@ -20,9 +20,9 @@ class DatabaseSeeder extends Seeder
             PenggunaSeeder::class,         // 2. Seed Master User
             UserSeeder::class,             // 3. Seed User Legacy (jika ada)
             KategoriAnggaranSeeder::class, // 4. Seed Master Kategori Anggaran
-            PengajuanRabSeeder::class,     // 5. Seed 20 baris data Pengajuan RAB Dummy
-            AlurPersetujuanSeeder::class,  // 6. Seed histori Alur Persetujuan (Opsional)
-            DummyDataSeeder::class,        // 7. Seed data dummy spesifik lainnya
+            PengajuanRabSeeder::class,     // 5. Seed 3 baris data Pengajuan RAB Dummy
+            // AlurPersetujuanSeeder::class,  // 6. Dimatikan agar tidak double dummy data
+            // DummyDataSeeder::class,        // 7. Dimatikan agar tidak menghasilkan 4 RAB tambahan
         ]);
     }
 }
