@@ -106,7 +106,7 @@ class StaffRabController extends Controller
         $kategoriListDb = KategoriAnggaran::all();
         $kategoriList = [];
         $sisaPaguList = [];
-        
+
         foreach ($kategoriListDb as $kat) {
             $kategoriList[$kat->nama_kategori] = $kat->deskripsi;
             $paguTerpakai = PengajuanRab::where('kategori_anggaran', $kat->nama_kategori)

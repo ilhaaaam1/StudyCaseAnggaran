@@ -226,4 +226,35 @@ class PengajuanRABController extends Controller
 
         return redirect()->back()->with('success', "Pengajuan RAB ({$pengajuan->no_rab}) berhasil {$statusText}.");
     }
+
+    /**
+     * Memperbarui data Pengajuan RAB (Update - Hanya role berizin: finance, pimpinan).
+     */
+    public function update(Request $request, int $id): RedirectResponse
+    {
+        $pengajuan = PengajuanRab::where('id_pengajuan', $id)->firstOrFail();
+
+        $validated = $request->validate([
+            'judul_pengajuan' => ['nullable', 'string', 'max:255'],
+            'latar_belakang' => ['nullable', 'string'],
+        ]);
+
+        $pengajuan->update(array_filter($validated));
+
+        return redirect()->route('pengajuan.show', $id)
+            ->with('success', "Pengajuan RAB ({$pengajuan->no_rab}) berhasil diperbarui.");
+    }
+
+    /**
+     * Menghapus data Pengajuan RAB (Destroy - Hanya role berizin: finance, pimpinan).
+     */
+    public function destroy(int $id): RedirectResponse
+    {
+        $pengajuan = PengajuanRab::where('id_pengajuan', $id)->firstOrFail();
+        $noRab = $pengajuan->no_rab;
+        $pengajuan->delete();
+
+        return redirect()->route('pengajuan.index')
+            ->with('success', "Pengajuan RAB ({$noRab}) berhasil dihapus dari sistem.");
+    }
 }

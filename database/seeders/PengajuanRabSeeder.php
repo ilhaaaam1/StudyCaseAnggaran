@@ -3,9 +3,9 @@
 namespace Database\Seeders;
 
 use App\Enums\StatusPengajuan;
+use App\Models\Divisi;
 use App\Models\PengajuanRab;
 use App\Models\Pengguna;
-use App\Models\Divisi;
 use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 

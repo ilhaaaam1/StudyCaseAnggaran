@@ -11,6 +11,7 @@ use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\View\View;
 
 class AuthController extends Controller
@@ -28,28 +29,39 @@ class AuthController extends Controller
     }
 
     /**
-     * Proses autentikasi pengguna dan redirect berdasarkan role.
+     * Proses autentikasi pengguna dan redirect berdasarkan role dengan Rate Limiter.
      */
     public function login(LoginRequest $request): RedirectResponse
     {
+        // 1. Cek apakah request telah melebihi batas percobaan gagal (Rate Limiting)
+        $request->ensureIsNotRateLimited();
+
         $credentials = $request->only('email', 'password');
         $remember = $request->boolean('remember');
 
-        // PRESENTASI: Implementasi fitur Remember Me menggunakan parameter kedua pada Auth::attempt
+        // 2. Percobaan autentikasi (Otomatis memicu Event Login jika sukses / Failed jika gagal)
         if (Auth::attempt($credentials, $remember)) {
+            // Bersihkan hit throttle pada key email + IP
+            RateLimiter::clear($request->throttleKey());
             $request->session()->regenerate();
 
-            ActivityLog::log('Berhasil login ke dalam sistem.');
-
-            /** @var Pengguna $user */
+            /** @var Pengguna|User $user */
             $user = Auth::user();
 
             return redirect()->intended(route($this->getDashboardRoute($user)))
-                ->with('success', 'Selamat datang kembali, '.$user->nama_lengkap.'!');
+                ->with('success', 'Selamat datang kembali, '.($user->nama_lengkap ?? $user->name).'!');
         }
 
+        // 3. Tambahkan hit gagal ke RateLimiter (decay 60 detik)
+        RateLimiter::hit($request->throttleKey(), 60);
+
+        $maxAttempts = $request->maxAttempts();
+        $remaining = RateLimiter::remaining($request->throttleKey(), $maxAttempts);
+
         return back()
-            ->withErrors(['email' => 'Email atau kata sandi yang Anda masukkan salah.'])
+            ->withErrors([
+                'email' => "Email atau kata sandi yang Anda masukkan salah. (Sisa percobaan: {$remaining} dari {$maxAttempts})",
+            ])
             ->onlyInput('email');
     }
 
