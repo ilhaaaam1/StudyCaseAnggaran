@@ -7,18 +7,18 @@ use App\Http\Controllers\AdminRabController;
 use App\Http\Controllers\AdminUserController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\FinanceController;
+use App\Http\Controllers\KategoriAnggaranController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PengajuanRABController;
 use App\Http\Controllers\PimpinanController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\RekapitulasiController;
 use App\Http\Controllers\StaffRabController;
 use App\Http\Controllers\UserRabController;
-use App\Http\Controllers\KategoriAnggaranController;
-use App\Http\Controllers\RekapitulasiController;
 use App\Models\Pengguna;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -189,8 +189,6 @@ Route::middleware(['auth', 'role:staff,user'])->prefix('user')->name('user.')->g
 // CONTOH TUGAS: Eloquent ORM & Query Builder
 // -------------------------------------------------------------------------
 
-
-
 // 2. Contoh Penerapan Eloquent ORM
 Route::get('/tugas/eloquent', function () {
     // Menggunakan Eloquent Model Pengguna beserta relasinya (Eager Loading), Filtering, dan Sorting
@@ -248,10 +246,74 @@ Route::post('/tugas/tambah-divisi', function (Request $request) {
     return back()->with('sukses', 'Divisi baru berhasil ditambahkan ke database!');
 })->name('uji.divisi.store');
 
-// Rute untuk fitur Pengajuan RAB
-Route::get('/pengajuan', [PengajuanRABController::class, 'index'])->name('pengajuan.index');
-Route::get('/pengajuan/create', [PengajuanRABController::class, 'create'])->name('pengajuan.create');
-Route::post('/pengajuan', [PengajuanRABController::class, 'store'])->name('pengajuan.store');
-Route::get('/pengajuan/antrean', [PengajuanRABController::class, 'antreanPersetujuan'])->name('pengajuan.antrean');
-Route::post('/pengajuan/{id}/approve', [PengajuanRABController::class, 'processApproval'])->name('pengajuan.approve');
-Route::get('/pengajuan/{id}', [PengajuanRABController::class, 'show'])->name('pengajuan.show');
+// -------------------------------------------------------------------------
+// 5. MANAJEMEN ANGGARAN (RAB) - PROTEKSI MIDDLEWARE CRUD PER-METODE
+// -------------------------------------------------------------------------
+// Memenuhi Poin 5: Proteksi dipasang ketat pada create, update, dan destroy
+// (Hanya role finance dan pimpinan yang boleh mutasi; staff hanya index & show)
+Route::middleware('auth')->prefix('pengajuan')->name('pengajuan.')->group(function (): void {
+    // READ ONLY (Bisa diakses oleh semua role: staff, finance, pimpinan, admin_it)
+    Route::get('/', [PengajuanRABController::class, 'index'])->name('index');
+    Route::get('/{id}', [PengajuanRABController::class, 'show'])->whereNumber('id')->name('show');
+
+    // CREATE, STORE, UPDATE, DESTROY & APPROVAL (Dilindungi Middleware Khusus Finance & Pimpinan)
+    Route::middleware('role:finance,pimpinan')->group(function (): void {
+        Route::get('/create', [PengajuanRABController::class, 'create'])->name('create');
+        Route::post('/', [PengajuanRABController::class, 'store'])->name('store');
+        Route::put('/{id}', [PengajuanRABController::class, 'update'])->whereNumber('id')->name('update');
+        Route::delete('/{id}', [PengajuanRABController::class, 'destroy'])->whereNumber('id')->name('destroy');
+        Route::get('/antrean', [PengajuanRABController::class, 'antreanPersetujuan'])->name('antrean');
+        Route::get('/antrean/persetujuan', [PengajuanRABController::class, 'antreanPersetujuan'])->name('persetujuan.index');
+        Route::post('/{id}/approve', [PengajuanRABController::class, 'processApproval'])->whereNumber('id')->name('approve');
+    });
+});
+
+// -------------------------------------------------------------------------
+// 6. PEMBUKTIAN IMPLEMENTASI ALIAS ROLE (SIMULASI PENGUJIAN ROUTE:LIST -V)
+// -------------------------------------------------------------------------
+// Memenuhi Poin 2 & 6: Menerapkan seluruh alias role yang didaftarkan di bootstrap/app.php
+Route::middleware('auth')->prefix('simulasi-role')->name('simulasi.')->group(function (): void {
+    // 1. Menggunakan Alias: role.admin_it
+    Route::get('/admin-it', function () {
+        return response()->json([
+            'status' => 'success',
+            'pesan' => 'Akses Berhasil! Anda memiliki izin sebagai Administrator IT.',
+            'user' => Auth::user()->nama_lengkap ?? Auth::user()->name,
+            'role' => Auth::user()->role,
+            'middleware_aktif' => 'role.admin_it',
+        ]);
+    })->middleware('role.admin_it')->name('admin_it');
+
+    // 2. Menggunakan Alias: role.finance
+    Route::get('/finance', function () {
+        return response()->json([
+            'status' => 'success',
+            'pesan' => 'Akses Berhasil! Anda memiliki izin sebagai Finance (Reviewer Tahap 1).',
+            'user' => Auth::user()->nama_lengkap ?? Auth::user()->name,
+            'role' => Auth::user()->role,
+            'middleware_aktif' => 'role.finance',
+        ]);
+    })->middleware('role.finance')->name('finance');
+
+    // 3. Menggunakan Alias: role.pimpinan
+    Route::get('/pimpinan', function () {
+        return response()->json([
+            'status' => 'success',
+            'pesan' => 'Akses Berhasil! Anda memiliki izin sebagai Pimpinan (Approval Final).',
+            'user' => Auth::user()->nama_lengkap ?? Auth::user()->name,
+            'role' => Auth::user()->role,
+            'middleware_aktif' => 'role.pimpinan',
+        ]);
+    })->middleware('role.pimpinan')->name('pimpinan');
+
+    // 4. Menggunakan Alias: role.staff
+    Route::get('/staff', function () {
+        return response()->json([
+            'status' => 'success',
+            'pesan' => 'Akses Berhasil! Anda memiliki izin sebagai Staff (Pemohon RAB).',
+            'user' => Auth::user()->nama_lengkap ?? Auth::user()->name,
+            'role' => Auth::user()->role,
+            'middleware_aktif' => 'role.staff',
+        ]);
+    })->middleware('role.staff')->name('staff');
+});

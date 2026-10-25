@@ -27,15 +27,17 @@
   </div>
 
   <!-- Form Pengajuan RAB (2-Column Figma Layout) -->
-  <form action="{{ route('user.rab.store') }}" method="POST" enctype="multipart/form-data" id="formRab">
+  <form action="{{ route('user.rab.store') }}" method="POST" enctype="multipart/form-data" id="formRab" x-data="formWizard()">
     @csrf
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
       <!-- LEFT COLUMN: Form Sections (Col Span 2) -->
       <div class="lg:col-span-2 space-y-6">
         
-        <!-- SECTION A: Informasi Umum -->
-        <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+        <!-- STEP 1: Informasi Umum -->
+        <div x-show="step === 1" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0">
+          <!-- SECTION A: Informasi Umum -->
+          <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden" id="step1-container">
           <div class="bg-[#f8fafc] px-5 py-3.5 border-b border-slate-200 flex items-center justify-between">
             <h2 class="text-xs font-bold text-slate-700 tracking-wider uppercase flex items-center gap-2">
               <span class="w-5 h-5 rounded-full bg-[#1e293b] text-white flex items-center justify-center text-[10px]">A</span>
@@ -157,9 +159,19 @@
             </div>
           </div>
         </div>
+          <!-- Step 1 Actions -->
+          <div class="mt-6 flex justify-end">
+            <button type="button" @click="nextStep()" class="bg-[#1e293b] hover:bg-slate-800 text-white font-semibold text-sm px-6 py-2.5 rounded-xl transition-all shadow-sm flex items-center gap-2">
+              Lanjut ke Rincian <span class="text-lg leading-none">&rarr;</span>
+            </button>
+          </div>
+        </div>
 
-        <!-- SECTION B: Rincian Anggaran Biaya (Dynamic Table + Real-Time JS) -->
-        <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+        <!-- STEP 2: Rincian & Dokumen -->
+        <div x-cloak x-show="step === 2" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0">
+          
+          <!-- SECTION B: Rincian Anggaran Biaya (Dynamic Table + Real-Time JS) -->
+          <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden mb-6">
           <div class="bg-[#f8fafc] px-5 py-3.5 border-b border-slate-200 flex items-center justify-between">
             <h2 class="text-xs font-bold text-slate-700 tracking-wider uppercase flex items-center gap-2">
               <span class="w-5 h-5 rounded-full bg-[#1e293b] text-white flex items-center justify-center text-[10px]">B</span>
@@ -299,6 +311,8 @@
           </div>
         </div>
 
+        </div>
+
       </div>
 
       <!-- RIGHT COLUMN: Sticky Sidebar & Summary (Col Span 1) -->
@@ -375,6 +389,8 @@
         <!-- Action Buttons -->
         <div class="space-y-3 pt-2">
           <button type="submit" 
+                  x-cloak
+                  x-show="step === 2"
                   class="w-full bg-[#1e293b] hover:bg-slate-800 text-white font-semibold text-xs sm:text-sm py-3 rounded-xl transition-all shadow-sm flex items-center justify-center gap-2 cursor-pointer">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
@@ -382,7 +398,16 @@
             Ajukan ke Supervisor
           </button>
           
+          <button type="button" 
+                  x-cloak
+                  x-show="step === 2"
+                  @click="prevStep()"
+                  class="w-full bg-white hover:bg-slate-50 text-slate-700 font-semibold text-xs sm:text-sm py-2.5 rounded-xl border border-slate-300 transition-colors cursor-pointer">
+            &larr; Kembali ke Data Pokok
+          </button>
+          
           <a href="{{ route('user.dashboard') }}" 
+             x-show="step === 1"
              class="w-full block text-center bg-white hover:bg-slate-50 text-slate-600 font-medium text-xs sm:text-sm py-2.5 rounded-xl border border-slate-300 transition-colors">
             Batal &amp; Kembali
           </a>
@@ -609,5 +634,30 @@
     syncSidebarPreview();
     calculateGrandTotal();
   });
+
+  // AlpineJS Wizard Logic
+  function formWizard() {
+    return {
+      step: 1,
+      nextStep() {
+        const step1Inputs = document.querySelectorAll('#step1-container [required]');
+        let valid = true;
+        step1Inputs.forEach(input => {
+          if (!input.checkValidity()) {
+            input.reportValidity();
+            valid = false;
+          }
+        });
+        if (valid) {
+          this.step = 2;
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+      },
+      prevStep() {
+        this.step = 1;
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }
+  }
 </script>
 @endpush

@@ -38,17 +38,18 @@
           {{ $pengajuan->no_rab }}
         </span>
         @php
-          $statusBadge = match($pengajuan->status) {
-            'disetujui' => ['bg' => 'bg-emerald-50 text-emerald-600', 'dot' => 'bg-emerald-400'],
-            'diajukan' => ['bg' => 'bg-amber-50 text-amber-600', 'dot' => 'bg-amber-400'],
-            'revisi' => ['bg' => 'bg-orange-50 text-orange-600', 'dot' => 'bg-orange-400'],
-            'ditolak' => ['bg' => 'bg-rose-50 text-rose-600', 'dot' => 'bg-rose-400'],
+          $statusVal = $pengajuan->status instanceof \BackedEnum ? $pengajuan->status->value : (string) $pengajuan->status;
+          $statusBadge = match($statusVal) {
+            'disetujui', \App\Enums\StatusPengajuan::SELESAI->value => ['bg' => 'bg-emerald-50 text-emerald-600', 'dot' => 'bg-emerald-400'],
+            'diajukan', \App\Enums\StatusPengajuan::MENUNGGU_FINANCE->value, \App\Enums\StatusPengajuan::MENUNGGU_PIMPINAN->value => ['bg' => 'bg-amber-50 text-amber-600', 'dot' => 'bg-amber-400'],
+            'revisi', \App\Enums\StatusPengajuan::REVISI->value => ['bg' => 'bg-orange-50 text-orange-600', 'dot' => 'bg-orange-400'],
+            'ditolak', \App\Enums\StatusPengajuan::DITOLAK->value => ['bg' => 'bg-rose-50 text-rose-600', 'dot' => 'bg-rose-400'],
             default => ['bg' => 'bg-slate-100 text-slate-600', 'dot' => 'bg-slate-400'],
           };
         @endphp
         <span class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold {{ $statusBadge['bg'] }} rounded-full">
           <span class="w-1.5 h-1.5 rounded-full {{ $statusBadge['dot'] }}"></span>
-          {{ ucfirst($pengajuan->status) }}
+          {{ ucfirst($statusVal) }}
         </span>
       </div>
       <h1 class="text-2xl font-bold text-slate-900">

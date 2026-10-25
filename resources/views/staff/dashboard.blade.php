@@ -143,37 +143,37 @@
         <span>Alokasi Kategori Anggaran</span>
         <span class="text-xs font-normal text-slate-400">Total: {{ $totalPengajuan ?? 0 }} Dokumen</span>
     </h2>
-    
+
     {{-- PRESENTASI: Struktur loop Kategori Anggaran menggunakan flexbox dan dinamis dari controller --}}
     <div class="flex flex-col text-sm">
         @forelse($alokasiKategori as $item)
-            @php
-                // Warna ikon bergantian secara otomatis berdasarkan indeks
-                $colors = [
-                    'bg-blue-100 text-blue-700', 
-                    'bg-emerald-100 text-emerald-700', 
-                    'bg-amber-100 text-amber-700', 
-                    'bg-purple-100 text-purple-700',
-                    'bg-rose-100 text-rose-700'
-                ];
-                $colorClass = $colors[$loop->index % count($colors)];
-            @endphp
-            <div class="flex justify-between items-center py-3 {{ !$loop->last ? 'border-b border-slate-100' : '' }}">
-                <div class="flex items-center gap-3">
-                    <div class="p-2 rounded-lg {{ $colorClass }}">
-                        <svg fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 9.776c.112-.017.227-.026.344-.026h15.812c.117 0 .232.009.344.026m-16.5 0a2.25 2.25 0 00-1.883 2.542l.857 6a2.25 2.25 0 002.227 1.932H19.05a2.25 2.25 0 002.227-1.932l.857-6a2.25 2.25 0 00-1.883-2.542m-16.5 0V6A2.25 2.25 0 016 3.75h3.879a1.5 1.5 0 011.06.44l2.122 2.12a1.5 1.5 0 001.06.44H18A2.25 2.25 0 0120.25 9v.776" />
-                        </svg>
-                    </div>
-                    <span class="font-medium text-gray-700">{{ $item->kategori_anggaran ?: 'Tanpa Kategori' }}</span>
+        @php
+        // Warna ikon bergantian secara otomatis berdasarkan indeks
+        $colors = [
+        'bg-blue-100 text-blue-700',
+        'bg-emerald-100 text-emerald-700',
+        'bg-amber-100 text-amber-700',
+        'bg-purple-100 text-purple-700',
+        'bg-rose-100 text-rose-700'
+        ];
+        $colorClass = $colors[$loop->index % count($colors)];
+        @endphp
+        <div class="flex justify-between items-center py-3 {{ !$loop->last ? 'border-b border-slate-100' : '' }}">
+            <div class="flex items-center gap-3">
+                <div class="p-2 rounded-lg {{ $colorClass }}">
+                    <svg fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 9.776c.112-.017.227-.026.344-.026h15.812c.117 0 .232.009.344.026m-16.5 0a2.25 2.25 0 00-1.883 2.542l.857 6a2.25 2.25 0 002.227 1.932H19.05a2.25 2.25 0 002.227-1.932l.857-6a2.25 2.25 0 00-1.883-2.542m-16.5 0V6A2.25 2.25 0 016 3.75h3.879a1.5 1.5 0 011.06.44l2.122 2.12a1.5 1.5 0 001.06.44H18A2.25 2.25 0 0120.25 9v.776" />
+                    </svg>
                 </div>
-                <div class="text-right">
-                    <div class="font-bold text-gray-900">Rp {{ number_format($item->total_rupiah, 0, ',', '.') }}</div>
-                    <div class="text-[11px] text-gray-500 font-medium">{{ $item->jumlah_dokumen }} Pengajuan</div>
-                </div>
+                <span class="font-medium text-gray-700">{{ $item->kategori_anggaran ?: 'Tanpa Kategori' }}</span>
             </div>
+            <div class="text-right">
+                <div class="font-bold text-gray-900">Rp {{ number_format($item->total_rupiah, 0, ',', '.') }}</div>
+                <div class="text-[11px] text-gray-500 font-medium">{{ $item->jumlah_dokumen }} Pengajuan</div>
+            </div>
+        </div>
         @empty
-            <div class="py-4 text-center text-slate-500 text-sm">Belum ada pengajuan untuk ditampilkan.</div>
+        <div class="py-4 text-center text-slate-500 text-sm">Belum ada pengajuan untuk ditampilkan.</div>
         @endforelse
     </div>
 </div>
@@ -211,9 +211,9 @@
                     <td class="px-4 py-3.5 sm:px-5 sm:py-4 align-middle whitespace-nowrap">
                         <span class="font-mono font-bold text-indigo-700 text-xs">{{ $item->no_rab }}</span>
                         @if($item->divisi)
-                            <div class="text-[11px] text-slate-400 mt-0.5 truncate max-w-[140px]">
-                                {{ $item->divisi->nama_divisi }}
-                            </div>
+                        <div class="text-[11px] text-slate-400 mt-0.5 truncate max-w-[140px]">
+                            {{ $item->divisi->nama_divisi }}
+                        </div>
                         @endif
                     </td>
 
@@ -223,9 +223,9 @@
                             {{ $item->judul_pengajuan }}
                         </div>
                         @if($item->kategori_anggaran)
-                            <div class="text-[11px] text-slate-400 mt-0.5 truncate" title="{{ $item->kategori_anggaran }}">
-                                {{ $item->kategori_anggaran }}
-                            </div>
+                        <div class="text-[11px] text-slate-400 mt-0.5 truncate" title="{{ $item->kategori_anggaran }}">
+                            {{ $item->kategori_anggaran }}
+                        </div>
                         @endif
                     </td>
 
@@ -251,36 +251,36 @@
                         <div class="inline-flex items-center justify-center gap-1.5 shrink-0">
                             <!-- Detail & Track -->
                             <a href="{{ route('staff.rab.show', $item->id_pengajuan) }}"
-                               class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap bg-slate-100 hover:bg-indigo-50 text-slate-700 hover:text-indigo-600 border border-slate-200/80 hover:border-indigo-200 shadow-2xs focus:outline-none focus:ring-2 focus:ring-indigo-500/20 active:scale-95 transition-all duration-150 shrink-0"
-                               title="Lihat Detail & Lacak Progres">
+                                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap bg-slate-100 hover:bg-indigo-50 text-slate-700 hover:text-indigo-600 border border-slate-200/80 hover:border-indigo-200 shadow-2xs focus:outline-none focus:ring-2 focus:ring-indigo-500/20 active:scale-95 transition-all duration-150 shrink-0"
+                                title="Lihat Detail & Lacak Progres">
                                 <i class="fa-regular fa-eye text-[12px] shrink-0"></i>
                                 <span>Detail</span>
                             </a>
 
                             <!-- Edit (Jika Status Revisi atau Draft) -->
                             @if(in_array($item->status, [\App\Enums\StatusPengajuan::REVISI, \App\Enums\StatusPengajuan::DRAFT]))
-                                <a href="{{ route('staff.rab.edit', $item->id_pengajuan) }}"
-                                   class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap text-amber-700 bg-amber-50 hover:bg-amber-100 border border-amber-200 shadow-2xs focus:outline-none focus:ring-2 focus:ring-amber-500/20 active:scale-95 transition-all duration-150 shrink-0"
-                                   title="Edit / Perbaiki Pengajuan">
-                                    <i class="fa-solid fa-pen-to-square text-[11px] shrink-0"></i>
-                                    <span>Edit</span>
-                                </a>
+                            <a href="{{ route('staff.rab.edit', $item->id_pengajuan) }}"
+                                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap text-amber-700 bg-amber-50 hover:bg-amber-100 border border-amber-200 shadow-2xs focus:outline-none focus:ring-2 focus:ring-amber-500/20 active:scale-95 transition-all duration-150 shrink-0"
+                                title="Edit / Perbaiki Pengajuan">
+                                <i class="fa-solid fa-pen-to-square text-[11px] shrink-0"></i>
+                                <span>Edit</span>
+                            </a>
                             @endif
 
                             <!-- Hapus (Khusus Status Draft) -->
                             @if($item->status === \App\Enums\StatusPengajuan::DRAFT)
-                                <form action="{{ route('staff.rab.destroy', $item->id_pengajuan) }}"
-                                      method="POST"
-                                      class="inline-block"
-                                      onsubmit="return confirm('Apakah Anda yakin ingin menghapus draft pengajuan ini?')">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit"
-                                            class="w-7 h-7 rounded-lg inline-flex items-center justify-center text-rose-600 hover:text-rose-700 hover:bg-rose-50 border border-rose-200 transition-colors shrink-0"
-                                            title="Hapus Draft">
-                                        <i class="fa-regular fa-trash-can text-[11px]"></i>
-                                    </button>
-                                </form>
+                            <form action="{{ route('staff.rab.destroy', $item->id_pengajuan) }}"
+                                method="POST"
+                                class="inline-block"
+                                onsubmit="return confirm('Apakah Anda yakin ingin menghapus draft pengajuan ini?')">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit"
+                                    class="w-7 h-7 rounded-lg inline-flex items-center justify-center text-rose-600 hover:text-rose-700 hover:bg-rose-50 border border-rose-200 transition-colors shrink-0"
+                                    title="Hapus Draft">
+                                    <i class="fa-regular fa-trash-can text-[11px]"></i>
+                                </button>
+                            </form>
                             @endif
                         </div>
                     </td>
@@ -296,13 +296,13 @@
                             Anda belum membuat berkas pengajuan anggaran. Klik tombol di bawah untuk membuat RAB baru.
                         </p>
                         @if(\App\Models\Setting::getSetting('maintenance_mode', '0') != '1')
-                            <div class="mt-4">
-                                <a href="{{ route('staff.rab.create') }}"
-                                   class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 shadow-xs transition-colors">
-                                    <i class="fa-solid fa-plus text-[11px]"></i>
-                                    Buat Pengajuan Baru
-                                </a>
-                            </div>
+                        <div class="mt-4">
+                            <a href="{{ route('staff.rab.create') }}"
+                                class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 shadow-xs transition-colors">
+                                <i class="fa-solid fa-plus text-[11px]"></i>
+                                Buat Pengajuan Baru
+                            </a>
+                        </div>
                         @endif
                     </td>
                 </tr>
@@ -311,4 +311,15 @@
         </table>
     </div>
 </div>
+
+<footer class="bg-[#111827] text-slate-400 text-xs py-4 px-6 mt-8">
+    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
+        <div>
+            &copy; 2026 SIRAB - Sistem Informasi Rencana Anggaran Biaya v2.4.1
+        </div>
+        <div class="text-[11px] text-slate-500">
+            Proyek Pembangunan & Infrastruktur
+        </div>
+    </div>
+</footer>
 @endsection

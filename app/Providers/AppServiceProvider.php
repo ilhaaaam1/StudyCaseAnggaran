@@ -2,6 +2,11 @@
 
 namespace App\Providers;
 
+use App\Listeners\LogAuthenticationActivity;
+use Illuminate\Auth\Events\Failed;
+use Illuminate\Auth\Events\Lockout;
+use Illuminate\Auth\Events\Login;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -19,6 +24,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        // Event Listener untuk mencatat aktivitas percobaan login (Berhasil, Gagal, Lockout)
+        Event::listen(Login::class, [LogAuthenticationActivity::class, 'handleLogin']);
+        Event::listen(Failed::class, [LogAuthenticationActivity::class, 'handleFailed']);
+        Event::listen(Lockout::class, [LogAuthenticationActivity::class, 'handleLockout']);
     }
 }
