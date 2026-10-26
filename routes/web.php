@@ -247,20 +247,22 @@ Route::post('/tugas/tambah-divisi', function (Request $request) {
 })->name('uji.divisi.store');
 
 // -------------------------------------------------------------------------
-// 5. MANAJEMEN ANGGARAN (RAB) - PROTEKSI MIDDLEWARE CRUD PER-METODE
+// 5. MANAJEMEN ANGGARAN (RAB) - PROTEKSI MIDDLEWARE CRUD (ALUR NORMAL)
 // -------------------------------------------------------------------------
-// Memenuhi Poin 5: Proteksi dipasang ketat pada create, update, dan destroy
-// (Hanya role finance dan pimpinan yang boleh mutasi; staff hanya index & show)
 Route::middleware('auth')->prefix('pengajuan')->name('pengajuan.')->group(function (): void {
-    // READ ONLY (Bisa diakses oleh semua role: staff, finance, pimpinan, admin_it)
+    // 1. READ ONLY: Bisa diakses oleh seluruh role terautentikasi (staff, finance, pimpinan, admin_it)
     Route::get('/', [PengajuanRABController::class, 'index'])->name('index');
     Route::get('/{id}', [PengajuanRABController::class, 'show'])->whereNumber('id')->name('show');
 
-    // CREATE, STORE, UPDATE, DESTROY & APPROVAL (Dilindungi Middleware Khusus Finance & Pimpinan)
-    Route::middleware('role:finance,pimpinan')->group(function (): void {
+    // 2. CREATE, STORE & UPDATE: Diizinkan untuk Staff, Finance, dan Pimpinan (Alur Normal)
+    Route::middleware('role:staff,finance,pimpinan')->group(function (): void {
         Route::get('/create', [PengajuanRABController::class, 'create'])->name('create');
         Route::post('/', [PengajuanRABController::class, 'store'])->name('store');
         Route::put('/{id}', [PengajuanRABController::class, 'update'])->whereNumber('id')->name('update');
+    });
+
+    // 3. DESTROY, ANTREAN VERIFIKASI & APPROVE: Dibatasi ketat hanya Finance & Pimpinan (Staff ditolak 403 Forbidden)
+    Route::middleware('role:finance,pimpinan')->group(function (): void {
         Route::delete('/{id}', [PengajuanRABController::class, 'destroy'])->whereNumber('id')->name('destroy');
         Route::get('/antrean', [PengajuanRABController::class, 'antreanPersetujuan'])->name('antrean');
         Route::get('/antrean/persetujuan', [PengajuanRABController::class, 'antreanPersetujuan'])->name('persetujuan.index');
