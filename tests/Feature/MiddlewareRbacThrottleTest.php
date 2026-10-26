@@ -187,7 +187,7 @@ class MiddlewareRbacThrottleTest extends TestCase
     }
 
     /**
-     * Uji Poin 5: Proteksi CRUD - Staff bisa Read (index/show), tapi Ditolak (403) pada create, update, destroy.
+     * Uji Poin 5: Proteksi CRUD - Staff bisa Read & Create pengajuan, tapi Ditolak (403) pada Antrean, Approve, dan Destroy.
      */
     public function test_staff_cannot_create_update_or_delete_budget_rab(): void
     {
@@ -212,24 +212,34 @@ class MiddlewareRbacThrottleTest extends TestCase
         $response = $this->actingAs($this->staff)->get('/pengajuan/'.$pengajuan->id_pengajuan);
         $response->assertStatus(200);
 
-        // Staff coba buka create -> 403 Forbidden
+        // Staff buka create -> 200 OK (Alur normal: Staff diizinkan mengajukan anggaran)
         $response = $this->actingAs($this->staff)->get('/pengajuan/create');
+        $response->assertStatus(200);
+
+        // Staff coba bypass buka antrean persetujuan verifikasi finance -> 403 Forbidden!
+        $response = $this->actingAs($this->staff)->get('/pengajuan/antrean');
         $response->assertStatus(403);
 
-        // Staff coba post store -> 403 Forbidden
-        $response = $this->actingAs($this->staff)->post('/pengajuan', [
-            'judul_pengajuan' => 'Ilegal',
+        // Staff coba eksekusi persetujuan (approve) anggaran -> 403 Forbidden!
+        $response = $this->actingAs($this->staff)->post('/pengajuan/'.$pengajuan->id_pengajuan.'/approve', [
+            'status_persetujuan' => 'disetujui',
         ]);
         $response->assertStatus(403);
 
-        // Staff coba update -> 403 Forbidden
-        $response = $this->actingAs($this->staff)->put('/pengajuan/'.$pengajuan->id_pengajuan, [
-            'judul_pengajuan' => 'Diubah Staf',
-        ]);
-        $response->assertStatus(403);
-
-        // Staff coba destroy -> 403 Forbidden
+        // Staff coba destroy / hapus anggaran -> 403 Forbidden!
         $response = $this->actingAs($this->staff)->delete('/pengajuan/'.$pengajuan->id_pengajuan);
+        $response->assertStatus(403);
+
+        // Staff coba bypass buka modul finance -> 403 Forbidden!
+        $response = $this->actingAs($this->staff)->get('/finance/antrean');
+        $response->assertStatus(403);
+
+        // Staff coba bypass buka modul pimpinan -> 403 Forbidden!
+        $response = $this->actingAs($this->staff)->get('/pimpinan/antrean');
+        $response->assertStatus(403);
+
+        // Staff coba bypass buka modul admin-it -> 403 Forbidden!
+        $response = $this->actingAs($this->staff)->get('/admin-it/users');
         $response->assertStatus(403);
     }
 

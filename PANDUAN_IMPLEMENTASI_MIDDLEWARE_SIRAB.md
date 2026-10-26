@@ -53,7 +53,7 @@ flowchart LR
 2. **Ekstraksi Role:** Mengambil nilai kolom `role` pada model yang sedang login. Mendukung tipe data `string` maupun `BackedEnum` (`UserRole`).
 3. **Normalisasi & Toleransi Sinonim:** Menghubungkan sinonim role antar model (`admin_it` $\leftrightarrow$ `admin`, `staff` $\leftrightarrow$ `user`).
 4. **Dukungan Delegasi Wewenang:** Jika rute membutuhkan role `pimpinan`, pengguna yang memiliki delegasi wewenang aktif (`hasActiveDelegation()`) tetap diizinkan.
-5. **Pencocokan Dinamis:** Melakukan perulangan pada parameter `...$roles`. Jika cocok, jalankan `$next($request)`. Jika tidak cocok, eksekusi `abort(403)`.
+5. **Pencocokan Dinamis:** Melakukan perulangan pada parameter `...$roles`. Jika cocok, jalankan `$next($request)`. Jika tidak cocok, eksekusi `abort(php artisan route:list -v 403)`.
 
 ### Kode Lengkap: `app/Http/Middleware/RoleMiddleware.php`
 ```php
@@ -478,27 +478,32 @@ class AppServiceProvider extends ServiceProvider
 |---|---|---|---|---|
 | `GET` | `/pengajuan` | `pengajuan.index` | Semua Role Terautentikasi (`auth`) | Menampilkan daftar riwayat RAB |
 | `GET` | `/pengajuan/{id}` | `pengajuan.show` | Semua Role Terautentikasi (`auth`) | Menampilkan rincian detail RAB |
-| `GET` | `/pengajuan/create` | `pengajuan.create` | `finance`, `pimpinan` | Form tambah pengajuan anggaran |
-| `POST` | `/pengajuan` | `pengajuan.store` | `finance`, `pimpinan` | Simpan data anggaran baru |
-| `PUT` | `/pengajuan/{id}` | `pengajuan.update` | `finance`, `pimpinan` | Perbarui data anggaran |
-| `DELETE` | `/pengajuan/{id}` | `pengajuan.destroy` | `finance`, `pimpinan` | Hapus data anggaran |
-| `POST` | `/pengajuan/{id}/approve` | `pengajuan.approve` | `finance`, `pimpinan` | Eksekusi persetujuan |
+| `GET` | `/pengajuan/create` | `pengajuan.create` | `staff`, `finance`, `pimpinan` | Form tambah pengajuan anggaran (Staff diizinkan) |
+| `POST` | `/pengajuan` | `pengajuan.store` | `staff`, `finance`, `pimpinan` | Simpan data anggaran baru (Staff diizinkan) |
+| `PUT` | `/pengajuan/{id}` | `pengajuan.update` | `staff`, `finance`, `pimpinan` | Perbarui data draft anggaran |
+| `DELETE` | `/pengajuan/{id}` | `pengajuan.destroy` | `finance`, `pimpinan` | Hapus anggaran (Staff DITOLAK 403) |
+| `GET` | `/pengajuan/antrean` | `pengajuan.antrean` | `finance`, `pimpinan` | Antrean verifikasi/approval (Staff DITOLAK 403) |
+| `POST` | `/pengajuan/{id}/approve` | `pengajuan.approve` | `finance`, `pimpinan` | Eksekusi persetujuan (Staff DITOLAK 403) |
 
 ### Kode Rute di `routes/web.php`
 ```php
 // -------------------------------------------------------------------------
-// 5. MANAJEMEN ANGGARAN (RAB) - PROTEKSI MIDDLEWARE CRUD PER-METODE
+// 5. MANAJEMEN ANGGARAN (RAB) - PROTEKSI MIDDLEWARE CRUD (ALUR NORMAL)
 // -------------------------------------------------------------------------
 Route::middleware('auth')->prefix('pengajuan')->name('pengajuan.')->group(function (): void {
-    // READ ONLY (Bisa diakses oleh semua role terautentikasi: staff, finance, pimpinan, admin_it)
+    // 1. READ ONLY: Bisa diakses oleh seluruh role terautentikasi (staff, finance, pimpinan, admin_it)
     Route::get('/', [PengajuanRABController::class, 'index'])->name('index');
     Route::get('/{id}', [PengajuanRABController::class, 'show'])->whereNumber('id')->name('show');
 
-    // CREATE, STORE, UPDATE, DESTROY & APPROVAL (Dilindungi Middleware Khusus Finance & Pimpinan)
-    Route::middleware('role:finance,pimpinan')->group(function (): void {
+    // 2. CREATE, STORE & UPDATE: Diizinkan untuk Staff, Finance, dan Pimpinan (Alur Normal)
+    Route::middleware('role:staff,finance,pimpinan')->group(function (): void {
         Route::get('/create', [PengajuanRABController::class, 'create'])->name('create');
         Route::post('/', [PengajuanRABController::class, 'store'])->name('store');
         Route::put('/{id}', [PengajuanRABController::class, 'update'])->whereNumber('id')->name('update');
+    });
+
+    // 3. DESTROY, ANTREAN VERIFIKASI & APPROVE: Dibatasi ketat hanya Finance & Pimpinan (Staff ditolak 403 Forbidden)
+    Route::middleware('role:finance,pimpinan')->group(function (): void {
         Route::delete('/{id}', [PengajuanRABController::class, 'destroy'])->whereNumber('id')->name('destroy');
         Route::get('/antrean', [PengajuanRABController::class, 'antreanPersetujuan'])->name('antrean');
         Route::get('/antrean/persetujuan', [PengajuanRABController::class, 'antreanPersetujuan'])->name('persetujuan.index');
