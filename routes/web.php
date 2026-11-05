@@ -6,6 +6,7 @@ use App\Http\Controllers\AdminItController;
 use App\Http\Controllers\AdminRabController;
 use App\Http\Controllers\AdminUserController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\BarangController;
 use App\Http\Controllers\FinanceController;
 use App\Http\Controllers\KategoriAnggaranController;
 use App\Http\Controllers\NotificationController;
@@ -15,6 +16,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RekapitulasiController;
 use App\Http\Controllers\StaffRabController;
 use App\Http\Controllers\UserRabController;
+use App\Models\Barang;
 use App\Models\Pengguna;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -56,6 +58,18 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout')->middl
 
 // Switch Role & Model (Pengguna Terautentikasi)
 Route::post('/switch-role', [AuthController::class, 'switchRole'])->name('role.switch')->middleware('auth');
+
+// -------------------------------------------------------------------------
+// Rute Mandiri: Halaman Welcome / Landing Page Publik
+// -------------------------------------------------------------------------
+Route::get('/welcome', function () {
+    $barangList = Barang::whereNotNull('gambar')
+        ->where('gambar', '!=', '')
+        ->latest()
+        ->get();
+
+    return view('welcome', compact('barangList'));
+})->name('welcome');
 
 // -------------------------------------------------------------------------
 // 1. RUTE STAFF / PEMOHON RAB (Role: staff)
@@ -156,6 +170,9 @@ Route::middleware('auth')->group(function (): void {
 
     // Route Notifikasi
     Route::get('/notifications/{id}/read', [NotificationController::class, 'read'])->name('notifications.read');
+
+    // Modul Inventaris & Dokumentasi Barang (Terkunci Auth & Dashboard)
+    Route::resource('barang', BarangController::class);
 });
 
 // -------------------------------------------------------------------------

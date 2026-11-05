@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\LoginRequest;
 use App\Models\ActivityLog;
+use App\Models\Barang;
 use App\Models\Pengguna;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
@@ -25,7 +26,12 @@ class AuthController extends Controller
             return redirect()->route($this->getDashboardRoute(Auth::user()));
         }
 
-        return view('auth.login');
+        $barangList = Barang::whereNotNull('gambar')
+            ->where('gambar', '!=', '')
+            ->latest()
+            ->get();
+
+        return view('auth.login', compact('barangList'));
     }
 
     /**

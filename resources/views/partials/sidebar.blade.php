@@ -254,6 +254,17 @@
         </a>
       @endif
 
+      <!-- Modul Inventaris & Dokumentasi Barang -->
+      <div class="text-[10px] uppercase text-slate-400 px-2.5 pb-2 tracking-wide font-semibold mt-4 mb-1">
+        Dokumentasi & Aset
+      </div>
+      <a href="{{ route('barang.index') }}" class="flex items-center justify-between px-3 py-2 rounded-lg mb-1 text-[13px] font-medium transition-all {{ request()->routeIs('barang.*') ? 'bg-[#2b337c] text-white' : 'text-slate-300 hover:bg-white/5 hover:text-white' }}">
+        <div class="flex items-center gap-3 min-w-0">
+          <i class="fa-solid fa-boxes-stacked w-[18px] text-center text-[15px] shrink-0 text-indigo-300"></i>
+          <span class="truncate">Inventaris & Dokumentasi</span>
+        </div>
+      </a>
+
       @if(in_array($userRole, ['staff', 'finance', 'pimpinan', 'user']))
         {{-- PRESENTASI: Penambahan menu 'Pengaturan Akun' untuk pengguna non-admin --}}
         {{-- Menu ini ditambahkan di bagian bawah list menu (sebelum card profil) untuk memberikan akses ke profil personal --}}
