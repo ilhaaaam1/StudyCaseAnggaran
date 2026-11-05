@@ -450,6 +450,176 @@
         </div>
     </div>
 
+    <!-- SECTION GALERI DOKUMENTASI & INVENTARIS SEKOLAH (CAROUSEL / IMAGE SLIDER INTERAKTIF) -->
+    <section class="py-16 px-6 sm:px-12 lg:px-20 bg-slate-50 border-t border-slate-200">
+        <div class="max-w-5xl mx-auto">
+            <div class="text-center max-w-2xl mx-auto mb-10">
+                <span class="inline-block text-[11px] font-semibold uppercase tracking-wider text-indigo-700 bg-indigo-50 px-3 py-1 rounded-full border border-indigo-100 mb-2">
+                    Dokumentasi Terpadu
+                </span>
+                <h2 class="text-2xl sm:text-3xl font-bold text-gray-900 tracking-tight">
+                    Galeri Dokumentasi & Inventaris Sekolah
+                </h2>
+                <p class="text-xs sm:text-sm text-gray-500 mt-2">
+                    Dokumentasi fisik aset, sarana dan prasarana penunjang kegiatan di SD Negeri Sidokare 3.
+                </p>
+            </div>
+
+            @php
+                $galleryItems = ($barangList ?? collect())
+                    ->filter(fn($b) => !empty($b->gambar))
+                    ->values()
+                    ->map(fn($b) => [
+                        'id' => $b->id,
+                        'nama' => $b->nama,
+                        'kategori' => $b->kategori,
+                        'kondisi' => $b->kondisi,
+                        'keterangan' => $b->keterangan ?? '',
+                        'jumlah' => $b->jumlah,
+                        'gambar' => asset($b->gambar),
+                    ]);
+            @endphp
+
+            <script>
+                function gallerySlider() {
+                    return {
+                        currentIndex: 0,
+                        items: {!! json_encode($galleryItems, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!},
+                        get hasItems() {
+                            return this.items.length > 0;
+                        },
+                        next() {
+                            if (this.items.length > 0) {
+                                this.currentIndex = (this.currentIndex + 1) % this.items.length;
+                            }
+                        },
+                        prev() {
+                            if (this.items.length > 0) {
+                                this.currentIndex = (this.currentIndex - 1 + this.items.length) % this.items.length;
+                            }
+                        }
+                    };
+                }
+            </script>
+
+            <div x-data="gallerySlider()" class="relative w-full">
+
+                <!-- 1. Kondisi Jika Data Kosong -->
+                <div x-show="!hasItems" class="text-center py-12 bg-white rounded-2xl sm:rounded-3xl border border-dashed border-slate-300 p-6 sm:p-8 max-w-md mx-auto shadow-sm">
+                    <div class="w-12 h-12 rounded-xl bg-indigo-50 text-indigo-400 flex items-center justify-center mx-auto mb-3 text-xl">
+                        <i class="fa-solid fa-images"></i>
+                    </div>
+                    <p class="text-sm sm:text-base font-semibold text-gray-800">Belum Ada Dokumentasi Gambar</p>
+                    <p class="text-xs text-gray-500 mt-1 max-w-xs mx-auto">Dokumentasi fisik inventaris sekolah akan tampil secara interaktif di sini setelah diunggah melalui sistem.</p>
+                </div>
+
+                <!-- 2. Kondisi Jika Ada Data Foto (Carousel Interaktif - Ukuran Kompak & Proporsional) -->
+                <div x-show="hasItems" class="relative max-w-md mx-auto" style="display: none;">
+                    <!-- Wrapper Kartu Slider -->
+                    <div class="relative overflow-hidden rounded-2xl sm:rounded-3xl bg-white border border-slate-200/80 shadow-md">
+                        <template x-for="(item, index) in items" :key="item.id || index">
+                            <div 
+                                x-show="currentIndex === index"
+                                x-transition:enter="transition ease-out duration-300 transform"
+                                x-transition:enter-start="opacity-0 scale-95"
+                                x-transition:enter-end="opacity-100 scale-100"
+                                x-transition:leave="transition ease-in duration-200 transform absolute inset-0"
+                                x-transition:leave-start="opacity-100 scale-100"
+                                x-transition:leave-end="opacity-0 scale-95"
+                                class="w-full flex flex-col"
+                            >
+                                <!-- Foto Utama (Kompak & Elegan) -->
+                                <div class="relative w-full h-44 sm:h-52 md:h-56 bg-slate-900 overflow-hidden flex items-center justify-center">
+                                    <img 
+                                        :src="item.gambar" 
+                                        :alt="item.nama" 
+                                        class="w-full h-full object-cover"
+                                        loading="lazy"
+                                    >
+                                    
+                                    <!-- Badge Kondisi & Counter Halaman di Atas Foto -->
+                                    <div class="absolute top-2.5 left-2.5 right-2.5 flex items-center justify-between z-10 pointer-events-none">
+                                        <div class="pointer-events-auto">
+                                            <span 
+                                                x-show="item.kondisi === 'baik'"
+                                                class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500 text-white shadow-sm"
+                                            >
+                                                <span class="w-1.5 h-1.5 rounded-full bg-white"></span> Baik
+                                            </span>
+                                            <span 
+                                                x-show="item.kondisi === 'rusak'"
+                                                class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-amber-500 text-white shadow-sm"
+                                            >
+                                                <span class="w-1.5 h-1.5 rounded-full bg-white"></span> Rusak
+                                            </span>
+                                            <span 
+                                                x-show="item.kondisi === 'hilang'"
+                                                class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-rose-500 text-white shadow-sm"
+                                            >
+                                                <span class="w-1.5 h-1.5 rounded-full bg-white"></span> Hilang
+                                            </span>
+                                        </div>
+
+                                        <span class="pointer-events-auto bg-black/60 backdrop-blur-md text-white text-[10px] font-semibold px-2.5 py-0.5 rounded-full shadow-sm">
+                                            <span x-text="currentIndex + 1"></span> / <span x-text="items.length"></span>
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <!-- Detail Keterangan di Bawah Foto -->
+                                <div class="p-4 sm:p-4.5 bg-white flex flex-col justify-between">
+                                    <div>
+                                        <div class="flex items-center gap-2 mb-1">
+                                            <span class="text-[10px] font-bold uppercase tracking-wider text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded border border-indigo-100" x-text="item.kategori"></span>
+                                            <span class="text-[11px] text-slate-400 font-mono" x-text="'Jumlah: ' + item.jumlah + ' Unit'"></span>
+                                        </div>
+                                        <h3 class="text-sm sm:text-base font-bold text-gray-900 leading-snug" x-text="item.nama"></h3>
+                                        <p class="text-[11px] sm:text-xs text-gray-500 mt-1 leading-relaxed line-clamp-2" x-text="item.keterangan || 'Tidak ada catatan tambahan untuk inventaris ini.'"></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+
+                    <!-- Tombol Panah Kiri (Previous) -->
+                    <button 
+                        @click="prev()" 
+                        type="button"
+                        class="absolute -left-3 sm:-left-4 top-1/2 -translate-y-1/2 z-20 w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-white/95 hover:bg-white text-gray-700 hover:text-indigo-600 shadow-md hover:shadow-lg border border-slate-200/80 flex items-center justify-center transition-all cursor-pointer hover:scale-105 active:scale-95 focus:outline-none"
+                        title="Foto Sebelumnya"
+                        aria-label="Foto Sebelumnya"
+                    >
+                        <i class="fa-solid fa-chevron-left text-xs"></i>
+                    </button>
+
+                    <!-- Tombol Panah Kanan (Next) -->
+                    <button 
+                        @click="next()" 
+                        type="button"
+                        class="absolute -right-3 sm:-right-4 top-1/2 -translate-y-1/2 z-20 w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-white/95 hover:bg-white text-gray-700 hover:text-indigo-600 shadow-md hover:shadow-lg border border-slate-200/80 flex items-center justify-center transition-all cursor-pointer hover:scale-105 active:scale-95 focus:outline-none"
+                        title="Foto Selanjutnya"
+                        aria-label="Foto Selanjutnya"
+                    >
+                        <i class="fa-solid fa-chevron-right text-xs"></i>
+                    </button>
+
+                    <!-- Indikator Dots -->
+                    <div class="flex items-center justify-center gap-1.5 mt-3.5 sm:mt-4">
+                        <template x-for="(item, index) in items" :key="'dot-' + (item.id || index)">
+                            <button 
+                                @click="currentIndex = index" 
+                                type="button"
+                                class="transition-all duration-300 rounded-full cursor-pointer border-none p-0 focus:outline-none"
+                                :class="currentIndex === index ? 'w-5 h-1.5 bg-indigo-600 shadow-xs' : 'w-1.5 h-1.5 bg-slate-300 hover:bg-slate-400'"
+                                :aria-label="'Buka slide foto ' + (index + 1)"
+                            ></button>
+                        </template>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- FOOTER -->
     <footer>
         <div class="footer-top">
