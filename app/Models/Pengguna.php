@@ -82,6 +82,14 @@ class Pengguna extends Authenticatable
     }
 
     /**
+     * Accessor atribut 'name' sebagai alias dari 'nama_lengkap'.
+     */
+    public function getNameAttribute(): ?string
+    {
+        return $this->nama_lengkap;
+    }
+
+    /**
      * Cek apakah pengguna memiliki role Staff (Pemohon RAB).
      */
     public function isStaff(): bool

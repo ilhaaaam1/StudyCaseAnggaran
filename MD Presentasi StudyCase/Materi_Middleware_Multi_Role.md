@@ -310,17 +310,25 @@ class LoginRequest extends FormRequest
         // 1. Cek apakah request telah melebihi batas percobaan gagal (Rate Limiting)
         $request->ensureIsNotRateLimited();
 
-        $credentials = $request->only('email', 'password');
+        $credentials = [
+            'email' => Str::lower(trim((string) $request->input('email'))),
+            'password' => (string) $request->input('password'),
+        ];
         $remember = $request->boolean('remember');
 
         // 2. Percobaan autentikasi (Otomatis memicu Event Login jika sukses / Failed jika gagal)
         if (Auth::attempt($credentials, $remember)) {
-            // Bersihkan hit throttle pada key email + IP
+            // Bersihkan hit throttle pada key email + IP agar hitungan gagal direset total
             RateLimiter::clear($request->throttleKey());
             $request->session()->regenerate();
 
             /** @var Pengguna|User $user */
             $user = Auth::user();
+
+            if (! empty($user->email)) {
+                $userKey = Str::transliterate(Str::lower(trim((string) $user->email)).'|'.$request->ip());
+                RateLimiter::clear($userKey);
+            }
 
             return redirect()->intended(route($this->getDashboardRoute($user)))
                 ->with('success', 'Selamat datang kembali, '.($user->nama_lengkap ?? $user->name).'!');

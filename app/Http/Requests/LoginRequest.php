@@ -43,7 +43,7 @@ class LoginRequest extends FormRequest
      */
     public function maxAttempts(): int
     {
-        $email = (string) $this->input('email');
+        $email = Str::lower(trim((string) $this->input('email')));
 
         // Cari calon pengguna berdasarkan email
         $user = Pengguna::where('email', $email)->first()
@@ -94,7 +94,7 @@ class LoginRequest extends FormRequest
      */
     public function throttleKey(): string
     {
-        return Str::transliterate(Str::lower((string) $this->input('email')).'|'.$this->ip());
+        return Str::transliterate(Str::lower(trim((string) $this->input('email'))).'|'.$this->ip());
     }
 
     /**

@@ -102,7 +102,7 @@ class BarangController extends Controller
             'jumlah' => 'required|integer|min:0',
             'kondisi' => 'required|in:baik,rusak,hilang',
             'keterangan' => 'nullable|string',
-            'gambar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'gambar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:100',
         ]);
 
         $data = $request->except(['gambar', 'hapus_gambar']);

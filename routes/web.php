@@ -9,6 +9,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BarangController;
 use App\Http\Controllers\FinanceController;
 use App\Http\Controllers\KategoriAnggaranController;
+use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PengajuanRABController;
 use App\Http\Controllers\PimpinanController;
@@ -158,6 +159,12 @@ Route::middleware(['auth', 'role:admin_it,admin'])->prefix('admin-it')->name('ad
 // Rute Dokumen Bersama (Terautentikasi Semua Role)
 // -------------------------------------------------------------------------
 Route::middleware('auth')->group(function (): void {
+    // ---------------------------------------------------------------------
+    // Export Laporan PDF (Tugas Praktikum barryvdh/laravel-dompdf)
+    // ---------------------------------------------------------------------
+    Route::get('/laporan/pengajuan/pdf', [LaporanController::class, 'exportPdfPengajuan'])->name('laporan.pengajuan.pdf');
+    Route::get('/laporan/analisis', [LaporanController::class, 'index'])->name('laporan.index');
+
     Route::get('/dokumen/{id}/preview', [AdminRabController::class, 'previewDokumen'])->name('dokumen.preview');
     Route::get('/dokumen/{id}/download', [AdminRabController::class, 'downloadDokumen'])->name('dokumen.download');
 

@@ -168,6 +168,14 @@ class PengajuanRab extends Model
     }
 
     /**
+     * Alias relasi 'user' mengarah ke 'pengguna' untuk kompatibilitas konvensi/tugas praktikum.
+     */
+    public function user(): BelongsTo
+    {
+        return $this->pengguna();
+    }
+
+    /**
      * Relasi ke Divisi unit kerja RAB (Many to One).
      */
     public function divisi(): BelongsTo
@@ -181,6 +189,14 @@ class PengajuanRab extends Model
     public function rincianItem(): HasMany
     {
         return $this->hasMany(RincianItem::class, 'id_pengajuan', 'id_pengajuan');
+    }
+
+    /**
+     * Alias relasi 'items' mengarah ke 'rincianItem' untuk kompatibilitas konvensi/tugas praktikum.
+     */
+    public function items(): HasMany
+    {
+        return $this->rincianItem();
     }
 
     /**
