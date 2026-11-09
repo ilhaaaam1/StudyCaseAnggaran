@@ -154,6 +154,53 @@ class MiddlewareRbacThrottleTest extends TestCase
     }
 
     /**
+     * Uji: Jika salah input password 2x (sisa 3), lalu berhasil login dan logout,
+     * hitungan gagal harus direset kembali penuh (sisa 4 dari 5 pada percobaan salah berikutnya).
+     */
+    public function test_failed_attempts_reset_after_successful_login_and_logout(): void
+    {
+        // 1. Salah input password 1x (sisa 4 dari 5)
+        $res1 = $this->from('/login')->post('/login', [
+            'email' => 'finance@sirab',
+            'password' => 'passwordsalah1',
+        ]);
+        $res1->assertSessionHasErrors(['email']);
+        $errorMessage1 = $res1->getSession()->get('errors')->first('email');
+        $this->assertStringContainsString('4 dari 5', $errorMessage1);
+
+        // 2. Salah input password 2x (sisa 3 dari 5)
+        $res2 = $this->from('/login')->post('/login', [
+            'email' => 'finance@sirab',
+            'password' => 'passwordsalah2',
+        ]);
+        $res2->assertSessionHasErrors(['email']);
+        $errorMessage2 = $res2->getSession()->get('errors')->first('email');
+        $this->assertStringContainsString('3 dari 5', $errorMessage2);
+
+        // 3. Berhasil login dengan password yang benar
+        $response = $this->post('/login', [
+            'email' => 'finance@sirab',
+            'password' => 'password123',
+        ]);
+        $response->assertRedirect(route('finance.dashboard'));
+        $this->assertAuthenticatedAs($this->finance);
+
+        // 4. Logout dari sistem
+        $logoutResponse = $this->post('/logout');
+        $logoutResponse->assertRedirect(route('login'));
+        $this->assertGuest();
+
+        // 5. Coba login salah lagi -> harus reset, sisa kembali menjadi 4 dari 5 (bukan 2 dari 5)
+        $resAfter = $this->from('/login')->post('/login', [
+            'email' => 'finance@sirab',
+            'password' => 'passwordsalah_setelah_logout',
+        ]);
+        $resAfter->assertSessionHasErrors(['email']);
+        $errorMessageAfter = $resAfter->getSession()->get('errors')->first('email');
+        $this->assertStringContainsString('4 dari 5', $errorMessageAfter);
+    }
+
+    /**
      * Uji Poin 4: Log aktivitas mencatat Email, Role, IP, Waktu, dan Status (Berhasil/Gagal).
      */
     public function test_login_attempts_are_recorded_to_activity_logs(): void

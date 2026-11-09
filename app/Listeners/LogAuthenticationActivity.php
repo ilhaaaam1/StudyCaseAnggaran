@@ -10,7 +10,10 @@ use App\Models\User;
 use Illuminate\Auth\Events\Failed;
 use Illuminate\Auth\Events\Lockout;
 use Illuminate\Auth\Events\Login;
+use Illuminate\Auth\Events\Logout;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Str;
 
 class LogAuthenticationActivity
 {
@@ -25,6 +28,12 @@ class LogAuthenticationActivity
         $ip = request()->ip() ?? '127.0.0.1';
         $waktu = now()->toDateTimeString();
         $userId = $user->id_pengguna ?? $user->id ?? null;
+
+        // Reset hitungan throttle rate limiter saat pengguna berhasil login
+        if ($user && ! empty($user->email)) {
+            $userKey = Str::transliterate(Str::lower(trim((string) $user->email)).'|'.$ip);
+            RateLimiter::clear($userKey);
+        }
 
         // 1. Simpan ke database (Tabel activity_logs)
         ActivityLog::create([
@@ -91,5 +100,19 @@ class LogAuthenticationActivity
         $waktu = now()->toDateTimeString();
 
         Log::alert("Percobaan Login: TERKUNCI (Lockout) | Email: {$email} | IP: {$ip} | Waktu: {$waktu}");
+    }
+
+    /**
+     * Reset hitungan throttle rate limiter saat pengguna logout dari sistem.
+     */
+    public function handleLogout(Logout $event): void
+    {
+        $user = $event->user;
+        $ip = request()->ip() ?? '127.0.0.1';
+
+        if ($user && ! empty($user->email)) {
+            $userKey = Str::transliterate(Str::lower(trim((string) $user->email)).'|'.$ip);
+            RateLimiter::clear($userKey);
+        }
     }
 }

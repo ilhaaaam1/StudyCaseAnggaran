@@ -13,6 +13,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Str;
 use Illuminate\View\View;
 
 class AuthController extends Controller
@@ -42,17 +43,25 @@ class AuthController extends Controller
         // 1. Cek apakah request telah melebihi batas percobaan gagal (Rate Limiting)
         $request->ensureIsNotRateLimited();
 
-        $credentials = $request->only('email', 'password');
+        $credentials = [
+            'email' => Str::lower(trim((string) $request->input('email'))),
+            'password' => (string) $request->input('password'),
+        ];
         $remember = $request->boolean('remember');
 
         // 2. Percobaan autentikasi (Otomatis memicu Event Login jika sukses / Failed jika gagal)
         if (Auth::attempt($credentials, $remember)) {
-            // Bersihkan hit throttle pada key email + IP
+            // Bersihkan hit throttle pada key email + IP agar hitungan gagal direset total
             RateLimiter::clear($request->throttleKey());
             $request->session()->regenerate();
 
             /** @var Pengguna|User $user */
             $user = Auth::user();
+
+            if (! empty($user->email)) {
+                $userKey = Str::transliterate(Str::lower(trim((string) $user->email)).'|'.$request->ip());
+                RateLimiter::clear($userKey);
+            }
 
             return redirect()->intended(route($this->getDashboardRoute($user)))
                 ->with('success', 'Selamat datang kembali, '.($user->nama_lengkap ?? $user->name).'!');
@@ -110,6 +119,11 @@ class AuthController extends Controller
         Auth::login($user);
         $request->session()->regenerate();
 
+        if (! empty($user->email)) {
+            $userKey = Str::transliterate(Str::lower(trim((string) $user->email)).'|'.$request->ip());
+            RateLimiter::clear($userKey);
+        }
+
         $roleVal = $user->role instanceof \BackedEnum ? $user->role->value : (string) $user->role;
         ActivityLog::log('Beralih peran ke: '.$roleVal);
 
@@ -152,6 +166,12 @@ class AuthController extends Controller
     public function logout(Request $request): RedirectResponse
     {
         if (Auth::check()) {
+            $user = Auth::user();
+            if ($user && ! empty($user->email)) {
+                $userKey = Str::transliterate(Str::lower(trim((string) $user->email)).'|'.$request->ip());
+                RateLimiter::clear($userKey);
+            }
+
             ActivityLog::log('Logout dari sistem.');
         }
 

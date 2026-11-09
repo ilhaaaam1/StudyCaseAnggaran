@@ -5,9 +5,12 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Enums\RabStatus;
+use App\Models\PengajuanRab;
 use App\Models\Rab;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 
 class LaporanController extends Controller
@@ -78,5 +81,48 @@ class LaporanController extends Controller
             'divisionReports',
             'rabs'
         ));
+    }
+
+    /**
+     * Export Laporan Pengajuan Rencana Anggaran Biaya (RAB) ke dalam format PDF (A4 Landscape).
+     * Menerapkan eager loading with(['user', 'divisi', 'items']) untuk mencegah N+1 query problem.
+     */
+    public function exportPdfPengajuan(Request $request): Response
+    {
+        $query = PengajuanRab::with(['user', 'divisi', 'items']);
+
+        // Filter opsional jika diakses melalui form pencarian / filter
+        if ($request->filled('start_date')) {
+            $query->whereDate('tanggal_pengajuan', '>=', $request->start_date);
+        }
+
+        if ($request->filled('end_date')) {
+            $query->whereDate('tanggal_pengajuan', '<=', $request->end_date);
+        }
+
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        if ($request->filled('kategori')) {
+            $query->where('kategori_anggaran', 'like', '%'.$request->kategori.'%');
+        }
+
+        // Urutkan data pengajuan terbaru
+        $pengajuans = $query->latest()->get();
+
+        // Konfigurasikan DomPDF sesuai spesifikasi praktikum
+        $pdf = Pdf::loadView('laporan.pdf.pengajuan', compact('pengajuans'))
+            ->setPaper('a4', 'landscape')
+            ->setOption('isRemoteEnabled', true)
+            ->setOption('defaultFont', 'sans-serif');
+
+        // Mode stream jika diminta untuk keperluan preview di tab browser
+        if ($request->query('stream') === '1') {
+            return $pdf->stream('laporan-pengajuan-rab-'.date('Y-m-d').'.pdf');
+        }
+
+        // Default: Response unduhan langsung ke folder download user
+        return $pdf->download('laporan-pengajuan-rab-'.date('Y-m-d').'.pdf');
     }
 }

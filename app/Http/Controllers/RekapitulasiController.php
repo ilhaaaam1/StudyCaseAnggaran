@@ -20,7 +20,7 @@ class RekapitulasiController extends Controller
         // PRESENTASI: Logika Filtering Laporan (Backend)
         // Menggunakan Eloquent Query Builder `when()` untuk menyaring data RAB
         // secara dinamis berdasarkan parameter input (tanggal, status, kategori, bidang)
-        $query = PengajuanRab::with(['pengguna', 'divisi'])
+        $query = PengajuanRab::with(['pengguna', 'divisi', 'rincianItem'])
             ->when($request->start_date, function ($q, $startDate) {
                 return $q->whereDate('tanggal_pengajuan', '>=', $startDate);
             })
@@ -45,14 +45,13 @@ class RekapitulasiController extends Controller
     }
 
     /**
-     * Export data rekapitulasi ke dalam format PDF.
+     * Export data rekapitulasi ke dalam format PDF (A4 Landscape sesuai Tugas Praktikum).
      */
     public function exportPdf(Request $request)
     {
         // PRESENTASI: Logika Cetak PDF dengan mempertahankan parameter Filter data
-        // Query builder identik dengan method index() agar hasil cetak akurat
-        // sesuai dengan data yang sedang dilihat user di layar.
-        $query = PengajuanRab::with(['pengguna', 'divisi'])
+        // Menggunakan Eager Loading pengguna, divisi, dan rincianItem untuk mencegah N+1 query problem
+        $query = PengajuanRab::with(['pengguna', 'divisi', 'rincianItem'])
             ->when($request->start_date, function ($q, $startDate) {
                 return $q->whereDate('tanggal_pengajuan', '>=', $startDate);
             })
@@ -68,11 +67,19 @@ class RekapitulasiController extends Controller
 
         $rekapList = $query->latest('tanggal_pengajuan')->get();
 
-        // Load view khusus PDF dan passing data
+        // Load view khusus PDF dan konfigurasikan A4 Landscape
         $pdf = Pdf::loadView('finance.rekapitulasi.pdf', compact('rekapList'))
-            ->setPaper('A4', 'portrait');
+            ->setPaper('a4', 'landscape')
+            ->setOption('isRemoteEnabled', true)
+            ->setOption('defaultFont', 'sans-serif');
 
-        return $pdf->stream('Laporan_Rekapitulasi_SIRAB.pdf');
+        // Mode stream jika diminta untuk preview browser tab
+        if ($request->query('action') === 'stream' || $request->query('stream') === '1') {
+            return $pdf->stream('Laporan_Rekapitulasi_SIRAB_'.date('Y-m-d').'.pdf');
+        }
+
+        // Default: Response unduhan langsung ke folder download
+        return $pdf->download('Laporan_Rekapitulasi_SIRAB_'.date('Y-m-d').'.pdf');
     }
 
     /**

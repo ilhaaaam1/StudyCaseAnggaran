@@ -68,8 +68,11 @@
       <h3 class="text-[15px] font-bold text-slate-800">Data Hasil Penyaringan</h3>
       <div class="flex items-center gap-3">
         {{-- PRESENTASI: Tombol Export dengan parameter request->query() agar sesuai filter --}}
-        <a href="{{ route('finance.rekapitulasi.pdf', request()->query()) }}" target="_blank" class="bg-rose-600 hover:bg-rose-700 text-white px-4 py-2 rounded-lg text-xs font-semibold flex items-center gap-2 transition-colors">
-          <i class="fa-solid fa-file-pdf"></i> Cetak PDF
+        <a href="{{ route('finance.rekapitulasi.pdf', request()->query()) }}" class="bg-rose-600 hover:bg-rose-700 text-white px-4 py-2 rounded-lg text-xs font-semibold flex items-center gap-2 transition-colors shadow-sm" title="Unduh Laporan Rekapitulasi Format PDF (A4 Landscape)">
+          <i class="fa-solid fa-file-arrow-down"></i> Unduh PDF
+        </a>
+        <a href="{{ route('finance.rekapitulasi.pdf', array_merge(request()->query(), ['action' => 'stream'])) }}" target="_blank" class="bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 px-3 py-2 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors" title="Buka Pratinjau PDF di Tab Browser">
+          <i class="fa-solid fa-eye"></i> Preview
         </a>
         {{-- PRESENTASI: Tombol Export Excel dengan parameter request->query() agar sesuai filter --}}
         <a href="{{ route('finance.rekapitulasi.excel', request()->query()) }}" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg text-xs font-semibold flex items-center gap-2 transition-colors">
