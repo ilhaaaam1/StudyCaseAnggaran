@@ -140,8 +140,10 @@
                   <a href="{{ route('barang.show', $item->id) }}" class="font-semibold text-slate-900 hover:text-indigo-600 transition-colors">
                     {{ $item->nama }}
                   </a>
-                  <div class="text-[11px] text-slate-400 mt-0.5">
-                    ID: #{{ str_pad((string)$item->id, 4, '0', STR_PAD_LEFT) }} &bull; Diperbarui {{ $item->updated_at->diffForHumans() }}
+                  <div class="text-[11px] text-slate-400 mt-0.5 flex items-center gap-1.5 flex-wrap">
+                    <span class="font-mono text-indigo-700 font-bold bg-indigo-50 border border-indigo-100 px-1.5 py-0.2 rounded text-[10px]" title="Kode Barcode">{{ $item->kode_barang }}</span>
+                    <span>&bull;</span>
+                    <span>Diperbarui {{ $item->updated_at->diffForHumans() }}</span>
                   </div>
                 </td>
 

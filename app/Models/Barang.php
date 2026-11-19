@@ -43,4 +43,28 @@ class Barang extends Model
             'jumlah' => 'integer',
         ];
     }
+
+    /**
+     * Accessor: Kode unik barang dari kolom id dengan format tetap (INV-XXXXX).
+     */
+    public function getKodeBarangAttribute(): string
+    {
+        return 'INV-'.str_pad((string) $this->id, 5, '0', STR_PAD_LEFT);
+    }
+
+    /**
+     * Method: Menghasilkan representasi visual Barcode 1D (Code 39) dalam format raw HTML.
+     */
+    public function barcodeHtml(int $width = 3, int $height = 100): string
+    {
+        return \DNS1D::getBarcodeHTML($this->kode_barang, 'C39', $width, $height);
+    }
+
+    /**
+     * Method: Menghasilkan representasi visual Barcode 2D (QR Code) dalam format raw HTML.
+     */
+    public function qrcodeHtml(int $width = 5, int $height = 5): string
+    {
+        return \DNS2D::getBarcodeHTML($this->kode_barang, 'QRCODE', $width, $height);
+    }
 }
